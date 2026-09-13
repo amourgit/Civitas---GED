@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="100%" height="100%">
+  <defs>
+    <linearGradient id="egen-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#4ade80" />
+      <stop offset="100%" stop-color="#22c55e" />
+    </linearGradient>
+    <filter id="egen-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#4ade80" flood-opacity="0.8" />
+    </filter>
+  </defs>
+
+  <!-- High-contrast dark tile container ensuring crystal clarity on light and dark browser tabs -->
+  <rect width="50" height="50" rx="12" fill="#071b1f" stroke="#164249" stroke-width="1.5" />
+  
+  <!-- EGEN Emblem curve -->
+  <path
+    d="M14 20 C14 10, 36 10, 36 20 C36 28, 14 26, 14 36 C14 44, 36 44, 36 36"
+    stroke="url(#egen-logo-grad)"
+    stroke-width="6"
+    stroke-linecap="round"
+    fill="none"
+    filter="url(#egen-glow)"
+  />
+</svg>
