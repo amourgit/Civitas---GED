@@ -1,0 +1,6 @@
+{
+  "name": "EGEN DOCUMENTS",
+  "description": "Votre contenu. Vos processus. Une seule plateforme. Interface GED immersive avec navigation par dossiers 3D.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

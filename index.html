@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      (function() {
+        try {
+          var win = typeof window !== 'undefined' ? window : globalThis;
+          if (win) {
+            var rawFetch = win.fetch;
+            var currentFetch = rawFetch ? function() { return rawFetch.apply(win, arguments); } : undefined;
+            if (rawFetch) {
+              for (var key in rawFetch) {
+                try { currentFetch[key] = rawFetch[key]; } catch (_) {}
+              }
+            }
+            try {
+              Object.defineProperty(win, 'fetch', {
+                get: function() { return currentFetch; },
+                set: function(val) { currentFetch = val; },
+                configurable: true,
+                enumerable: true
+              });
+            } catch (e1) {
+              try {
+                Object.defineProperty(win, 'fetch', {
+                  value: currentFetch,
+                  writable: true,
+                  configurable: true,
+                  enumerable: true
+                });
+              } catch (e2) {}
+            }
+            try {
+              if (typeof Window !== 'undefined' && Window.prototype) {
+                var protoDesc = Object.getOwnPropertyDescriptor(Window.prototype, 'fetch');
+                if (protoDesc && !protoDesc.set && protoDesc.configurable) {
+                  Object.defineProperty(Window.prototype, 'fetch', {
+                    get: function() { return currentFetch; },
+                    set: function(val) { currentFetch = val; },
+                    configurable: true,
+                    enumerable: true
+                  });
+                }
+              }
+            } catch (e3) {}
+          }
+        } catch (_) {}
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EGEN DOCUMENTS - Plateforme Collaborative Immersive</title>
+    <meta name="description" content="Votre contenu. Vos processus. Une seule plateforme. Interface GED immersive avec navigation par dossiers 3D." />
+    <meta property="og:title" content="EGEN DOCUMENTS - Plateforme Collaborative Immersive" />
+    <meta property="og:description" content="Votre contenu. Vos processus. Une seule plateforme. Interface GED immersive avec navigation par dossiers 3D." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Epilogue:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&family=Urbanist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
