@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { FolderOpen, ChevronRight } from "lucide-react";
+import { playXboxSound } from "../../utils/xboxAudio";
 
 export interface GalleryPhoto {
   id: string | number;
@@ -20,13 +22,15 @@ export interface InteractiveFolderGalleryProps {
   folderName?: string;
   dragHintText?: string;
   className?: string;
+  onViewMore?: () => void;
 }
 
 export function InteractiveFolderGallery({
   photos = defaultPhotos,
   folderName = "Photography.gallery",
   dragHintText = "Drag any photo down to close",
-  className
+  className,
+  onViewMore
 }: InteractiveFolderGalleryProps) {
   const [isFolderOpen, setIsFolderOpen] = useState(false);
   const [hoverFolder, setHoverFolder] = useState(false);
@@ -44,7 +48,7 @@ export function InteractiveFolderGallery({
   const isTablet = screenWidth >= 640 && screenWidth < 1024;
 
   return (
-    <div className={`w-full relative overflow-visible ${className || ""}`}>
+    <div className={`w-full relative overflow-visible pt-1 sm:pt-2 md:pt-3 lg:pt-5 xl:pt-8 ${className || ""}`}>
       <div className="relative w-full flex flex-col items-center justify-center overflow-visible">
 
         {/* Responsive folder container size: compact for 2-col mobile & 3-col tablet */}
@@ -144,11 +148,40 @@ export function InteractiveFolderGallery({
               </div>
             </div>
           </motion.div>
+
+          {/* Bouton "Voir plus" - Visible quand le dossier est ouvert, juste en dessous des fichiers alignés */}
+          <motion.div 
+            className="absolute bottom-1 sm:bottom-2 md:bottom-2.5 z-30 flex items-center justify-center pointer-events-none"
+            animate={{ 
+              opacity: isFolderOpen ? 1 : 0, 
+              y: isFolderOpen ? 0 : 8,
+              scale: isFolderOpen ? 1 : 0.85
+            }}
+            transition={{ duration: 0.22, delay: isFolderOpen ? 0.08 : 0 }}
+          >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                playXboxSound('select');
+                if (onViewMore) {
+                  onViewMore();
+                }
+              }}
+              className={`pointer-events-auto flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-black font-semibold text-[10px] sm:text-xs shadow-[0_4px_16px_rgba(16,185,129,0.55)] hover:shadow-[0_4px_22px_rgba(16,185,129,0.75)] border border-emerald-300/60 cursor-pointer transition-all ${
+                isFolderOpen ? '' : 'pointer-events-none'
+              }`}
+            >
+              <FolderOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>Voir plus</span>
+              <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-70" />
+            </button>
+          </motion.div>
         </div>
 
         {/* Drag to close hint */}
         <motion.div 
-          animate={{ opacity: isFolderOpen ? 1 : 0, y: isFolderOpen ? 0 : 10 }}
+          animate={{ opacity: isFolderOpen ? 1 : 0, y: isFolderOpen ? 0 : 8 }}
           className="absolute -bottom-5 sm:-bottom-6 md:-bottom-7 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 backdrop-blur-md text-black/50 dark:text-white/50 text-[8px] sm:text-[9px] md:text-[10px] font-medium uppercase tracking-widest pointer-events-none z-30"
         >
           {dragHintText}

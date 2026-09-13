@@ -3,14 +3,9 @@ import {
   Search, 
   Bell, 
   PanelLeft, 
-  PanelLeftClose, 
-  Compass, 
-  Flame, 
-  Sparkles,
-  Wifi,
-  BatteryMedium
+  PanelLeftClose
 } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { XboxAudioController } from '../shared/XboxAudioController';
 import { playXboxSound } from '../../utils/xboxAudio';
 
@@ -36,7 +31,6 @@ export function TopBar({
   onQuickAction
 }: TopBarProps) {
   const navigate = useNavigate();
-  const location = useLocation();
   const [timeStr, setTimeStr] = useState("10:50");
 
   useEffect(() => {
@@ -54,26 +48,6 @@ export function TopBar({
     const interval = setInterval(updateTime, 30000);
     return () => clearInterval(interval);
   }, []);
-
-  const currentPath = location.pathname;
-
-  const isDocumentsActive = 
-    currentPath.startsWith('/documentation') ||
-    currentPath === '/salles' || 
-    currentPath === '/documents' || 
-    currentPath.startsWith('/salle') || 
-    currentPath.startsWith('/rayon') || 
-    currentPath.startsWith('/casier') || 
-    currentPath.startsWith('/dossier');
-
-  const navLinks = [
-    { label: 'Accueil', path: '/', isActive: currentPath === '/' || currentPath === '/accueil' },
-    { label: 'Documentation', path: '/documentation/salles', isActive: isDocumentsActive },
-    { label: 'Numérisation', path: '/ingestion', isActive: currentPath === '/ingestion' || currentPath === '/scanner' },
-    { label: 'Espaces', action: 'espaces', isActive: false },
-    { label: 'Tâches', action: 'taches', isActive: false },
-    { label: 'Workflows', action: 'workflows', isActive: false }
-  ];
 
   return (
     <header className="w-full max-w-full flex items-center justify-between px-3 sm:px-4 md:px-8 pt-1.5 sm:pt-2 md:pt-4 pb-1 md:pb-2 mt-0 sm:mt-0.5 z-30 bg-transparent border-none select-none overflow-hidden">
@@ -143,40 +117,7 @@ export function TopBar({
         </div>
       </div>
 
-      {/* 2. MILIEU: Liens de navigation libres dans leur design, non encadrés (masqués sur mobile et tablette) */}
-      <nav className="hidden xl:flex items-center justify-center gap-6 2xl:gap-8 px-4">
-        {navLinks.map((link) => {
-          const handleClick = () => {
-            playXboxSound(link.isActive ? 'hover' : 'select');
-            if (link.path) {
-              navigate(link.path);
-            } else if (link.action && onQuickAction) {
-              onQuickAction(link.action);
-            }
-          };
-
-          return (
-            <button
-              key={link.label}
-              type="button"
-              onClick={handleClick}
-              className={`relative py-1 text-xs sm:text-sm font-medium tracking-wide transition-all duration-150 cursor-pointer outline-none ${
-                link.isActive
-                  ? 'text-white font-semibold drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]'
-                  : 'text-white/60 hover:text-white hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]'
-              }`}
-            >
-              {link.label}
-              {/* Active subtle glowing dot / line indicator */}
-              {link.isActive && (
-                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-sky-400 rounded-full shadow-[0_0_8px_rgba(56,189,248,0.9)]" />
-              )}
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* 3. DROITE: Options sous forme d'icônes compactes + Gamerscore / Heure */}
+      {/* 2. DROITE: Options sous forme d'icônes compactes + Gamerscore / Heure */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         {/* Recherche Icon Button */}
         <button

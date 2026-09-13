@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FolderItem } from '../../types/document';
 import { InteractiveFolderGallery, GalleryPhoto } from '../folder/InteractiveFolderGallery';
+import { FolderFilesOverlay } from '../folder/FolderFilesOverlay';
 
 interface DocumentGridProps {
   folders: FolderItem[];
@@ -67,6 +68,8 @@ export function DocumentGrid({
   onViewProperties,
   onDelete
 }: DocumentGridProps) {
+  const [overlayFolder, setOverlayFolder] = useState<FolderItem | null>(null);
+
   if (folders.length === 0) {
     return (
       <div className="w-full min-h-[350px] flex flex-col items-center justify-center text-center p-8 rounded-2xl bg-[#07181b]/30 border border-white/[0.06] backdrop-blur-md">
@@ -82,9 +85,9 @@ export function DocumentGrid({
   }
 
   return (
-    <div className="w-full relative pb-8 sm:pb-12 overflow-visible">
+    <div className="w-full relative pb-8 sm:pb-12 overflow-visible mt-2 sm:mt-4 md:mt-6 lg:mt-10 xl:mt-14">
       {/* Responsive Grid with InteractiveFolderGallery: 2 on mobile, 3 on tablet, 4+ on desktop */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-y-4 sm:gap-y-6 md:gap-y-7 gap-x-2 sm:gap-x-3 md:gap-x-4 lg:gap-x-6 justify-items-center overflow-visible pt-1 pb-6 sm:pb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-y-6 sm:gap-y-8 md:gap-y-10 lg:gap-y-14 gap-x-2 sm:gap-x-3 md:gap-x-4 lg:gap-x-6 justify-items-center overflow-visible pt-4 sm:pt-6 md:pt-8 lg:pt-12 xl:pt-16 pb-6 sm:pb-8">
         {folders.map((folder) => {
           const photos = getPhotosForFolder(folder);
 
@@ -98,6 +101,9 @@ export function DocumentGrid({
                 folderName={folder.name}
                 photos={photos}
                 dragHintText="Glissez vers le bas pour fermer"
+                onViewMore={() => {
+                  setOverlayFolder(folder);
+                }}
               />
             </div>
           );
@@ -106,6 +112,15 @@ export function DocumentGrid({
 
       {/* Subtle floor reflection for the entire grid */}
       <div className="w-full h-8 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none mt-2 rounded-2xl" />
+
+      {/* Full-Page 3-Mode Document Viewer ("Voir plus") */}
+      {overlayFolder && (
+        <FolderFilesOverlay
+          folder={overlayFolder}
+          isOpen={!!overlayFolder}
+          onClose={() => setOverlayFolder(null)}
+        />
+      )}
     </div>
   );
 }

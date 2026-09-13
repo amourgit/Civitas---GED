@@ -16,6 +16,7 @@ import {
   Archive 
 } from "lucide-react"
 import { FolderItem } from "../../types/document"
+import { playXboxSound } from "../../utils/xboxAudio"
 
 export type LayoutMode = "stack" | "grid" | "list"
 
@@ -68,23 +69,34 @@ function getFileIcon(type?: string) {
 }
 
 export function folderToCardData(folder: FolderItem): CardData[] {
+  const list: CardData[] = []
+
   if (folder.filesInside && folder.filesInside.length > 0) {
-    return folder.filesInside.map((file) => ({
-      id: file.id,
-      title: file.name,
-      description: `${file.size || '3.5 Mo'} • Mis à jour ${file.updatedAt || 'Récemment'}`,
-      icon: getFileIcon(file.type),
-    }))
+    folder.filesInside.forEach((file) => {
+      list.push({
+        id: file.id,
+        title: file.name,
+        description: `${file.size || '3.5 Mo'} • Mis à jour ${file.updatedAt || folder.updatedAt || 'Récemment'}`,
+        icon: getFileIcon(file.type),
+      })
+    })
   }
 
   if (folder.photos && folder.photos.length > 0) {
-    return folder.photos.map((p, i) => ({
-      id: `p-${p.id || i}`,
-      title: p.title || `Photo_${i + 1}.jpg`,
-      description: `${p.size || '4.2 Mo'} • Mis à jour ${folder.updatedAt}`,
-      icon: <ImageIcon className="h-5 w-5 text-cyan-400" />,
-    }))
+    folder.photos.forEach((p, i) => {
+      const exists = list.some(item => item.id === String(p.id) || item.title === p.title)
+      if (!exists) {
+        list.push({
+          id: `photo-${p.id || i}`,
+          title: p.title || `Fichier_${i + 1}.jpg`,
+          description: `${p.dimensions ? p.dimensions + ' • ' : ''}${p.size || '4.2 Mo'} • Mis à jour ${folder.updatedAt}`,
+          icon: <ImageIcon className="h-5 w-5 text-cyan-400" />,
+        })
+      }
+    })
   }
+
+  if (list.length > 0) return list
 
   // Fallback files for rich demonstration
   return [
@@ -190,9 +202,9 @@ export function Component({
   }
 
   const containerStyles = {
-    stack: "relative h-64 w-64",
-    grid: "grid grid-cols-2 gap-3 w-full max-w-lg",
-    list: "flex flex-col gap-3 w-full max-w-lg",
+    stack: "relative h-64 sm:h-72 w-64 sm:w-72",
+    grid: "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full max-w-5xl",
+    list: "flex flex-col gap-2.5 w-full max-w-3xl",
   }
 
   const displayCards = layout === "stack" ? getStackOrder() : cards.map((c, i) => ({ ...c, stackPosition: i }))
@@ -200,44 +212,49 @@ export function Component({
   return (
     <div 
       className={cn(
-        "fixed inset-0 z-[100] flex flex-col bg-black/70 backdrop-blur-xl select-none overflow-hidden",
+        "fixed inset-0 z-[100] flex flex-col bg-black/80 backdrop-blur-2xl select-none overflow-hidden",
         className
       )}
     >
       {/* Barre de contrôle toujours en haut de la page */}
-      <div className="w-full shrink-0 px-6 py-4 flex items-center justify-between border-b border-white/10 bg-black/40 backdrop-blur-md z-50">
+      <div className="w-full shrink-0 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-white/10 bg-black/60 backdrop-blur-md z-50">
         {/* Titre / contexte du dossier */}
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 text-sm">
             📁
           </div>
           <div className="min-w-0">
-            <h2 className="text-sm font-semibold text-white truncate drop-shadow-sm">
+            <h2 className="text-xs sm:text-sm font-semibold text-white truncate drop-shadow-sm">
               {title}
             </h2>
-            <p className="text-[11px] text-white/50 truncate">
-              {cards.length} fichier{cards.length > 1 ? 's' : ''} chargé{cards.length > 1 ? 's' : ''}
+            <p className="text-[10px] sm:text-[11px] text-white/50 truncate">
+              {cards.length} fichier{cards.length > 1 ? 's' : ''} indexé{cards.length > 1 ? 's' : ''}
             </p>
           </div>
         </div>
 
         {/* Layout Toggle - Les trois boutons de contrôle sont TOUJOURS en haut de la page */}
-        <div className="flex items-center justify-center gap-1 rounded-lg bg-secondary/50 p-1 w-fit mx-auto">
+        <div className="flex items-center justify-center gap-1 rounded-lg bg-white/5 border border-white/10 p-1 w-fit mx-auto">
           {(Object.keys(layoutIcons) as LayoutMode[]).map((mode) => {
             const Icon = layoutIcons[mode]
             return (
               <button
                 key={mode}
-                onClick={() => setLayout(mode)}
+                onClick={() => {
+                  playXboxSound('toggle')
+                  setLayout(mode)
+                }}
                 className={cn(
-                  "rounded-md p-2 transition-all cursor-pointer",
+                  "rounded-md px-2.5 py-1.5 transition-all cursor-pointer flex items-center gap-1.5",
                   layout === mode
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary",
+                    ? "bg-emerald-500 text-black font-semibold shadow-sm"
+                    : "text-white/60 hover:text-white hover:bg-white/10",
                 )}
                 aria-label={`Switch to ${mode} layout`}
+                title={`Mode ${mode}`}
               >
                 <Icon className="h-4 w-4" />
+                <span className="text-[11px] capitalize hidden md:inline">{mode}</span>
               </button>
             )
           })}
@@ -247,8 +264,11 @@ export function Component({
         <div className="flex items-center justify-end">
           {onClose && (
             <button
-              onClick={onClose}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all cursor-pointer"
+              onClick={() => {
+                playXboxSound('back')
+                onClose()
+              }}
+              className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/10 transition-all cursor-pointer"
               aria-label="Fermer"
               title="Fermer (Échap)"
             >
@@ -259,7 +279,7 @@ export function Component({
       </div>
 
       {/* Cards Container - Zone centrale scrollable si grille/liste */}
-      <div className="flex-1 overflow-y-auto px-4 py-8 sm:py-12 flex flex-col items-center justify-center min-h-0">
+      <div className="flex-1 overflow-y-auto px-4 py-6 sm:py-10 flex flex-col items-center justify-center min-h-0">
         <LayoutGroup>
           <motion.div layout className={cn(containerStyles[layout], "mx-auto")}>
             <AnimatePresence mode="popLayout">
@@ -275,7 +295,7 @@ export function Component({
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{
                       opacity: 1,
-                      scale: isExpanded ? 1.05 : 1,
+                      scale: isExpanded ? 1.03 : 1,
                       x: 0,
                       ...styles,
                     }}
@@ -293,34 +313,35 @@ export function Component({
                     whileDrag={{ scale: 1.02, cursor: "grabbing" }}
                     onClick={() => {
                       if (isDragging) return
+                      playXboxSound('select')
                       setExpandedCard(isExpanded ? null : card.id)
                       onCardClick?.(card)
                     }}
                     className={cn(
-                      "cursor-pointer rounded-xl border border-border bg-card p-4",
-                      "hover:border-primary/50 transition-colors",
-                      layout === "stack" && "absolute w-56 h-48",
+                      "cursor-pointer rounded-xl border border-white/10 bg-[#0d1f22]/90 backdrop-blur-md transition-all duration-200",
+                      "hover:border-emerald-400/60 hover:bg-[#102a2e] shadow-lg",
+                      layout === "stack" && "absolute w-60 sm:w-64 h-52 sm:h-56 p-4",
                       layout === "stack" && isTopCard && "cursor-grab active:cursor-grabbing",
-                      layout === "grid" && "w-full aspect-square",
-                      layout === "list" && "w-full",
-                      isExpanded && "ring-2 ring-primary",
+                      layout === "grid" && "w-full min-h-[90px] p-3.5 flex flex-col justify-between",
+                      layout === "list" && "w-full p-3 flex items-center justify-between",
+                      isExpanded && "ring-2 ring-emerald-400 border-emerald-400/80 bg-[#123136]",
                     )}
                     style={{
                       backgroundColor: card.color || undefined,
                     }}
                   >
-                    <div className="flex items-start gap-3">
+                    <div className={cn("flex items-start gap-3", layout === "list" && "items-center w-full")}>
                       {card.icon && (
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-foreground">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-emerald-400">
                           {card.icon}
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <h3 className="font-semibold text-card-foreground truncate">{card.title}</h3>
+                        <h3 className="text-xs sm:text-sm font-semibold text-white truncate">{card.title}</h3>
                         <p
                           className={cn(
-                            "text-sm text-muted-foreground mt-1",
-                            layout === "stack" && "line-clamp-3",
+                            "text-[11px] text-white/50 mt-0.5",
+                            layout === "stack" && "line-clamp-2",
                             layout === "grid" && "line-clamp-2",
                             layout === "list" && "line-clamp-1",
                           )}
@@ -330,9 +351,9 @@ export function Component({
                       </div>
                     </div>
 
-                    {isTopCard && (
+                    {isTopCard && layout === "stack" && (
                       <div className="absolute bottom-2 left-0 right-0 text-center">
-                        <span className="text-xs text-muted-foreground/50">Swipe to navigate</span>
+                        <span className="text-[10px] text-white/40 uppercase tracking-widest">Glisser pour naviguer</span>
                       </div>
                     )}
                   </motion.div>

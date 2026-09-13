@@ -120,7 +120,7 @@ export function DossiersPage({
 
       {/* Main Viewport Content */}
       <div 
-        className="flex-1 overflow-y-auto overflow-x-hidden px-2 sm:px-4 md:px-6 py-2 sm:py-3 pb-12 min-h-0"
+        className="flex-1 overflow-y-auto overflow-x-hidden px-2 sm:px-4 md:px-6 lg:px-8 pt-3 sm:pt-5 lg:pt-8 xl:pt-10 pb-12 min-h-0"
         data-scrollable="true"
       >
         <DocumentGrid

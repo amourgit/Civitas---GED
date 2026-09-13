@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Maximize2, Sparkles, Folder, ArrowLeft } from 'lucide-react';
 import { InteractiveFolderGallery, GalleryPhoto } from './InteractiveFolderGallery';
+import { FolderFilesOverlay } from './FolderFilesOverlay';
 import { FolderItem } from '../../types/document';
 import { playXboxSound } from '../../utils/xboxAudio';
 
@@ -18,6 +19,7 @@ export function InteractiveFolderModal({
   onPhotoClick
 }: InteractiveFolderModalProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
+  const [showFilesOverlay, setShowFilesOverlay] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -94,9 +96,19 @@ export function InteractiveFolderModal({
             photos={folder.photos}
             folderName={folder.name}
             dragHintText="Glissez une photo vers le bas pour refermer le dossier"
+            onViewMore={() => setShowFilesOverlay(true)}
           />
         </div>
       </div>
+
+      {/* Full 3-mode Folder Files Overlay */}
+      {showFilesOverlay && (
+        <FolderFilesOverlay
+          folder={folder}
+          isOpen={showFilesOverlay}
+          onClose={() => setShowFilesOverlay(false)}
+        />
+      )}
 
       {/* Photo Lightbox Preview modal if user clicks on an unstacked photo */}
       {selectedPhoto && (
