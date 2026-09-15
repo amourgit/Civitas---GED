@@ -65,8 +65,8 @@ export interface DefaultBackgroundProps {
  * Toutes ses couches acceptent des injections CSS directes via les props.
  */
 export function DefaultPageBackground({
-  imageSrc = '/background.jpg',
-  imageAlt = "Arrière-plan d'ambiance GED",
+  imageSrc = '/assets/cod_archive_vault.jpg',
+  imageAlt = "Arrière-plan Salle d'archivage moderne 3D",
   className,
   imageClassName,
   overlayClassName,
@@ -203,8 +203,8 @@ export function GlobalPageBackground() {
   // 2. Composant par défaut avec injection CSS et image spécifique de la page
   return (
     <DefaultPageBackground
-      imageSrc={config?.imageSrc || '/background.jpg'}
-      imageAlt={config?.imageAlt || "Arrière-plan d'ambiance GED"}
+      imageSrc={config?.imageSrc || '/assets/cod_archive_vault.jpg'}
+      imageAlt={config?.imageAlt || "Arrière-plan Salle d'archivage moderne 3D"}
       className={config?.className}
       imageClassName={config?.imageClassName}
       overlayClassName={config?.overlayClassName}

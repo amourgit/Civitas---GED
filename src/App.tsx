@@ -35,6 +35,7 @@ import { initialFolders, searchSuggestions } from './data/mockFolders';
 import { FolderItem } from './types/document';
 import { AmbientBackground } from './components/shell/AmbientBackground';
 import { PageBackgroundProvider } from './components/shell/PageBackground';
+import { PageLoadingProvider } from './context/PageLoadingContext';
 import { TopBar } from './components/shell/TopBar';
 import { XboxSidebar, XboxSidebarItem, XboxSidebarSection } from './components/shell/XboxSidebar';
 import { AccueilPage } from './components/views/AccueilPage';
@@ -809,9 +810,11 @@ function AppContent() {
 export default function App() {
   return (
     <BrowserRouter>
-      <PageBackgroundProvider>
-        <AppContent />
-      </PageBackgroundProvider>
+      <PageLoadingProvider>
+        <PageBackgroundProvider>
+          <AppContent />
+        </PageBackgroundProvider>
+      </PageLoadingProvider>
     </BrowserRouter>
   );
 }
