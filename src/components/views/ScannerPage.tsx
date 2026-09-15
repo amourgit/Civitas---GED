@@ -20,8 +20,12 @@ import {
   Gauge,
   Focus,
   Sun,
-  Maximize2
+  Maximize2,
+  ChevronUp,
+  ChevronDown
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CardStack } from '../ui/CardStack';
 import { playXboxSound } from '../../utils/xboxAudio';
 import { IngestionDocument } from '../../types/ingestion';
 import { initialIngestionSession } from '../../data/mockIngestion';
@@ -88,8 +92,34 @@ export function ScannerPage({ onShowToast, onAddCapturedDocsToSession }: Scanner
   
   // Settings modal state
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [ocrResolution, setOcrResolution] = useState<string>('300 DPI (Ultra-HD)');
   const [autoEnhance, setAutoEnhance] = useState<boolean>(true);
+
+  // Window resize tracking for responsive slide & title scaling
+  const [windowWidth, setWindowWidth] = useState<number>(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 1200
+  );
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobile = windowWidth < 640;
+  const isTablet = windowWidth >= 640 && windowWidth < 1024;
+
+  // Responsive slide sizing:
+  // Desktop (>=1024px): 520x320
+  // Tablet (640px-1023px): 260x160 (reduced considerably)
+  // Mobile (<640px): 200x125 (reduced even more)
+  const cardWidth = isMobile ? 200 : isTablet ? 260 : 520;
+  const cardHeight = isMobile ? 125 : isTablet ? 160 : 320;
+  const maxVisible = isMobile ? 3 : isTablet ? 4 : 7;
+  const depthPx = isMobile ? 40 : isTablet ? 60 : 140;
+  const spreadDeg = isMobile ? 18 : isTablet ? 26 : 48;
+  const activeLiftPx = isMobile ? 8 : isTablet ? 12 : 22;
 
   // Scanning state: 'scanning' | 'captured'
   const [scanState, setScanState] = useState<'scanning' | 'captured'>('scanning');
@@ -123,6 +153,9 @@ export function ScannerPage({ onShowToast, onAddCapturedDocsToSession }: Scanner
       cropped: true
     }));
   });
+
+  // Selected document ID with glowing contour highlight
+  const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
 
   // Flash effect on capture
   const [isFlashing, setIsFlashing] = useState<boolean>(false);
@@ -544,6 +577,40 @@ export function ScannerPage({ onShowToast, onAddCapturedDocsToSession }: Scanner
     navigate('/ingestion');
   };
 
+  // Actions for selected slide (3 free icon buttons: Réessayer, Valider, Supprimer)
+  const handleDocRetry = (doc: CapturedItem) => {
+    if (audioEnabled) playXboxSound('toggle');
+    // Prepare document for re-scanning / re-cropping in main viewfinder
+    setCapturedImage(doc.thumbnail);
+    setCurrentDocTitle(doc.title);
+    setScanState('captured');
+    setIsDrawerOpen(false);
+    if (onShowToast) {
+      onShowToast(`Reprise du scan pour « ${doc.title} ». Ajustez le document.`, 'info');
+    }
+  };
+
+  const handleDocValidate = (doc: CapturedItem) => {
+    if (audioEnabled) playXboxSound('toastSuccess');
+    if (onShowToast) {
+      onShowToast(`Document « ${doc.title} » validé avec succès !`, 'success');
+    }
+  };
+
+  const handleDocDelete = (doc: CapturedItem) => {
+    if (audioEnabled) playXboxSound('back');
+    setSessionDocsList((prev) => {
+      const remaining = prev.filter((d) => d.id !== doc.id);
+      if (selectedDocId === doc.id) {
+        setSelectedDocId(remaining.length > 0 ? remaining[0].id : null);
+      }
+      return remaining;
+    });
+    if (onShowToast) {
+      onShowToast(`Document « ${doc.title} » supprimé.`, 'info');
+    }
+  };
+
   const currentSample = SAMPLE_DOCS[selectedSampleIndex];
 
   return (
@@ -636,10 +703,21 @@ export function ScannerPage({ onShowToast, onAddCapturedDocsToSession }: Scanner
               <span>{ocrResolution}</span>
             </div>
 
-            <div className="px-2.5 py-1.5 rounded-xl bg-black/60 border border-white/10 backdrop-blur-md text-[10px] font-mono text-white/80 flex items-center gap-1.5 shadow-md">
+            <button
+              type="button"
+              onClick={() => {
+                playXboxSound('toggle');
+                setIsDrawerOpen((prev) => {
+                  if (prev) setSelectedDocId(null);
+                  return !prev;
+                });
+              }}
+              className="px-2.5 py-1.5 rounded-xl bg-black/60 hover:bg-emerald-950/40 border border-white/10 hover:border-emerald-500/40 backdrop-blur-md text-[10px] font-mono text-white/80 hover:text-emerald-300 flex items-center gap-1.5 shadow-md cursor-pointer transition-all"
+              title="Afficher la galerie des documents scannés"
+            >
               <Layers className="w-3 h-3 text-emerald-400" />
               <span>{sessionDocsList.length} doc(s)</span>
-            </div>
+            </button>
           </div>
 
         </div>
@@ -783,40 +861,137 @@ export function ScannerPage({ onShowToast, onAddCapturedDocsToSession }: Scanner
         </div>
       )}
 
-      {/* 5. TRANSLUCENT DISCRET RIGHT-SIDE SESSION DOCUMENTS LIST */}
-      <aside className="fixed right-4 top-20 bottom-36 w-32 sm:w-40 z-40 flex flex-col gap-2 p-2 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 opacity-50 hover:opacity-100 transition-opacity duration-300 pointer-events-auto overflow-y-auto scrollbar-none shadow-2xl">
-        <div className="flex items-center justify-between px-1 pb-1 border-b border-white/10">
-          <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest">
-            Session ({sessionDocsList.length})
-          </span>
+      {/* 5. TRAPPE INFÉRIEURE ET CARROUSEL DES DOCUMENTS SCANNÉS (100% LARGEUR, 80% HAUTEUR, SLIDE VERS LE HAUT) */}
+      {!isDrawerOpen && (
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => {
+              playXboxSound('select');
+              setSelectedDocId(null);
+              setIsDrawerOpen(true);
+            }}
+            className="flex items-center gap-1.5 sm:gap-2 md:gap-2.5 px-3.5 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-2.5 rounded-t-xl sm:rounded-t-2xl bg-black/90 hover:bg-[#041a15] border-t-2 border-x border-emerald-400/70 text-white font-mono text-[10px] sm:text-[11px] md:text-xs font-bold backdrop-blur-xl shadow-[0_-8px_30px_rgba(16,185,129,0.35)] transition-all cursor-pointer group hover:-translate-y-1"
+            title="Ouvrir le carrousel des documents scannés"
+          >
+            <ChevronUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400 group-hover:-translate-y-1 transition-transform" />
+            <span className="text-emerald-300 group-hover:text-emerald-200">Documents scannés</span>
+            <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-[9px] sm:text-[10px] text-emerald-300 font-bold">
+              {sessionDocsList.length}
+            </span>
+          </button>
         </div>
+      )}
 
-        <div className="flex flex-col gap-2">
-          {sessionDocsList.map((item, idx) => (
-            <div 
-              key={item.id}
-              className="group relative flex flex-col p-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-emerald-500/25 transition-all animate-in fade-in slide-in-from-right-4 duration-300"
+      {/* TIROIR PLEINE LARGEUR (100% LARGEUR, 80% HAUTEUR) AVEC ANIMATION DE SLIDE DU BAS VERS LE HAUT */}
+      <AnimatePresence>
+        {isDrawerOpen && (
+          <>
+            {/* Voile d'arrière-plan semi-transparent pour fermer au clic */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                playXboxSound('back');
+                setSelectedDocId(null);
+                setIsDrawerOpen(false);
+              }}
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 cursor-pointer"
+            />
+
+            {/* Panneau du carrousel */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 280, damping: 28 }}
+              className="fixed bottom-0 left-0 right-0 w-full h-[80vh] z-50 bg-[#020b08]/95 border-t-2 border-emerald-500/50 rounded-t-3xl backdrop-blur-2xl shadow-[0_-25px_60px_rgba(0,0,0,0.95)] flex flex-col overflow-hidden select-none"
             >
-              <div className="relative w-full h-16 rounded-lg overflow-hidden border border-white/10">
-                <img 
-                  src={item.thumbnail} 
-                  alt={item.title} 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-mono text-emerald-300 font-bold border border-emerald-500/40">
-                  #{sessionDocsList.length - idx}
+              {/* En-tête de la trappe avec contrôle de fermeture et taille de titre responsive */}
+              <div className="flex items-center justify-between px-3 sm:px-4 lg:px-6 py-2 sm:py-2.5 lg:py-3.5 border-b border-white/10 shrink-0 bg-black/40">
+                <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playXboxSound('back');
+                      setSelectedDocId(null);
+                      setIsDrawerOpen(false);
+                    }}
+                    className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 lg:px-3.5 py-1 sm:py-1.5 rounded-lg lg:rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white/80 hover:text-white text-[10px] sm:text-[11px] lg:text-xs font-mono font-bold transition-all cursor-pointer shadow"
+                    title="Fermer la trappe"
+                  >
+                    <ChevronDown className="w-3.5 h-3.5 text-emerald-400" />
+                    <span className="hidden sm:inline">Fermer la trappe</span>
+                    <span className="inline sm:hidden">Fermer</span>
+                  </button>
+
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-[10px] sm:text-[11px] lg:text-sm font-bold text-white font-mono tracking-tight truncate max-w-[140px] xs:max-w-[180px] sm:max-w-none">
+                      Documents scannés de la session
+                    </span>
+                    <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] sm:text-[10px] lg:text-[11px] font-mono font-bold border border-emerald-400/40 shrink-0">
+                      {sessionDocsList.length} slide{sessionDocsList.length > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-[9px] sm:text-[10px] lg:text-[11px] font-mono text-emerald-400/80 hidden md:flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>1er clic : sélectionner • 2e clic : ouvrir en grand</span>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold text-white/90 truncate mt-1">
-                {item.title}
-              </span>
-              <span className="text-[9px] text-white/40 font-mono">
-                {item.timestamp}
-              </span>
-            </div>
-          ))}
-        </div>
-      </aside>
+
+              {/* Corps : Intégration fidèle du CardStack avec les documents scannés comme slides (tailles adaptées mobile / tablette / desktop) */}
+              <div className="relative flex-1 w-full flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+                {sessionDocsList.length > 0 ? (
+                  <CardStack
+                    items={sessionDocsList.map((doc, idx) => ({
+                      id: doc.id,
+                      title: doc.title,
+                      description: `${doc.timestamp} • Scan #${sessionDocsList.length - idx}`,
+                      imageSrc: doc.thumbnail,
+                    }))}
+                    cardWidth={cardWidth}
+                    cardHeight={cardHeight}
+                    maxVisible={maxVisible}
+                    spreadDeg={spreadDeg}
+                    depthPx={depthPx}
+                    activeLiftPx={activeLiftPx}
+                    loop={true}
+                    autoAdvance={false}
+                    showDots={true}
+                    selectedId={selectedDocId}
+                    onCardClick={(item) => {
+                      const found = sessionDocsList.find((d) => d.id === item.id);
+                      if (!found) return;
+                      if (audioEnabled) playXboxSound('toggle');
+                      setSelectedDocId(found.id);
+                    }}
+                    onRetry={(item) => {
+                      const found = sessionDocsList.find((d) => d.id === item.id);
+                      if (found) handleDocRetry(found);
+                    }}
+                    onValidate={(item) => {
+                      const found = sessionDocsList.find((d) => d.id === item.id);
+                      if (found) handleDocValidate(found);
+                    }}
+                    onDelete={(item) => {
+                      const found = sessionDocsList.find((d) => d.id === item.id);
+                      if (found) handleDocDelete(found);
+                    }}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-2 text-white/50 font-mono text-xs">
+                    <Layers className="w-8 h-8 text-emerald-400/50" />
+                    <span>Aucun document scanné dans cette session</span>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* 6. BOTTOM-LEFT CORNER: REAL-TIME TECHNICAL METRICS & INTEL STATS */}
       <div className="absolute bottom-5 left-5 z-40 max-w-xs p-3.5 rounded-2xl bg-black/35 border border-white/10 hover:border-emerald-500/40 text-white/60 hover:text-white backdrop-blur-md opacity-45 hover:opacity-100 transition-all duration-300 cursor-pointer shadow-xl flex flex-col gap-2 font-mono text-[10px]">

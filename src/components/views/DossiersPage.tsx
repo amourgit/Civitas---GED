@@ -12,6 +12,7 @@ import {
   buildRayonUrl 
 } from '../../data/archiveStructure';
 import { ArchiveHeaderPipeline } from '../archive/ArchiveHeaderPipeline';
+import { PageBackground, cn } from '../shell/PageBackground';
 import { playXboxSound } from '../../utils/xboxAudio';
 
 interface DossiersPageProps {
@@ -24,6 +25,12 @@ interface DossiersPageProps {
   onPreviewSpecial: (folder: FolderItem) => void;
   onShare: (folder: FolderItem) => void;
   onCreateFolder?: () => void;
+  /** Surcharge par un composant React custom */
+  customBackground?: React.ReactNode;
+  /** Injections CSS */
+  backgroundClassName?: string;
+  backgroundImageClassName?: string;
+  backgroundOverlayClassName?: string;
 }
 
 export function DossiersPage({
@@ -35,7 +42,11 @@ export function DossiersPage({
   onViewProperties,
   onPreviewSpecial,
   onShare,
-  onCreateFolder
+  onCreateFolder,
+  customBackground,
+  backgroundClassName,
+  backgroundImageClassName,
+  backgroundOverlayClassName,
 }: DossiersPageProps) {
   const { salleId, rayonId, casierId } = useParams<{ salleId?: string; rayonId?: string; casierId: string }>();
   const navigate = useNavigate();
@@ -84,6 +95,17 @@ export function DossiersPage({
 
   return (
     <div className="w-full h-full flex flex-col overflow-hidden relative select-none min-h-0">
+      {/* Système d'arrière-plan modulaire de page avec support de surcharge et injection CSS (lumineux, sans voile sombre imposé) */}
+      <PageBackground
+        customComponent={customBackground}
+        imageSrc={casier?.coverImage || '/assets/cover_casier_ouvert.jpg'}
+        imageAlt="Zoom sur le casier d'archives ouvert avec dossiers"
+        className={backgroundClassName}
+        imageClassName={cn('opacity-100 object-cover object-center', backgroundImageClassName)}
+        overlayClassName={backgroundOverlayClassName}
+        showAtmosphere={false}
+      />
+
       {/* Dynamic Archive Header Pipeline */}
       <ArchiveHeaderPipeline
         currentLevel="dossier"

@@ -13,144 +13,7 @@ import {
   ArrowLeft,
   Search
 } from 'lucide-react';
-
-// Business/Domain Structure for the multi-step archiving system
-const SALLES = [
-  {
-    id: 's01',
-    matricule: 'S-01',
-    name: 'Salle Centrale Administrative',
-    description: 'Gestion des affaires courantes, des contrats, des projets actifs et ressources humaines.',
-    location: 'Aile Est - Niveau 1',
-    securityLevel: 'Restreint',
-    status: 'Opérationnel',
-    storageCapacity: '450 / 1000 Go',
-    rayonCount: 2,
-    fileCount: 47
-  },
-  {
-    id: 's02',
-    matricule: 'S-02',
-    name: 'Salle des Archives & Haute-Sécurité',
-    description: 'Comptabilité certifiée, documents légaux de l’entreprise et archives historiques.',
-    location: 'Aile Ouest - Sous-sol 2',
-    securityLevel: 'Secret',
-    status: 'Opérationnel',
-    storageCapacity: '120 / 500 Go',
-    rayonCount: 2,
-    fileCount: 18
-  }
-];
-
-const RAYONS = [
-  {
-    id: 'ry101',
-    salleId: 's01',
-    matricule: 'RY-101',
-    name: 'Rayon Administration & RH',
-    description: 'Dossiers du personnel, mémos stratégiques et documents administratifs du groupe.',
-    rowNumber: 'Rangée 4, Section A',
-    material: 'Acier Renforcé',
-    casierCount: 2,
-    fileCount: 27
-  },
-  {
-    id: 'ry102',
-    salleId: 's01',
-    matricule: 'RY-102',
-    name: 'Rayon Projets & Médias',
-    description: 'Roadmaps de développement, livrables techniques et galeries multimédias.',
-    rowNumber: 'Rangée 4, Section B',
-    material: 'Acier Renforcé',
-    casierCount: 2,
-    fileCount: 20
-  },
-  {
-    id: 'ry201',
-    salleId: 's02',
-    matricule: 'RY-201',
-    name: 'Rayon Finance & Comptes',
-    description: 'Bilans de l’exercice fiscal, budgets prévisionnels et déclarations certifiées.',
-    rowNumber: 'Rangée 1, Section C',
-    material: 'Titane Ignifuge',
-    casierCount: 1,
-    fileCount: 11
-  },
-  {
-    id: 'ry202',
-    salleId: 's02',
-    matricule: 'RY-202',
-    name: 'Rayon Réserve Historique',
-    description: 'Archives physiques numérisées et documents d’activité clos.',
-    rowNumber: 'Rangée 1, Section D',
-    material: 'Titane Ignifuge',
-    casierCount: 1,
-    fileCount: 7
-  }
-];
-
-const CASIERS = [
-  {
-    id: 'cs1011',
-    rayonId: 'ry101',
-    matricule: 'CS-1011',
-    name: 'Casier Personnel & Équipe',
-    description: 'Organigrammes, fiches de poste, plannings et dossiers collaborateurs.',
-    boxCount: 2,
-    lockerType: 'Armoire Blindée Numérique',
-    folderIds: ['f4', 'f10'] // Équipe, Personnel
-  },
-  {
-    id: 'cs1012',
-    rayonId: 'ry101',
-    matricule: 'CS-1012',
-    name: 'Casier Administratif & Ressources',
-    description: 'Baux commerciaux, règlements, modèles de contrat et stockage principal.',
-    boxCount: 3,
-    lockerType: 'Armoire Standard',
-    folderIds: ['f0', 'f9', 'f7', 'f5'] // Mes fichiers, Administratif, Ressources, Formation
-  },
-  {
-    id: 'cs1021',
-    rayonId: 'ry102',
-    matricule: 'CS-1021',
-    name: 'Casier Projets & Roadmaps',
-    description: 'Dossiers projets, spécifications techniques et feuilles de route.',
-    boxCount: 2,
-    lockerType: 'Coffre Projets Sécurisé',
-    folderIds: ['f2', 'f3'] // Projets, Travail
-  },
-  {
-    id: 'cs1022',
-    rayonId: 'ry102',
-    matricule: 'CS-1022',
-    name: 'Casier Marketing & Médias',
-    description: 'Campagnes promotionnelles, communiqués et chartes visuelles.',
-    boxCount: 2,
-    lockerType: 'Serveur de Médias Local',
-    folderIds: ['f1', 'f8'] // Photography.gallery, Marketing
-  },
-  {
-    id: 'cs2011',
-    rayonId: 'ry201',
-    matricule: 'CS-2011',
-    name: 'Casier Budgets & Comptes',
-    description: 'Feuilles de calcul de trésorerie, factures et audits de paie.',
-    boxCount: 1,
-    lockerType: 'Coffre Fort Numérique',
-    folderIds: ['f6'] // Finance
-  },
-  {
-    id: 'cs2021',
-    rayonId: 'ry202',
-    matricule: 'CS-2021',
-    name: 'Casier Fonds Documentaire',
-    description: 'Fonds d’archives clos, fiches de synthèse de l’année passée.',
-    boxCount: 1,
-    lockerType: 'Archive Ignifuge v2',
-    folderIds: ['f7'] // Archives 2024 / Ressources (shared mapped)
-  }
-];
+import { SALLES, RAYONS, CASIERS } from '../../data/archiveStructure';
 
 interface DocumentsPageProps {
   folders: FolderItem[];
@@ -450,62 +313,79 @@ export function DocumentsPage({
             {SALLES.map((salle) => (
               <div
                 key={salle.id}
-                className="group relative rounded-xl p-4 sm:p-5 bg-gradient-to-b from-white/10 via-[#07171d]/85 to-[#02090c]/95 border border-emerald-500/30 hover:border-emerald-400 shadow-[0_0_15px_rgba(74,222,128,0.1)] hover:shadow-[0_0_25px_rgba(74,222,128,0.25)] transition-all duration-200"
+                className="group relative overflow-hidden rounded-xl p-4 sm:p-5 bg-[#02090c] border border-emerald-500/30 hover:border-emerald-400 shadow-[0_0_15px_rgba(74,222,128,0.1)] hover:shadow-[0_0_25px_rgba(74,222,128,0.25)] transition-all duration-300 flex flex-col justify-between min-h-[260px]"
               >
-                {/* HUD Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 text-[10px] font-mono rounded font-bold">
-                      {salle.matricule}
-                    </span>
-                    <span className="text-[10px] sm:text-xs text-white/50 font-mono">
-                      {salle.location}
-                    </span>
-                  </div>
-                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                    salle.securityLevel === 'Secret' 
-                      ? 'bg-red-500/20 border border-red-400/50 text-red-300'
-                      : 'bg-amber-500/20 border border-amber-400/50 text-amber-300'
-                  }`}>
-                    {salle.securityLevel}
-                  </span>
+                {/* Cover Image claire et bien visible */}
+                <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                  <img
+                    src={salle.coverImage || '/assets/cover_salle.jpg'}
+                    alt={salle.name}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 </div>
 
-                {/* Core Title */}
-                <h3 className="text-sm sm:text-base font-extrabold text-white group-hover:text-emerald-300 transition-colors drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                  {salle.name}
-                </h3>
-                <p className="text-[11px] sm:text-xs text-white/60 mt-1.5 leading-relaxed">
-                  {salle.description}
-                </p>
+                <div className="relative z-10 flex flex-col justify-between h-full">
+                  <div>
+                    {/* HUD Header */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 bg-black/70 text-emerald-400 border border-emerald-400/50 text-[10px] font-mono rounded font-bold backdrop-blur-sm shadow">
+                          {salle.matricule}
+                        </span>
+                        <span className="text-[10px] sm:text-xs text-white font-mono px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm shadow">
+                          {salle.location}
+                        </span>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider backdrop-blur-sm shadow ${
+                        salle.securityLevel === 'Secret' 
+                          ? 'bg-red-950/80 border border-red-400 text-red-200'
+                          : 'bg-amber-950/80 border border-amber-400 text-amber-200'
+                      }`}>
+                        {salle.securityLevel}
+                      </span>
+                    </div>
 
-                {/* Metrics Footer */}
-                <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/5 text-[10px] font-mono text-white/50">
-                  <div className="flex flex-col">
-                    <span className="text-white/35">Capacité</span>
-                    <span className="text-white font-semibold mt-0.5">{salle.storageCapacity}</span>
+                    {/* Core Title */}
+                    <div className="inline-block p-2 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 mt-1 max-w-full">
+                      <h3 className="text-sm sm:text-base font-extrabold text-white group-hover:text-emerald-300 transition-colors drop-shadow">
+                        {salle.name}
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-white/90 mt-1 leading-relaxed drop-shadow">
+                        {salle.description}
+                      </p>
+                    </div>
+
+                    {/* Metrics Footer */}
+                    <div className="grid grid-cols-3 gap-2 mt-4 p-2.5 rounded-lg bg-black/65 backdrop-blur-sm border border-white/10 text-[10px] font-mono text-white">
+                      <div className="flex flex-col">
+                        <span className="text-white/70">Capacité</span>
+                        <span className="text-white font-semibold mt-0.5">{salle.storageCapacity}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-white/70">Rayons</span>
+                        <span className="text-white font-semibold mt-0.5">{salle.rayonCount} unités</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-white/70">Fichiers</span>
+                        <span className="text-emerald-300 font-semibold mt-0.5">{salle.fileCount} docs</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-white/35">Rayons</span>
-                    <span className="text-white font-semibold mt-0.5">{salle.rayonCount} unités</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-white/35">Fichiers</span>
-                    <span className="text-white font-semibold mt-0.5 text-emerald-400">{salle.fileCount} docs</span>
-                  </div>
+
+                  {/* Call To Action */}
+                  <button
+                    onClick={() => {
+                      setSelectedSalleId(salle.id);
+                      setCurrentLevel('rayon');
+                    }}
+                    className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 border border-emerald-400/60 text-white text-xs font-bold transition-all cursor-pointer shadow-lg backdrop-blur-sm"
+                  >
+                    <DoorOpen className="w-4 h-4" />
+                    <span>Ouvrir la salle</span>
+                  </button>
                 </div>
-
-                {/* Call To Action */}
-                <button
-                  onClick={() => {
-                    setSelectedSalleId(salle.id);
-                    setCurrentLevel('rayon');
-                  }}
-                  className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-400/30 text-emerald-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
-                >
-                  <DoorOpen className="w-4 h-4" />
-                  <span>Ouvrir la salle</span>
-                </button>
               </div>
             ))}
           </div>
@@ -517,54 +397,71 @@ export function DocumentsPage({
             {RAYONS.filter(r => r.salleId === selectedSalleId).map((rayon) => (
               <div
                 key={rayon.id}
-                className="group relative rounded-xl p-4 sm:p-5 bg-gradient-to-b from-white/10 via-[#07171d]/85 to-[#02090c]/95 border border-emerald-500/30 hover:border-emerald-400 shadow-[0_0_15px_rgba(74,222,128,0.1)] hover:shadow-[0_0_25px_rgba(74,222,128,0.25)] transition-all duration-200"
+                className="group relative overflow-hidden rounded-xl p-4 sm:p-5 bg-[#02090c] border border-emerald-500/30 hover:border-emerald-400 shadow-[0_0_15px_rgba(74,222,128,0.1)] hover:shadow-[0_0_25px_rgba(74,222,128,0.25)] transition-all duration-300 flex flex-col justify-between min-h-[260px]"
               >
-                {/* HUD Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 text-[10px] font-mono rounded font-bold">
-                      {rayon.matricule}
-                    </span>
-                    <span className="text-[10px] sm:text-xs text-white/50 font-mono">
-                      {rayon.rowNumber}
-                    </span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[9px] font-mono text-white/50">
-                    {rayon.material}
-                  </span>
+                {/* Cover Image claire et bien visible */}
+                <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                  <img
+                    src={rayon.coverImage || '/assets/cover_rayon_lockers.jpg'}
+                    alt={rayon.name}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 </div>
 
-                {/* Title */}
-                <h3 className="text-sm sm:text-base font-extrabold text-white group-hover:text-emerald-300 transition-colors">
-                  {rayon.name}
-                </h3>
-                <p className="text-[11px] sm:text-xs text-white/60 mt-1.5 leading-relaxed">
-                  {rayon.description}
-                </p>
+                <div className="relative z-10 flex flex-col justify-between h-full">
+                  <div>
+                    {/* HUD Header */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 bg-black/70 text-emerald-400 border border-emerald-400/50 text-[10px] font-mono rounded font-bold backdrop-blur-sm shadow">
+                          {rayon.matricule}
+                        </span>
+                        <span className="text-[10px] sm:text-xs text-white font-mono px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm shadow">
+                          {rayon.rowNumber}
+                        </span>
+                      </div>
+                      <span className="px-2 py-0.5 rounded bg-black/70 border border-white/20 text-[9px] font-mono text-white backdrop-blur-sm shadow">
+                        {rayon.material}
+                      </span>
+                    </div>
 
-                {/* Metrics */}
-                <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/5 text-[10px] font-mono text-white/50">
-                  <div className="flex flex-col">
-                    <span className="text-white/35">Casiers</span>
-                    <span className="text-white font-semibold mt-0.5">{rayon.casierCount} unités</span>
+                    {/* Title */}
+                    <div className="inline-block p-2 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 mt-1 max-w-full">
+                      <h3 className="text-sm sm:text-base font-extrabold text-white group-hover:text-emerald-300 transition-colors drop-shadow">
+                        {rayon.name}
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-white/90 mt-1 leading-relaxed drop-shadow">
+                        {rayon.description}
+                      </p>
+                    </div>
+
+                    {/* Metrics with clean dark plate */}
+                    <div className="grid grid-cols-2 gap-2 mt-4 p-2.5 rounded-lg bg-black/65 backdrop-blur-sm border border-white/10 text-[10px] font-mono text-white">
+                      <div className="flex flex-col">
+                        <span className="text-white/70">Casiers</span>
+                        <span className="text-white font-semibold mt-0.5">{rayon.casierCount} unités</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-white/70">Total documents</span>
+                        <span className="text-emerald-300 font-semibold mt-0.5">{rayon.fileCount} fichiers</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-white/35">Total documents</span>
-                    <span className="text-white font-semibold mt-0.5 text-emerald-400">{rayon.fileCount} fichiers</span>
-                  </div>
+
+                  {/* Action */}
+                  <button
+                    onClick={() => {
+                      setSelectedRayonId(rayon.id);
+                      setCurrentLevel('casier');
+                    }}
+                    className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 border border-emerald-400/60 text-white text-xs font-bold transition-all cursor-pointer shadow-lg backdrop-blur-sm"
+                  >
+                    <Layers className="w-4 h-4" />
+                    <span>Inspecter les casiers</span>
+                  </button>
                 </div>
-
-                {/* Action */}
-                <button
-                  onClick={() => {
-                    setSelectedRayonId(rayon.id);
-                    setCurrentLevel('casier');
-                  }}
-                  className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-400/30 text-emerald-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
-                >
-                  <Layers className="w-4 h-4" />
-                  <span>Inspecter les casiers</span>
-                </button>
               </div>
             ))}
           </div>
@@ -576,48 +473,65 @@ export function DocumentsPage({
             {CASIERS.filter(c => c.rayonId === selectedRayonId).map((casier) => (
               <div
                 key={casier.id}
-                className="group relative rounded-xl p-4 sm:p-5 bg-gradient-to-b from-white/10 via-[#07171d]/85 to-[#02090c]/95 border border-emerald-500/30 hover:border-emerald-400 shadow-[0_0_15px_rgba(74,222,128,0.1)] hover:shadow-[0_0_25px_rgba(74,222,128,0.25)] transition-all duration-200"
+                className="group relative overflow-hidden rounded-xl p-4 sm:p-5 bg-[#02090c] border border-emerald-500/30 hover:border-emerald-400 shadow-[0_0_15px_rgba(74,222,128,0.1)] hover:shadow-[0_0_25px_rgba(74,222,128,0.25)] transition-all duration-300 flex flex-col justify-between min-h-[260px]"
               >
-                {/* HUD Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 text-[10px] font-mono rounded font-bold">
-                      {casier.matricule}
-                    </span>
-                    <span className="text-[10px] sm:text-xs text-white/50 font-mono">
-                      Conteneurs : {casier.boxCount} boîtes
-                    </span>
-                  </div>
+                {/* Cover Image claire et bien visible */}
+                <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                  <img
+                    src={casier.coverImage || '/assets/cover_single_casier.jpg'}
+                    alt={casier.name}
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 </div>
 
-                {/* Title */}
-                <h3 className="text-sm sm:text-base font-extrabold text-white group-hover:text-emerald-300 transition-colors">
-                  {casier.name}
-                </h3>
-                <p className="text-[11px] sm:text-xs text-white/60 mt-1.5 leading-relaxed">
-                  {casier.description}
-                </p>
-
-                {/* Subtitle properties */}
-                <div className="mt-4 pt-3 border-t border-white/5 text-[10px] font-mono text-white/50 flex items-center justify-between">
+                <div className="relative z-10 flex flex-col justify-between h-full">
                   <div>
-                    <span className="text-white/35">Type :</span>
-                    <span className="text-white font-semibold ml-1">{casier.lockerType}</span>
-                  </div>
-                  <span className="text-emerald-400 font-bold">{casier.folderIds.length} Dossier(s)</span>
-                </div>
+                    {/* HUD Header */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 bg-black/70 text-emerald-400 border border-emerald-400/50 text-[10px] font-mono rounded font-bold backdrop-blur-sm shadow">
+                          {casier.matricule}
+                        </span>
+                        <span className="text-[10px] sm:text-xs text-white font-mono px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm shadow">
+                          Conteneurs : {casier.boxCount} boîtes
+                        </span>
+                      </div>
+                    </div>
 
-                {/* Action */}
-                <button
-                  onClick={() => {
-                    setSelectedCasierId(casier.id);
-                    setCurrentLevel('dossier');
-                  }}
-                  className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-400/30 text-emerald-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
-                >
-                  <Box className="w-4 h-4" />
-                  <span>Consulter les dossiers</span>
-                </button>
+                    {/* Title */}
+                    <div className="inline-block p-2 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 mt-1 max-w-full">
+                      <h3 className="text-sm sm:text-base font-extrabold text-white group-hover:text-emerald-300 transition-colors drop-shadow">
+                        {casier.name}
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-white/90 mt-1 leading-relaxed drop-shadow">
+                        {casier.description}
+                      </p>
+                    </div>
+
+                    {/* Subtitle properties with clean dark plate */}
+                    <div className="mt-4 p-2.5 rounded-lg bg-black/65 backdrop-blur-sm border border-white/10 text-[10px] font-mono text-white flex items-center justify-between">
+                      <div>
+                        <span className="text-white/70">Type :</span>
+                        <span className="text-white font-semibold ml-1">{casier.lockerType}</span>
+                      </div>
+                      <span className="text-emerald-300 font-bold drop-shadow">{casier.folderIds.length} Dossier(s)</span>
+                    </div>
+                  </div>
+
+                  {/* Action */}
+                  <button
+                    onClick={() => {
+                      setSelectedCasierId(casier.id);
+                      setCurrentLevel('dossier');
+                    }}
+                    className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 border border-emerald-400/60 text-white text-xs font-bold transition-all cursor-pointer shadow-lg backdrop-blur-sm"
+                  >
+                    <Box className="w-4 h-4" />
+                    <span>Consulter les dossiers</span>
+                  </button>
+                </div>
               </div>
             ))}
           </div>

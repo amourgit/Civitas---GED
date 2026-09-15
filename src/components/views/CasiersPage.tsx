@@ -10,9 +10,35 @@ import {
   buildCasierUrl 
 } from '../../data/archiveStructure';
 import { ArchiveHeaderPipeline } from '../archive/ArchiveHeaderPipeline';
+import { PageBackground, cn } from '../shell/PageBackground';
 import { playXboxSound } from '../../utils/xboxAudio';
 
-export function CasiersPage() {
+export interface CasiersPageProps {
+  /**
+   * Surcharge par un composant React custom passé en props.
+   * Si ce composant existe, il surcharge l'arrière-plan par défaut.
+   */
+  customBackground?: React.ReactNode;
+  /**
+   * Injection CSS sur le composant par défaut (conteneur racine)
+   */
+  backgroundClassName?: string;
+  /**
+   * Injection CSS sur l'image par défaut
+   */
+  backgroundImageClassName?: string;
+  /**
+   * Injection CSS sur la couche de superposition par défaut
+   */
+  backgroundOverlayClassName?: string;
+}
+
+export function CasiersPage({
+  customBackground,
+  backgroundClassName,
+  backgroundImageClassName,
+  backgroundOverlayClassName,
+}: CasiersPageProps = {}) {
   const { salleId, rayonId } = useParams<{ salleId?: string; rayonId: string }>();
   const navigate = useNavigate();
 
@@ -48,6 +74,17 @@ export function CasiersPage() {
 
   return (
     <div className="w-full h-full flex flex-col overflow-hidden relative select-none min-h-0">
+      {/* Système d'arrière-plan modulaire de page avec support de surcharge et injection CSS (lumineux, sans voile sombre imposé) */}
+      <PageBackground
+        customComponent={customBackground}
+        imageSrc="/assets/cover_casier.jpg"
+        imageAlt="Casiers métalliques d'archives"
+        className={backgroundClassName}
+        imageClassName={cn('opacity-100 object-cover', backgroundImageClassName)}
+        overlayClassName={backgroundOverlayClassName}
+        showAtmosphere={false}
+      />
+
       {/* Dynamic Archive Header Pipeline */}
       <ArchiveHeaderPipeline
         currentLevel="casier"
@@ -61,58 +98,63 @@ export function CasiersPage() {
 
       {/* Main Viewport Content */}
       <div 
-        className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-6 py-4 pb-16 min-h-0"
+        className="flex-1 overflow-y-auto overflow-x-hidden px-2.5 sm:px-4 md:px-6 py-2 sm:py-3.5 md:py-4 pb-12 sm:pb-16 min-h-0 relative z-10"
         data-scrollable="true"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3.5 md:gap-4">
           {casiers.map((casier) => (
             <div
               key={casier.id}
-              className="group relative rounded-xl p-4 sm:p-5 bg-gradient-to-b from-white/10 via-[#07171d]/85 to-[#02090c]/95 border border-emerald-500/30 hover:border-emerald-400 shadow-[0_0_15px_rgba(74,222,128,0.1)] hover:shadow-[0_0_25px_rgba(74,222,128,0.25)] transition-all duration-200 flex flex-col justify-between"
+              className="group relative overflow-hidden rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 lg:p-6 bg-white/[0.08] hover:bg-white/[0.14] backdrop-blur-xl border border-white/25 hover:border-emerald-400/80 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_40px_rgba(16,185,129,0.3)] transition-all duration-300 flex flex-col justify-between min-h-[190px] sm:min-h-[220px] md:min-h-[240px] before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent"
             >
-              <div>
-                {/* HUD Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 text-[10px] font-mono rounded font-bold">
-                      {casier.matricule}
-                    </span>
-                    <span className="text-[10px] sm:text-xs text-white/50 font-mono">
-                      Conteneurs : {casier.boxCount} boîtes
-                    </span>
+              <div className="relative z-10 flex flex-col justify-between h-full">
+                <div>
+                  {/* HUD Header */}
+                  <div className="flex items-center justify-between mb-2 sm:mb-2.5 md:mb-3">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-emerald-500/25 text-emerald-300 border border-emerald-400/60 text-[10px] sm:text-[11px] font-mono rounded-lg font-bold backdrop-blur-md shadow-sm flex items-center gap-1 sm:gap-1.5">
+                        <Box className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                        {casier.matricule}
+                      </span>
+                      <span className="text-[10px] sm:text-xs text-white/90 font-mono px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg bg-black/35 border border-white/20 backdrop-blur-md">
+                        Conteneurs : {casier.boxCount} boîtes
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <div className="mt-1 sm:mt-1.5 md:mt-2">
+                    <h3 className="text-sm sm:text-base md:text-lg font-extrabold text-white group-hover:text-emerald-300 transition-colors drop-shadow-sm">
+                      {casier.name}
+                    </h3>
+                    <p className="text-[11px] sm:text-xs md:text-sm text-white/85 mt-1 sm:mt-1.5 leading-relaxed line-clamp-2 sm:line-clamp-none drop-shadow-sm">
+                      {casier.description}
+                    </p>
+                  </div>
+
+                  {/* Subtitle properties with clean glass plate */}
+                  <div className="mt-2.5 sm:mt-3.5 md:mt-4 p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl bg-black/35 backdrop-blur-md border border-white/15 text-[10px] sm:text-[11px] md:text-xs font-mono text-white flex items-center justify-between">
+                    <div>
+                      <span className="text-white/70 text-[9px] sm:text-[10px] md:text-[11px]">Type :</span>
+                      <span className="text-white font-semibold ml-1 sm:ml-1.5">{casier.lockerType}</span>
+                    </div>
+                    <span className="text-emerald-300 font-bold drop-shadow">{casier.folderIds.length} Dossier(s)</span>
                   </div>
                 </div>
 
-                {/* Title */}
-                <h3 className="text-sm sm:text-base font-extrabold text-white group-hover:text-emerald-300 transition-colors">
-                  {casier.name}
-                </h3>
-                <p className="text-[11px] sm:text-xs text-white/60 mt-1.5 leading-relaxed">
-                  {casier.description}
-                </p>
-
-                {/* Subtitle properties */}
-                <div className="mt-4 pt-3 border-t border-white/5 text-[10px] font-mono text-white/50 flex items-center justify-between">
-                  <div>
-                    <span className="text-white/35">Type :</span>
-                    <span className="text-white font-semibold ml-1">{casier.lockerType}</span>
-                  </div>
-                  <span className="text-emerald-400 font-bold">{casier.folderIds.length} Dossier(s)</span>
-                </div>
+                {/* Action */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    playXboxSound('select');
+                    navigate(buildCasierUrl(finalSalleId, rayon.id, casier.id));
+                  }}
+                  className="w-full mt-3 sm:mt-4 md:mt-5 flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-emerald-500/90 hover:bg-emerald-400 border border-emerald-300/70 text-black text-[11px] sm:text-xs md:text-sm font-extrabold transition-all cursor-pointer shadow-[0_4px_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] active:scale-[0.99] backdrop-blur-md"
+                >
+                  <Box className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>Consulter les dossiers ({casier.matricule})</span>
+                </button>
               </div>
-
-              {/* Action */}
-              <button
-                type="button"
-                onClick={() => {
-                  playXboxSound('select');
-                  navigate(buildCasierUrl(finalSalleId, rayon.id, casier.id));
-                }}
-                className="w-full mt-4 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-400/30 text-emerald-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
-              >
-                <Box className="w-4 h-4" />
-                <span>Consulter les dossiers ({casier.matricule})</span>
-              </button>
             </div>
           ))}
         </div>

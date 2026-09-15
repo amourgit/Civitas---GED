@@ -11,6 +11,7 @@ export interface SalleItem {
   storageCapacity: string;
   rayonCount: number;
   fileCount: number;
+  coverImage?: string;
 }
 
 export interface RayonItem {
@@ -23,6 +24,7 @@ export interface RayonItem {
   material: string;
   casierCount: number;
   fileCount: number;
+  coverImage?: string;
 }
 
 export interface CasierItem {
@@ -34,6 +36,7 @@ export interface CasierItem {
   boxCount: number;
   lockerType: string;
   folderIds: string[];
+  coverImage?: string;
 }
 
 export const SALLES: SalleItem[] = [
@@ -47,7 +50,8 @@ export const SALLES: SalleItem[] = [
     status: 'Opérationnel',
     storageCapacity: '450 / 1000 Go',
     rayonCount: 2,
-    fileCount: 47
+    fileCount: 47,
+    coverImage: '/assets/cover_salle.jpg'
   },
   {
     id: 's02',
@@ -59,7 +63,8 @@ export const SALLES: SalleItem[] = [
     status: 'Opérationnel',
     storageCapacity: '120 / 500 Go',
     rayonCount: 2,
-    fileCount: 18
+    fileCount: 18,
+    coverImage: '/assets/cover_salle.jpg'
   }
 ];
 
@@ -73,7 +78,8 @@ export const RAYONS: RayonItem[] = [
     rowNumber: 'Rangée 4, Section A',
     material: 'Acier Renforcé',
     casierCount: 2,
-    fileCount: 27
+    fileCount: 27,
+    coverImage: '/assets/cover_rayon_lockers.jpg'
   },
   {
     id: 'ry102',
@@ -84,7 +90,8 @@ export const RAYONS: RayonItem[] = [
     rowNumber: 'Rangée 4, Section B',
     material: 'Acier Renforcé',
     casierCount: 2,
-    fileCount: 20
+    fileCount: 20,
+    coverImage: '/assets/cover_rayon_lockers.jpg'
   },
   {
     id: 'ry201',
@@ -95,7 +102,8 @@ export const RAYONS: RayonItem[] = [
     rowNumber: 'Rangée 1, Section C',
     material: 'Titane Ignifuge',
     casierCount: 1,
-    fileCount: 11
+    fileCount: 11,
+    coverImage: '/assets/cover_rayon_lockers.jpg'
   },
   {
     id: 'ry202',
@@ -106,7 +114,8 @@ export const RAYONS: RayonItem[] = [
     rowNumber: 'Rangée 1, Section D',
     material: 'Titane Ignifuge',
     casierCount: 1,
-    fileCount: 7
+    fileCount: 7,
+    coverImage: '/assets/cover_rayon_lockers.jpg'
   }
 ];
 
@@ -119,7 +128,8 @@ export const CASIERS: CasierItem[] = [
     description: 'Organigrammes, fiches de poste, plannings et dossiers collaborateurs.',
     boxCount: 2,
     lockerType: 'Armoire Blindée Numérique',
-    folderIds: ['f4', 'f10'] // Équipe, Personnel
+    folderIds: ['f4', 'f10'], // Équipe, Personnel
+    coverImage: '/assets/cover_casier_ouvert.jpg'
   },
   {
     id: 'cs1012',
@@ -129,7 +139,8 @@ export const CASIERS: CasierItem[] = [
     description: 'Baux commerciaux, règlements, modèles de contrat et stockage principal.',
     boxCount: 3,
     lockerType: 'Armoire Standard',
-    folderIds: ['f0', 'f9', 'f7', 'f5'] // Mes fichiers, Administratif, Ressources, Formation
+    folderIds: ['f0', 'f9', 'f7', 'f5'], // Mes fichiers, Administratif, Ressources, Formation
+    coverImage: '/assets/cover_casier_ouvert.jpg'
   },
   {
     id: 'cs1021',
@@ -139,7 +150,8 @@ export const CASIERS: CasierItem[] = [
     description: 'Dossiers projets, spécifications techniques et feuilles de route.',
     boxCount: 2,
     lockerType: 'Coffre Projets Sécurisé',
-    folderIds: ['f2', 'f3'] // Projets, Travail
+    folderIds: ['f2', 'f3'], // Projets, Travail
+    coverImage: '/assets/cover_casier_ouvert.jpg'
   },
   {
     id: 'cs1022',
@@ -149,7 +161,8 @@ export const CASIERS: CasierItem[] = [
     description: 'Campagnes promotionnelles, communiqués et chartes visuelles.',
     boxCount: 2,
     lockerType: 'Serveur de Médias Local',
-    folderIds: ['f1', 'f8'] // Photography.gallery, Marketing
+    folderIds: ['f1', 'f8'], // Photography.gallery, Marketing
+    coverImage: '/assets/cover_casier_ouvert.jpg'
   },
   {
     id: 'cs2011',
@@ -159,7 +172,8 @@ export const CASIERS: CasierItem[] = [
     description: 'Feuilles de calcul de trésorerie, factures et audits de paie.',
     boxCount: 1,
     lockerType: 'Coffre Fort Numérique',
-    folderIds: ['f6'] // Finance
+    folderIds: ['f6'], // Finance
+    coverImage: '/assets/cover_casier_ouvert.jpg'
   },
   {
     id: 'cs2021',
@@ -169,7 +183,8 @@ export const CASIERS: CasierItem[] = [
     description: 'Fonds d’archives clos, fiches de synthèse de l’année passée.',
     boxCount: 1,
     lockerType: 'Archive Ignifuge v2',
-    folderIds: ['f7'] // Archives 2024 / Ressources (shared mapped)
+    folderIds: ['f7'], // Archives 2024 / Ressources (shared mapped)
+    coverImage: '/assets/cover_casier_ouvert.jpg'
   }
 ];
 
