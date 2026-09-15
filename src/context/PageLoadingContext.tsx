@@ -84,25 +84,24 @@ export function PageLoadingProvider({ children }: { children: React.ReactNode })
     };
   }, []);
 
-  const triggerLoading = useCallback((customDurationMs = 3000) => {
+  const triggerLoading = useCallback((customDurationMs = 250) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
     }, customDurationMs);
   }, []);
 
-  // Déclencheur automatique à chaque changement de page / URL avec minimum 3 secondes garanties
+  // Déclencheur automatique à chaque changement de page / URL : disparaît dès que les médias et composants sont prêts
   useEffect(() => {
     const { title, sub } = getContextualText(location.pathname);
     setLoadingText(title);
     setLoadingSubText(sub);
     setIsLoading(true);
 
-    const startTime = Date.now();
-    const MINIMUM_LOADING_DURATION_MS = 3000; // Minimum 3 secondes de chargement garanti
+    let isMounted = true;
 
     // Déterminer le média prioritaire pour la route active
-    let targetMedia: string[] = ['/assets/cod_archive_vault.jpg'];
+    const targetMedia: string[] = ['/assets/cod_archive_vault.jpg'];
     if (location.pathname.includes('/casiers/') || location.pathname.includes('/casier/')) {
       targetMedia.push('/assets/cover_casier_ouvert.jpg');
     } else if (location.pathname.includes('/rayons/')) {
@@ -113,17 +112,17 @@ export function PageLoadingProvider({ children }: { children: React.ReactNode })
       targetMedia.push('/assets/cover_salle.jpg');
     }
 
-    // Préchargement de sécurité de tous les médias avec minimum 3s
+    // Préchargement des médias : dès que c'est prêt, le spinner s'estompe immédiatement
     Promise.all([...targetMedia, ...CRITICAL_MEDIA].map(preloadMedia)).finally(() => {
-      const elapsed = Date.now() - startTime;
-      const remainingTime = Math.max(0, MINIMUM_LOADING_DURATION_MS - elapsed);
-
-      const timer = setTimeout(() => {
+      if (isMounted) {
+        // Disparition automatique instantanée dès que la page et ses médias sont prêts
         setIsLoading(false);
-      }, remainingTime);
-
-      return () => clearTimeout(timer);
+      }
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, [location.pathname, getContextualText]);
 
   return (
