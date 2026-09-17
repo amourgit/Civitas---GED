@@ -29,7 +29,12 @@ import {
   Share2,
   Trash2,
   Download,
-  FolderOpen
+  FolderOpen,
+  Landmark,
+  Archive,
+  Repeat,
+  BarChart3,
+  Inbox
 } from 'lucide-react';
 import { initialFolders, searchSuggestions } from './data/mockFolders';
 import { FolderItem } from './types/document';
@@ -39,10 +44,17 @@ import { PageLoadingProvider } from './context/PageLoadingContext';
 import { SupremeIntranetTopBar } from './components/shell/SupremeIntranetTopBar';
 import { XboxSidebar, XboxSidebarItem, XboxSidebarSection } from './components/shell/XboxSidebar';
 import { AccueilPage } from './components/views/AccueilPage';
+import { ServicesPage } from './components/views/ServicesPage';
+import { SuiviDossiersPage } from './components/views/SuiviDossiersPage';
+import { CirculationPage } from './components/views/CirculationPage';
+import { PilotagePage } from './components/views/PilotagePage';
+import { RecherchePage } from './components/views/RecherchePage';
+import { AdministrationPage } from './components/views/AdministrationPage';
 import { SallesPage } from './components/views/SallesPage';
 import { RayonsPage } from './components/views/RayonsPage';
 import { CasiersPage } from './components/views/CasiersPage';
 import { DossiersPage } from './components/views/DossiersPage';
+import { DossiersMetierPage } from './components/views/DossiersMetierPage';
 import { DocumentsPage } from './components/views/DocumentsPage';
 import { Dossier3DRoutePage } from './components/views/Dossier3DRoutePage';
 import { IngestionPage } from './components/views/IngestionPage';
@@ -188,6 +200,7 @@ function AppContent() {
   const activeNavId = useMemo(() => {
     const path = location.pathname;
     if (path === '/' || path === '/accueil') return 'accueil';
+    if (path.startsWith('/dossiers')) return 'dossiers';
     if (
       path.startsWith('/documentation') ||
       path === '/salles' || 
@@ -197,10 +210,11 @@ function AppContent() {
       path.startsWith('/casier') || 
       path.startsWith('/dossier')
     ) return 'documents';
-    if (path === '/espaces') return 'espaces';
-    if (path === '/taches') return 'taches';
-    if (path === '/workflows') return 'workflows';
-    if (path === '/collaboration') return 'collaboration';
+    if (path === '/services' || path.startsWith('/services/')) return 'services';
+    if (path === '/depots' || path === '/ingestion') return 'entrees';
+    if (path === '/suivi' || path === '/circulation') return 'suivi';
+    if (path === '/recherche') return 'recherche';
+    if (path === '/pilotage' || path === '/rapports') return 'pilotage';
     if (path === '/administration') return 'administration';
     return 'accueil';
   }, [location.pathname]);
@@ -451,83 +465,91 @@ function AppContent() {
       ];
     }
 
-    // Default / Accueil Page Sections
+    // SGAI Institutional Navigation Sections
     return [
       {
-        title: 'Navigation Principale',
+        title: 'Modules SGAI',
         items: [
           {
             id: 'accueil',
-            label: 'Accueil',
+            label: 'Tableau de bord',
             icon: <Home className="w-5 h-5" strokeWidth={2} />,
             onClick: () => navigate('/')
           },
           {
-            id: 'documents',
-            label: 'Documents & Dossiers',
-            icon: <FileText className="w-5 h-5" strokeWidth={2} />,
-            badge: folders.length,
-            onClick: () => navigate('/documents')
+            id: 'dossiers',
+            label: 'Dossiers métier',
+            icon: <FileText className="w-5 h-5 text-sky-400" strokeWidth={2} />,
+            badge: 'Actif',
+            onClick: () => navigate('/dossiers')
           },
           {
-            id: 'ingestion',
-            label: 'Numérisation & OCR',
-            icon: <Scan className="w-5 h-5" strokeWidth={2} />,
-            badge: 'IA',
-            onClick: () => navigate('/ingestion')
+            id: 'services',
+            label: 'Services territoriaux',
+            icon: <Landmark className="w-5 h-5 text-indigo-400" strokeWidth={2} />,
+            badge: '11',
+            onClick: () => navigate('/services')
           },
           {
-            id: 'espaces',
-            label: 'Espaces Partagés',
-            icon: <Layers className="w-5 h-5" strokeWidth={2} />,
-            onClick: () => showToast('Module Espaces de travail partagés disponible.', 'info')
+            id: 'entrees',
+            label: 'Entrées & Dépôts',
+            icon: <Inbox className="w-5 h-5 text-amber-400" strokeWidth={2} />,
+            badge: 'OCR',
+            onClick: () => navigate('/depots')
           },
           {
-            id: 'taches',
-            label: 'Tâches & Assignations',
-            icon: <CheckSquare className="w-5 h-5" strokeWidth={2} />,
-            badge: 4,
-            onClick: () => showToast('Module Tâches & Assignations GED ouvert.', 'info')
+            id: 'archives',
+            label: 'Archives & Magasins',
+            icon: <Archive className="w-5 h-5 text-purple-400" strokeWidth={2} />,
+            badge: 'S-01/02',
+            onClick: () => navigate(buildDocumentationUrl())
           },
           {
-            id: 'workflows',
-            label: 'Workflows GED',
-            icon: <GitFork className="w-5 h-5" strokeWidth={2} />,
-            onClick: () => showToast('Circuits de validation & Workflows configurés.', 'info')
+            id: 'recherche',
+            label: 'Recherche unifiée',
+            icon: <Search className="w-5 h-5 text-teal-400" strokeWidth={2} />,
+            onClick: () => navigate('/recherche')
           },
           {
-            id: 'collaboration',
-            label: 'Collaboration',
-            icon: <Users className="w-5 h-5" strokeWidth={2} />,
-            onClick: () => showToast('Espace collaboratif en temps réel prêt.', 'info')
+            id: 'suivi',
+            label: 'Suivi des dossiers',
+            icon: <Repeat className="w-5 h-5 text-rose-400" strokeWidth={2} />,
+            badge: 3,
+            onClick: () => navigate('/suivi')
+          },
+          {
+            id: 'pilotage',
+            label: 'Pilotage & Statistiques',
+            icon: <BarChart3 className="w-5 h-5 text-emerald-400" strokeWidth={2} />,
+            onClick: () => navigate('/pilotage')
           },
           {
             id: 'administration',
-            label: 'Administration',
-            icon: <Settings className="w-5 h-5" strokeWidth={2} />,
-            onClick: () => showToast('Paramètres système et habilitations GED.', 'warning')
+            label: 'Administration & Plan',
+            icon: <Settings className="w-5 h-5 text-white/70" strokeWidth={2} />,
+            onClick: () => navigate('/administration')
           }
         ]
       },
       {
-        title: 'Raccourcis GED',
+        title: 'Actions Rapides Métier',
         items: [
           {
             id: 'new_folder',
-            label: '+ Créer un dossier',
+            label: '+ Nouveau dossier métier',
             icon: <FolderPlus className="w-5 h-5" strokeWidth={2} />,
             accent: true,
-            onClick: handleCreateFolder
+            onClick: () => navigate('/dossiers')
           },
           {
             id: 'scan_ocr',
-            label: 'Numérisation OCR',
+            label: 'Numérisation & Dépôt',
             icon: <Scan className="w-5 h-5" strokeWidth={2} />,
             onClick: () => navigate('/ingestion')
           },
           {
             id: 'search',
-            label: 'Recherche globale',
+            label: 'Rechercher une cote',
             icon: <Search className="w-5 h-5" strokeWidth={2} />,
             onClick: openSearchModal
           }
@@ -584,8 +606,10 @@ function AppContent() {
           setIsMobileSidebarOpen(false);
         }}
         onNavigateHome={() => navigate('/')}
+        onNavigateServices={() => navigate('/services')}
         onNavigateDocuments={() => navigate(buildDocumentationUrl())}
-        onNavigateIngestion={() => navigate('/ingestion')}
+        onNavigateSuivi={() => navigate('/suivi')}
+        onNavigateIngestion={() => navigate('/depots')}
         onOpenSearch={openSearchModal}
         onOpenNotifications={openNotificationModal}
         onCreateFolder={handleCreateFolder}
@@ -616,6 +640,31 @@ function AppContent() {
               path="/accueil" 
               element={<Navigate to="/" replace />} 
             />
+
+            {/* SGAI Module: Dossiers Métier — Cœur documentaire du service */}
+            <Route path="/dossiers" element={<DossiersMetierPage />} />
+            <Route path="/dossiers/:serviceId" element={<DossiersMetierPage />} />
+
+            {/* SGAI Module 02: Services Territoriaux & Activités Métier */}
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/services/:serviceId" element={<ServicesPage />} />
+
+            {/* SGAI Module 03: Dépôts & Ingestion */}
+            <Route path="/depots" element={<IngestionPage onShowToast={showToast} />} />
+
+            {/* SGAI Module 05: Recherche Unifiée Transversale */}
+            <Route path="/recherche" element={<RecherchePage />} />
+
+            {/* SGAI Module 06: Suivi des Dossiers & Mouvements des Archives */}
+            <Route path="/suivi" element={<SuiviDossiersPage />} />
+            <Route path="/circulation" element={<SuiviDossiersPage />} />
+
+            {/* SGAI Module 07: Rapports & Statistiques */}
+            <Route path="/rapports" element={<PilotagePage />} />
+            <Route path="/pilotage" element={<PilotagePage />} />
+
+            {/* SGAI Module 08: Administration & Plan de Classement */}
+            <Route path="/administration" element={<AdministrationPage />} />
 
             {/* Level 1: Documentation / Salles */}
             <Route path="/documentation" element={<Navigate to="/documentation/salles" replace />} />

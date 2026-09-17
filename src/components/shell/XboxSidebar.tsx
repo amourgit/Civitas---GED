@@ -20,7 +20,9 @@ import {
   HardDrive,
   Clock,
   Scan,
-  MoreHorizontal
+  MoreHorizontal,
+  Landmark,
+  ClipboardList
 } from 'lucide-react';
 import { playXboxSound } from '../../utils/xboxAudio';
 
@@ -47,7 +49,9 @@ export interface XboxSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateHome?: () => void;
+  onNavigateServices?: () => void;
   onNavigateDocuments?: () => void;
+  onNavigateSuivi?: () => void;
   onNavigateIngestion?: () => void;
   onOpenSearch?: () => void;
   onOpenNotifications?: () => void;
@@ -72,7 +76,9 @@ export function XboxSidebar({
   isOpen,
   onClose,
   onNavigateHome,
+  onNavigateServices,
   onNavigateDocuments,
+  onNavigateSuivi,
   onNavigateIngestion,
   onOpenSearch,
   onOpenNotifications,
@@ -265,7 +271,29 @@ export function XboxSidebar({
             }`}
           >
             <Home className="w-5 h-5 text-white shrink-0" />
-            <span className="text-base font-medium tracking-wide">Accueil</span>
+            <span className="text-base font-medium tracking-wide">Tableau de bord</span>
+          </button>
+
+          {/* 1.B PRIMARY FOCUSED ITEM: SERVICES TERRITORIAUX (Métier) */}
+          <button
+            type="button"
+            onClick={() => {
+              playXboxSound('select');
+              if (onNavigateServices) onNavigateServices();
+              else onSelect('services');
+              onClose();
+            }}
+            className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-150 cursor-pointer text-left ${
+              activeId === 'services'
+                ? 'bg-sky-500/20 text-white border-2 border-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.35)]'
+                : 'bg-white/[0.03] hover:bg-white/[0.08] text-white/80 hover:text-white border border-transparent'
+            }`}
+          >
+            <Landmark className="w-5 h-5 text-sky-400 shrink-0" />
+            <span className="text-sm font-medium tracking-wide flex-1">Services territoriaux</span>
+            <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-bold">
+              11
+            </span>
           </button>
 
           {/* 2. SECONDARY ITEM: MY GAMES & APPS / DOCUMENTS & DOSSIERS */}
@@ -288,6 +316,28 @@ export function XboxSidebar({
             <span className="text-sm font-medium tracking-wide flex-1">Mes documents & dossiers</span>
             <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-white/10 text-white/60">
               GED
+            </span>
+          </button>
+
+          {/* 2.B SUIVI DES DOSSIERS */}
+          <button
+            type="button"
+            onClick={() => {
+              playXboxSound('select');
+              if (onNavigateSuivi) onNavigateSuivi();
+              else onSelect('suivi');
+              onClose();
+            }}
+            className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-150 cursor-pointer text-left ${
+              activeId === 'suivi'
+                ? 'bg-amber-500/20 text-white border-2 border-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.35)]'
+                : 'bg-white/[0.03] hover:bg-white/[0.08] text-white/80 hover:text-white border border-transparent'
+            }`}
+          >
+            <ClipboardList className="w-5 h-5 text-amber-400 shrink-0" />
+            <span className="text-sm font-medium tracking-wide flex-1">Suivi des dossiers</span>
+            <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-bold">
+              Traçabilité
             </span>
           </button>
 

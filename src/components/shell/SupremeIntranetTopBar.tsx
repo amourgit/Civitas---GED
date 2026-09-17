@@ -39,8 +39,10 @@ import {
   Scan,
   CheckSquare,
   GitFork,
-  Plus
+  Plus,
+  LogOut
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { XboxAudioController } from '../shared/XboxAudioController';
 import { playXboxSound } from '../../utils/xboxAudio';
@@ -93,18 +95,26 @@ export function SupremeIntranetTopBar({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [timeStr, setTimeStr] = useState("10:50");
+  const [dateLongStr, setDateLongStr] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Live time ticker for App Tier
+  // Live time ticker & long date for App Tier
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
       let hours = now.getHours();
       const mins = String(now.getMinutes()).padStart(2, '0');
       const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12;
-      hours = hours ? hours : 12;
-      setTimeStr(`${hours}:${mins} ${ampm}`);
+      const displayHours = hours % 12 || 12;
+      setTimeStr(`${displayHours}:${mins} ${ampm}`);
+
+      const formattedDate = now.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      setDateLongStr(formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1));
     };
 
     updateTime();
@@ -850,44 +860,87 @@ export function SupremeIntranetTopBar({
             )}
           </div>
 
-          {/* 7. Profile / Account Dropdown Chevron */}
-          <div className="relative overflow-visible">
+          {/* 7. Profil Utilisateur (Taille harmonisée avec les autres icônes, cliquable avec popup animée) */}
+          <div className="relative overflow-visible flex items-center">
             <button
               type="button"
               onClick={() => handleMenuClick('profile')}
-              className="p-1 text-slate-500 hover:text-[#008080] transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible"
-              title="Menu Profil"
-              aria-label="Profil Utilisateur"
+              className="w-6 h-6 rounded-full overflow-hidden border border-slate-300 hover:border-[#008080] shadow-2xs shrink-0 bg-slate-100 ml-0.5 sm:ml-1 cursor-pointer transition-all duration-150 hover:ring-2 hover:ring-[#008080]/25 flex items-center justify-center p-0 focus:outline-none aspect-square"
+              title="Profil Utilisateur"
+              aria-label="Menu Profil"
             >
-              <ChevronDown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 transition-transform duration-200 ${activeMenu === 'profile' ? 'rotate-180 text-[#008080]' : ''}`} />
+              <img 
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" 
+                alt="Avatar" 
+                className="w-full h-full object-cover rounded-full aspect-square block pointer-events-none"
+              />
             </button>
 
-            {/* Profile Menu Dropdown */}
-            {activeMenu === 'profile' && (
-              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-60 max-w-xs bg-white rounded-xl shadow-xl border border-slate-200 p-3 z-50 text-xs animate-in fade-in duration-150">
-                <div className="flex items-center gap-2.5 pb-2.5 mb-2 border-b border-slate-100">
-                  <div className="w-8 h-8 rounded-full bg-[#008080] text-white font-bold flex items-center justify-center text-xs">
-                    LD
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-800 text-xs">Laura Denvida</p>
-                    <p className="text-[10px] text-slate-400">HR Manager • Paris</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => { setActiveMenu(null); notify("Profil RH Laura Denvida"); }}
-                  className="w-full text-left px-2 py-1.5 text-slate-700 hover:bg-slate-50 hover:text-[#008080] rounded cursor-pointer bg-transparent border-none"
+            {/* Popup Profil avec animation fluide */}
+            <AnimatePresence>
+              {activeMenu === 'profile' && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.94, y: -6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.94, y: -6 }}
+                  transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+                  className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-64 max-w-xs bg-white rounded-2xl shadow-2xl border border-slate-200/90 p-3.5 z-50 text-xs origin-top-right"
                 >
-                  Voir mon profil complet
-                </button>
-                <button 
-                  onClick={() => { setActiveMenu(null); notify("Déconnexion du portail intranet"); }}
-                  className="w-full text-left px-2 py-1.5 text-red-600 hover:bg-red-50 rounded cursor-pointer mt-1 bg-transparent border-none"
-                >
-                  Se déconnecter
-                </button>
-              </div>
-            )}
+                  <div className="flex items-center gap-3 pb-3 mb-2.5 border-b border-slate-100">
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden border border-slate-200 shrink-0 shadow-xs aspect-square">
+                      <img 
+                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" 
+                        alt="Avatar" 
+                        className="w-full h-full object-cover rounded-full aspect-square"
+                      />
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-800 text-xs truncate">Laura Denvida</p>
+                      <p className="text-[11px] text-slate-400 truncate">HR Manager • Paris</p>
+                      <span className="inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.2 rounded-md bg-emerald-50 text-emerald-700 text-[9px] font-medium border border-emerald-100">
+                        <ShieldCheck className="w-2.5 h-2.5 text-emerald-600" />
+                        Connecté
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-0.5">
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("Accès au profil complet"); }}
+                      className="w-full text-left px-2.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2.5 transition-colors font-medium"
+                    >
+                      <User className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Mon profil complet</span>
+                    </button>
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("Préférences du compte"); }}
+                      className="w-full text-left px-2.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2.5 transition-colors"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Préférences & Compte</span>
+                    </button>
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("Favoris & signets"); }}
+                      className="w-full text-left px-2.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2.5 transition-colors"
+                    >
+                      <Bookmark className="w-3.5 h-3.5 text-slate-400" />
+                      <span>Mes favoris GED</span>
+                    </button>
+                  </div>
+
+                  <div className="mt-2 pt-2 border-t border-slate-100">
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("Déconnexion du portail intranet"); }}
+                      className="w-full text-left px-2.5 py-1.5 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2.5 transition-colors font-medium text-xs"
+                    >
+                      <LogOut className="w-3.5 h-3.5 text-red-500" />
+                      <span>Se déconnecter</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
         </div>
@@ -978,79 +1031,20 @@ export function SupremeIntranetTopBar({
           {appSlotCenter || null}
         </div>
 
-        {/* ZONE DROITE : Recherche Rapide + Audio Xbox + Notifications + Avatar + Horloge & Slot Extensible */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 overflow-visible">
-          {/* Mini-Slot d'extension Droite (Flexible pour n'importe quelle app) */}
+        {/* ZONE DROITE : Heure & Date longue au format discret/réduit */}
+        <div className="flex items-center gap-2 shrink-0 overflow-visible">
           {appSlotRight && (
             <div className="flex items-center gap-1 pr-1 border-r border-white/10">
               {appSlotRight}
             </div>
           )}
 
-          {/* Recherche Spécifique App */}
-          <button
-            type="button"
-            onClick={() => {
-              playXboxSound('toggle');
-              if (onSearchClick) onSearchClick();
-              else if (onOpenGlobalSearch) onOpenGlobalSearch();
-            }}
-            className="p-1.5 rounded-lg text-white/75 hover:text-white hover:bg-white/10 transition-colors cursor-pointer bg-transparent border-none"
-            title="Recherche rapide GED (Ctrl+K)"
-            aria-label="Recherche GED"
-          >
-            <Search className="w-4 h-4" />
-          </button>
-
-          {/* Contrôleur Audio Xbox */}
-          <XboxAudioController />
-
-          {/* Notifications Cloche */}
-          <button
-            type="button"
-            onClick={() => {
-              playXboxSound('notification');
-              if (onNotificationClick) onNotificationClick();
-              else notify("3 nouvelles notifications GED");
-            }}
-            className="relative p-1.5 rounded-lg text-white/75 hover:text-white hover:bg-white/10 transition-colors cursor-pointer bg-transparent border-none overflow-visible flex items-center justify-center"
-            title="Notifications GED"
-            aria-label="Notifications"
-          >
-            <Bell className="w-4 h-4 text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]" />
-            <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full bg-[#E41E3F] text-white text-[9px] font-bold shadow-md ring-1.5 ring-[#070d14] z-30 leading-none">
-              3
-            </span>
-          </button>
-
-          {/* User Avatar */}
-          <div 
-            onClick={() => {
-              playXboxSound('toggle');
-              if (onQuickAction) onQuickAction('profile');
-              else notify("Profil Amour Samuel NZILA NGALA");
-            }}
-            className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden border border-emerald-400/50 shadow-[0_0_8px_rgba(52,211,153,0.3)] shrink-0 bg-emerald-950/40 cursor-pointer hover:scale-105 transition-transform"
-            title="Profil Amour Samuel NZILA NGALA"
-          >
-            <img 
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" 
-              alt="Avatar" 
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Xbox Gamerscore / GED Score & Time */}
-          <div className="flex items-center gap-1.5 pl-1 text-white/90">
-            <div className="hidden xl:flex items-center gap-1 text-[11px] font-bold font-mono text-white/75 tracking-tighter">
-              <span className="w-3.5 h-3.5 rounded-full bg-white/15 text-white/90 text-[9px] flex items-center justify-center font-bold">
-                G
-              </span>
-              <span>18294</span>
-            </div>
-
-            <span className="text-white font-bold text-xs sm:text-sm tracking-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+          <div className="flex flex-col items-end justify-center text-right select-none pr-1">
+            <span className="text-white font-bold text-xs sm:text-sm tracking-tight leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
               {timeStr}
+            </span>
+            <span className="text-[10px] sm:text-[11px] text-white/50 font-normal tracking-tight leading-tight mt-0.5 capitalize">
+              {dateLongStr}
             </span>
           </div>
         </div>

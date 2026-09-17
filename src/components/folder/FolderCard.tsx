@@ -9,13 +9,13 @@ interface FolderCardProps {
   key?: React.Key;
   folder: FolderItem;
   isSelected?: boolean;
-  onSelect: (folder: FolderItem) => void;
-  onOpen: (folder: FolderItem) => void;
-  onPreviewSpecial: (folder: FolderItem) => void;
-  onShare: (folder: FolderItem) => void;
-  onToggleFavorite: (folder: FolderItem) => void;
-  onViewProperties: (folder: FolderItem) => void;
-  onDelete: (folder: FolderItem) => void;
+  onSelect?: (folder: FolderItem) => void;
+  onOpen?: (folder: FolderItem) => void;
+  onPreviewSpecial?: (folder: FolderItem) => void;
+  onShare?: (folder: FolderItem) => void;
+  onToggleFavorite?: (folder: FolderItem) => void;
+  onViewProperties?: (folder: FolderItem) => void;
+  onDelete?: (folder: FolderItem) => void;
 }
 
 export function FolderCard({
@@ -33,10 +33,15 @@ export function FolderCard({
   const [isHovered, setIsHovered] = useState(false);
   const matricule = getFolderMatricule(folder);
 
+  const handleOpen = () => {
+    if (onOpen) onOpen(folder);
+    else if (onSelect) onSelect(folder);
+  };
+
   return (
     <div
-      onClick={() => onSelect(folder)}
-      onDoubleClick={() => onOpen(folder)}
+      onClick={() => onSelect?.(folder)}
+      onDoubleClick={handleOpen}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -115,15 +120,15 @@ export function FolderCard({
       {isMenuOpen && (
         <FolderContextMenu
           folder={folder}
-          onOpen={() => onOpen(folder)}
-          onPreview={() => onPreviewSpecial(folder)}
-          onShare={() => onShare(folder)}
-          onToggleFavorite={() => onToggleFavorite(folder)}
-          onViewProperties={() => onViewProperties(folder)}
+          onOpen={() => handleOpen()}
+          onPreview={() => onPreviewSpecial ? onPreviewSpecial(folder) : handleOpen()}
+          onShare={() => onShare?.(folder)}
+          onToggleFavorite={() => onToggleFavorite?.(folder)}
+          onViewProperties={() => onViewProperties?.(folder)}
           onDownload={() => {
             // Simulated download
           }}
-          onDelete={() => onDelete(folder)}
+          onDelete={() => onDelete?.(folder)}
           onClose={() => setIsMenuOpen(false)}
         />
       )}
