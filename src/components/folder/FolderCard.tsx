@@ -3,6 +3,7 @@ import { MoreHorizontal } from 'lucide-react';
 import { FolderItem } from '../../types/document';
 import { FolderVisual } from './FolderVisual';
 import { FolderContextMenu } from './FolderContextMenu';
+import { getFolderMatricule } from '../../data/mockFolders';
 
 interface FolderCardProps {
   key?: React.Key;
@@ -30,6 +31,7 @@ export function FolderCard({
 }: FolderCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const matricule = getFolderMatricule(folder);
 
   return (
     <div
@@ -94,8 +96,15 @@ export function FolderCard({
           </h3>
         </div>
 
+        {/* Matricule gravé en calligraphie humaine - texte libre sans background */}
+        <div className="mt-0.5 flex items-center justify-center pointer-events-none select-none">
+          <span className="font-handwriting text-amber-200/90 text-xs sm:text-sm font-bold tracking-widest drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] opacity-90 rotate-[-1deg]">
+            #{matricule}
+          </span>
+        </div>
+
         {/* Item count & Updated date */}
-        <div className="mt-1 flex items-center gap-1.5 text-[11px] text-white/50 font-normal drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+        <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-white/50 font-normal drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
           <span>{folder.itemCount} éléments</span>
           <span>•</span>
           <span>{folder.updatedAt}</span>

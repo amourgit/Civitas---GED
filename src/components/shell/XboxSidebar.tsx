@@ -404,8 +404,8 @@ export function XboxSidebar({
         </div>
 
         {/* BOTTOM TOOLBAR OF GUIDE (Identical to bottom row in reference image) */}
-        <div className="p-3 bg-black/30 border-t border-white/[0.08] shrink-0">
-          <div className="grid grid-cols-5 gap-1.5">
+        <div className="p-3 bg-white/[0.03] border-t border-white/[0.08] shrink-0 overflow-visible">
+          <div className="grid grid-cols-5 gap-1.5 overflow-visible">
             {/* Button 1: Notification Bell */}
             <button
               type="button"
@@ -414,11 +414,11 @@ export function XboxSidebar({
                 if (onOpenNotifications) onOpenNotifications();
                 onClose();
               }}
-              className="relative p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              className="relative p-2.5 rounded-xl bg-transparent hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer overflow-visible"
               title="Notifications"
             >
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1.5 w-3.5 h-3.5 rounded-full bg-sky-400 text-black text-[9px] font-bold flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-[#E41E3F] text-white text-[9px] font-bold flex items-center justify-center shadow-md ring-1 ring-white/30 z-30">
                 3
               </span>
             </button>
@@ -431,7 +431,7 @@ export function XboxSidebar({
                 if (onNavigateDocuments) onNavigateDocuments();
                 onClose();
               }}
-              className="p-1.5 rounded-xl bg-white/[0.04] hover:bg-white/10 text-white/90 hover:text-white flex flex-col items-center justify-center transition-colors cursor-pointer font-bold leading-tight"
+              className="p-1.5 rounded-xl bg-transparent hover:bg-white/10 text-white/90 hover:text-white flex flex-col items-center justify-center transition-colors cursor-pointer font-bold leading-tight overflow-visible"
               title="Pass GED Enterprise"
             >
               <span className="text-[9px] tracking-tighter text-sky-400">EGEN</span>
@@ -446,7 +446,7 @@ export function XboxSidebar({
                 if (onCreateFolder) onCreateFolder();
                 onClose();
               }}
-              className="p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-transparent hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer overflow-visible"
               title="Nouveau dossier"
             >
               <ShoppingBag className="w-4 h-4" />
@@ -460,7 +460,7 @@ export function XboxSidebar({
                 if (onOpenSearch) onOpenSearch();
                 onClose();
               }}
-              className="p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-transparent hover:bg-white/10 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer overflow-visible"
               title="Recherche"
             >
               <Search className="w-4 h-4" />
@@ -472,7 +472,7 @@ export function XboxSidebar({
               onClick={() => {
                 playXboxSound('toggle');
               }}
-              className="p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 text-white/80 hover:text-emerald-400 flex items-center justify-center transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-transparent hover:bg-white/10 text-white/80 hover:text-emerald-400 flex items-center justify-center transition-colors cursor-pointer overflow-visible"
               title="Effets sonores Xbox"
             >
               <Volume2 className="w-4 h-4" />

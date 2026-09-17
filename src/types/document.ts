@@ -16,6 +16,7 @@ export type ViewMode = 'grid' | 'list';
 
 export interface FolderItem {
   id: string;
+  matricule?: string; // Matricule à plus de 8 chiffres codé en base 10 (ex: "8492048193")
   name: string;
   type: 'folder' | 'document' | 'image' | 'video' | 'music' | 'archive';
   itemCount: number;

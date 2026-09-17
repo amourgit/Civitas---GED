@@ -36,7 +36,7 @@ import { FolderItem } from './types/document';
 import { AmbientBackground } from './components/shell/AmbientBackground';
 import { PageBackgroundProvider } from './components/shell/PageBackground';
 import { PageLoadingProvider } from './context/PageLoadingContext';
-import { TopBar } from './components/shell/TopBar';
+import { SupremeIntranetTopBar } from './components/shell/SupremeIntranetTopBar';
 import { XboxSidebar, XboxSidebarItem, XboxSidebarSection } from './components/shell/XboxSidebar';
 import { AccueilPage } from './components/views/AccueilPage';
 import { SallesPage } from './components/views/SallesPage';
@@ -553,22 +553,24 @@ function AppContent() {
       {/* Dynamic Ambient Background */}
       <AmbientBackground />
 
-      {/* Top Header Bar */}
-      {location.pathname !== '/scanner' && (
-        <TopBar
-          onSearchClick={openSearchModal}
-          onNotificationClick={openNotificationModal}
-          onToggleSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
-          isSidebarOpen={isMobileSidebarOpen}
-          onQuickAction={(action) => {
-            if (action === 'espaces') showToast('Espaces de travail partagés ouverts.', 'info');
-            else if (action === 'taches') showToast('Tâches & validations GED.', 'info');
-            else if (action === 'workflows') showToast('Circuits de validation opérationnels.', 'info');
-            else if (action === 'profile') showToast('Profil Amour Samuel NZILA NGALA (Administrateur)', 'info');
-            else showToast(`Action ${action} déclenchée.`, 'info');
-          }}
-        />
-      )}
+      {/* 0. SUPREME TOPBAR DE L'INTRANET AVEC 2ÈME NIVEAU EXTENSIBLE DE L'APPLICATION ACTIVE */}
+      <SupremeIntranetTopBar
+        onOpenGlobalSearch={openSearchModal}
+        onOpenGED={() => navigate(buildDocumentationUrl())}
+        currentAppName="EGEN GED Documents"
+        onShowNotification={showToast}
+        onToggleSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
+        isSidebarOpen={isMobileSidebarOpen}
+        onSearchClick={openSearchModal}
+        onNotificationClick={openNotificationModal}
+        onQuickAction={(action) => {
+          if (action === 'espaces') showToast('Espaces de travail partagés ouverts.', 'info');
+          else if (action === 'taches') showToast('Tâches & validations GED.', 'info');
+          else if (action === 'workflows') showToast('Circuits de validation opérationnels.', 'info');
+          else if (action === 'profile') showToast('Profil Amour Samuel NZILA NGALA (Administrateur)', 'info');
+          else showToast(`Action ${action} déclenchée.`, 'info');
+        }}
+      />
 
       {/* Xbox Guide Modal (Always modal overlay, exactly matching Xbox Guide OS design) */}
       <XboxSidebar

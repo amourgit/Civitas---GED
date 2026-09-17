@@ -47,11 +47,11 @@ export function XboxHeader({
           <button
             type="button"
             onClick={onSearchClick}
-            className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/20 hover:bg-black/40 border border-white/10 hover:border-emerald-400/50 text-white/70 hover:text-white transition-all text-xs cursor-pointer backdrop-blur-sm"
+            className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-transparent hover:bg-white/10 border border-white/20 hover:border-emerald-400/50 text-white/80 hover:text-white transition-all text-xs cursor-pointer overflow-visible"
           >
             <Search className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-white/60">Rechercher...</span>
-            <kbd className="text-[10px] font-mono text-white/40 bg-white/5 px-1.5 py-0.5 rounded border border-white/10 ml-2">
+            <span className="text-white/80">Rechercher...</span>
+            <kbd className="text-[10px] font-mono text-white/50 bg-white/10 px-1.5 py-0.5 rounded border border-white/15 ml-2">
               Ctrl+K
             </kbd>
           </button>

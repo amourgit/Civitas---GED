@@ -1,8 +1,25 @@
 import { FolderItem } from '../types/document';
 
+/**
+ * Génère ou récupère un matricule décimal (> 8 chiffres, codé en base 10) pour un dossier
+ */
+export function getFolderMatricule(folder: { id: string; matricule?: string }): string {
+  if (folder.matricule && folder.matricule.trim().length >= 8) {
+    return folder.matricule.trim();
+  }
+  // Algorithme déterministe pour générer un matricule à 10 chiffres en base 10
+  let hash = 0;
+  for (let i = 0; i < folder.id.length; i++) {
+    hash = (hash * 31 + folder.id.charCodeAt(i)) >>> 0;
+  }
+  const baseTenNum = 1000000000 + (hash % 8999999999);
+  return String(baseTenNum);
+}
+
 export const initialFolders: FolderItem[] = [
   {
     id: 'f0',
+    matricule: '8492048193',
     name: 'Mes fichiers',
     type: 'folder',
     itemCount: 16,
@@ -25,6 +42,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f1',
+    matricule: '3920184715',
     name: 'Photography.gallery',
     type: 'folder',
     itemCount: 24,
@@ -54,6 +72,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f2',
+    matricule: '7482910482',
     name: 'Projets',
     type: 'folder',
     itemCount: 12,
@@ -72,6 +91,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f3',
+    matricule: '1092837465',
     name: 'Travail',
     type: 'folder',
     itemCount: 8,
@@ -89,6 +109,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f4',
+    matricule: '9283746152',
     name: 'Équipe',
     type: 'folder',
     itemCount: 15,
@@ -106,6 +127,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f5',
+    matricule: '6581920384',
     name: 'Formation',
     type: 'folder',
     itemCount: 32,
@@ -123,6 +145,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f6',
+    matricule: '4729103847',
     name: 'Finance',
     type: 'folder',
     itemCount: 18,
@@ -140,6 +163,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f7',
+    matricule: '5839201948',
     name: 'Ressources',
     type: 'folder',
     itemCount: 27,
@@ -157,6 +181,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f8',
+    matricule: '2948102938',
     name: 'Marketing',
     type: 'folder',
     itemCount: 11,
@@ -174,6 +199,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f9',
+    matricule: '7182940192',
     name: 'Administratif',
     type: 'folder',
     itemCount: 20,
@@ -191,6 +217,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f10',
+    matricule: '9481029384',
     name: 'Personnel',
     type: 'folder',
     itemCount: 14,
@@ -207,6 +234,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f11',
+    matricule: '6392018472',
     name: 'Partenaires',
     type: 'folder',
     itemCount: 9,
@@ -224,6 +252,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f12',
+    matricule: '8102938471',
     name: 'Archives',
     type: 'folder',
     itemCount: 43,
@@ -241,6 +270,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f13',
+    matricule: '5293847102',
     name: 'Événements',
     type: 'folder',
     itemCount: 6,
@@ -258,6 +288,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f14',
+    matricule: '3948102938',
     name: 'Système',
     type: 'folder',
     itemCount: 5,
@@ -275,6 +306,7 @@ export const initialFolders: FolderItem[] = [
   },
   {
     id: 'f15',
+    matricule: '4820193847',
     name: 'Divers',
     type: 'folder',
     itemCount: 19,

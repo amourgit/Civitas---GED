@@ -50,9 +50,9 @@ export function TopBar({
   }, []);
 
   return (
-    <header className="w-full max-w-full flex items-center justify-between px-3 sm:px-4 md:px-8 pt-1.5 sm:pt-2 md:pt-4 pb-1 md:pb-2 mt-0 sm:mt-0.5 z-30 bg-transparent border-none select-none overflow-hidden">
+    <header className="w-full max-w-full flex items-center justify-between px-3 sm:px-4 md:px-8 pt-1.5 sm:pt-2 md:pt-4 pb-1 md:pb-2 mt-0 sm:mt-0.5 z-30 bg-transparent border-none select-none overflow-visible">
       {/* 1. GAUCHE: Bouton Sidebar + Logo + Nom du Projet */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0 overflow-visible">
         {/* Bouton de contrôle de la sidebar (toujours visible) */}
         {onToggleSidebar && (
           <button
@@ -118,7 +118,7 @@ export function TopBar({
       </div>
 
       {/* 2. DROITE: Options sous forme d'icônes compactes + Gamerscore / Heure */}
-      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 overflow-visible">
         {/* Recherche Icon Button */}
         <button
           type="button"
@@ -126,7 +126,7 @@ export function TopBar({
             playXboxSound('toggle');
             onSearchClick();
           }}
-          className="p-1.5 rounded-lg text-white/75 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+          className="p-1.5 rounded-lg text-white/75 hover:text-white hover:bg-white/10 transition-colors cursor-pointer bg-transparent border-none"
           title="Rechercher (Ctrl+K)"
           aria-label="Recherche"
         >
@@ -143,12 +143,12 @@ export function TopBar({
             playXboxSound('notification');
             onNotificationClick();
           }}
-          className="relative p-1.5 rounded-lg text-white/75 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+          className="relative p-1.5 rounded-lg text-white/75 hover:text-white hover:bg-white/10 transition-colors cursor-pointer bg-transparent border-none overflow-visible flex items-center justify-center"
           title="Notifications GED"
           aria-label="Notifications"
         >
           <Bell className="w-4 h-4 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]" />
-          <span className="absolute top-0.5 right-0.5 min-w-[13px] h-[13px] px-0.5 flex items-center justify-center rounded-full bg-sky-400 text-black text-[8px] font-black shadow-[0_0_6px_rgba(56,189,248,0.9)]">
+          <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full bg-[#E41E3F] text-white text-[9px] font-bold shadow-md ring-1.5 ring-slate-900 z-30 leading-none">
             3
           </span>
         </button>

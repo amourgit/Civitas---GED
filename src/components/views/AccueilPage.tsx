@@ -396,7 +396,7 @@ export function AccueilPage({
                 onQuickAction(btn.action);
               }
             }}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-[5px] bg-black/40 hover:bg-white/10 border border-white/10 hover:border-emerald-400/60 hover:shadow-[0_0_15px_rgba(74,222,128,0.25)] backdrop-blur-sm transition-all duration-150 cursor-pointer text-xs font-medium text-white/90 hover:text-white"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-[5px] bg-transparent hover:bg-white/10 border border-white/15 hover:border-emerald-400/60 hover:shadow-[0_0_15px_rgba(74,222,128,0.25)] transition-all duration-150 cursor-pointer text-xs font-medium text-white/90 hover:text-white overflow-visible"
           >
             {btn.icon}
             <span>{btn.label}</span>

@@ -20,6 +20,7 @@ const defaultPhotos: GalleryPhoto[] = [
 export interface InteractiveFolderGalleryProps {
   photos?: GalleryPhoto[];
   folderName?: string;
+  matricule?: string;
   dragHintText?: string;
   className?: string;
   onViewMore?: () => void;
@@ -28,6 +29,7 @@ export interface InteractiveFolderGalleryProps {
 export function InteractiveFolderGallery({
   photos = defaultPhotos,
   folderName = "Photography.gallery",
+  matricule = "3920184715",
   dragHintText = "Drag any photo down to close",
   className,
   onViewMore
@@ -37,6 +39,8 @@ export function InteractiveFolderGallery({
   const [screenWidth, setScreenWidth] = useState<number>(() => 
     typeof window !== 'undefined' ? window.innerWidth : 1024
   );
+
+  const displayMatricule = matricule || "3920184715";
 
   React.useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
@@ -54,12 +58,17 @@ export function InteractiveFolderGallery({
         {/* Responsive folder container size: compact for 2-col mobile & 3-col tablet */}
         <div className="relative w-[145px] sm:w-[185px] md:w-[215px] lg:w-[280px] xl:w-[320px] h-[125px] sm:h-[155px] md:h-[175px] lg:h-[220px] xl:h-[250px] flex justify-center pointer-events-none z-0 overflow-visible">
 
-          {/* Folder Back */}
+          {/* Folder Back (le dos du dossier avec gravure manuscrite sans background) */}
           <motion.div 
             className="absolute bottom-2 sm:bottom-3 md:bottom-4 lg:bottom-5 w-[138px] sm:w-[178px] md:w-[205px] lg:w-[270px] xl:w-[305px] h-24 sm:h-32 md:h-36 lg:h-46 xl:h-52 drop-shadow-xl"
             animate={{ opacity: isFolderOpen ? 0 : 1, scale: isFolderOpen ? 0.9 : 1 }}
           >
-            <div className="absolute top-0 left-0 w-12 sm:w-16 md:w-20 lg:w-28 h-3.5 sm:h-5 md:h-6 lg:h-8 bg-linear-to-t from-[#1e1e1e] to-[#2a2a2a] rounded-t-md sm:rounded-t-lg lg:rounded-t-xl border-t border-l border-r border-white/10" />
+            {/* Onglet / dos supérieur avec matricule gravé */}
+            <div className="absolute top-0 left-0 w-18 sm:w-26 md:w-32 lg:w-40 h-3.5 sm:h-5 md:h-6 lg:h-8 bg-linear-to-t from-[#1e1e1e] to-[#2a2a2a] rounded-t-md sm:rounded-t-lg lg:rounded-t-xl border-t border-l border-r border-white/10 flex items-center px-1.5 sm:px-2 overflow-visible">
+              <span className="font-handwriting text-amber-200/95 text-[10px] sm:text-xs md:text-sm lg:text-base font-bold tracking-widest drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] opacity-90 select-none whitespace-nowrap rotate-[-1deg]">
+                #{displayMatricule}
+              </span>
+            </div>
             <div className="absolute top-3 sm:top-4 md:top-5 lg:top-7 left-0 right-0 bottom-0 bg-linear-to-b from-[#1e1e1e] to-[#0a0a0a] rounded-b-md sm:rounded-b-lg lg:rounded-b-xl rounded-tr-md sm:rounded-tr-lg lg:rounded-tr-xl border border-white/10 shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
             <div className="absolute top-4 sm:top-6 md:top-7 lg:top-9 left-1 sm:left-1.5 md:left-2 right-1 sm:right-1.5 md:right-2 bottom-1 sm:bottom-1.5 md:bottom-2 bg-black rounded-sm sm:rounded-md lg:rounded-lg shadow-inner pointer-events-none" />
           </motion.div>
@@ -138,11 +147,19 @@ export function InteractiveFolderGallery({
             onMouseLeave={() => setHoverFolder(false)}
             onClick={() => setIsFolderOpen(true)}
           >
-            <div className="w-full h-full bg-linear-to-b from-[#2a2a2a] to-[#111] rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 shadow-[inset_0_2px_8px_rgba(255,255,255,0.1)] relative overflow-hidden flex items-end justify-center pb-2.5 sm:pb-3.5 md:pb-4 lg:pb-6">
+            <div className="w-full h-full bg-linear-to-b from-[#2a2a2a] to-[#111] rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 shadow-[inset_0_2px_8px_rgba(255,255,255,0.1)] relative overflow-hidden flex flex-col items-center justify-between p-1.5 sm:p-2.5 md:p-3 pb-2.5 sm:pb-3.5 md:pb-4 lg:pb-6">
               <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/40 to-transparent" />
 
-              <div className="px-2 py-0.5 sm:px-2.5 sm:py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 bg-black rounded sm:rounded-md lg:rounded-lg border border-black/80 shadow-inner flex items-center justify-center backdrop-blur-md max-w-[88%] truncate">
-                <span className="text-white/90 text-[10px] sm:text-[11px] md:text-xs lg:text-sm font-medium tracking-wide truncate">
+              {/* Gravure manuscrite libre du matricule sur la tranche supérieure du volet (texte libre, calligraphie humaine sans fond) */}
+              <div className="w-full flex justify-end pr-1 sm:pr-2 pt-0.5 pointer-events-none select-none">
+                <span className="font-handwriting text-emerald-300/90 text-[10px] sm:text-xs md:text-sm lg:text-base font-bold tracking-widest drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] opacity-90 rotate-[-1.5deg]">
+                  N° {displayMatricule}
+                </span>
+              </div>
+
+              {/* Titre du dossier libre sans fond noir */}
+              <div className="px-2 py-0.5 sm:px-2.5 sm:py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 flex items-center justify-center max-w-[95%] truncate">
+                <span className="text-white/95 text-[10px] sm:text-[11px] md:text-xs lg:text-sm font-medium tracking-wide truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
                   {folderName}
                 </span>
               </div>

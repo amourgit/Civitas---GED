@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { X, Folder, Calendar, Shield, HardDrive, FileText, CheckCircle } from 'lucide-react';
+import { X, Folder, Calendar, Shield, HardDrive, FileText, CheckCircle, Hash } from 'lucide-react';
 import { FolderItem } from '../../types/document';
 import { playXboxSound } from '../../utils/xboxAudio';
+import { getFolderMatricule } from '../../data/mockFolders';
 
 interface FolderPropertiesModalProps {
   folder: FolderItem | null;
@@ -22,6 +23,7 @@ export function FolderPropertiesModal({ folder, isOpen, onClose }: FolderPropert
   };
 
   if (!isOpen || !folder) return null;
+  const matricule = getFolderMatricule(folder);
 
   return (
     <div 
@@ -38,7 +40,9 @@ export function FolderPropertiesModal({ folder, isOpen, onClose }: FolderPropert
               <Folder className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-white font-semibold text-base leading-snug">{folder.name}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-white font-semibold text-base leading-snug">{folder.name}</h3>
+              </div>
               <p className="text-white/40 text-xs">Propriétés du dossier GED</p>
             </div>
           </div>
@@ -53,6 +57,17 @@ export function FolderPropertiesModal({ folder, isOpen, onClose }: FolderPropert
         </div>
 
         <div className="space-y-3 text-xs">
+          {/* Matricule gravé (calligraphie humaine, texte libre) */}
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03]">
+            <span className="text-white/50 flex items-center gap-2">
+              <Hash className="w-4 h-4 text-amber-400" />
+              Matricule gravé (base 10)
+            </span>
+            <span className="font-handwriting text-amber-200 text-sm font-bold tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              #{matricule}
+            </span>
+          </div>
+
           <div className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03]">
             <span className="text-white/50 flex items-center gap-2">
               <HardDrive className="w-4 h-4 text-emerald-400" />

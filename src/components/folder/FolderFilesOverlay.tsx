@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { FolderItem } from "../../types/document"
 import { playXboxSound } from "../../utils/xboxAudio"
+import { getFolderMatricule } from "../../data/mockFolders"
 
 export type LayoutMode = "stack" | "grid" | "list"
 
@@ -218,15 +219,22 @@ export function Component({
     >
       {/* Barre de contrôle toujours en haut de la page */}
       <div className="w-full shrink-0 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-white/10 bg-black/60 backdrop-blur-md z-50">
-        {/* Titre / contexte du dossier */}
+        {/* Titre / contexte du dossier avec matricule manuscrit libre */}
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 text-sm">
             📁
           </div>
-          <div className="min-w-0">
-            <h2 className="text-xs sm:text-sm font-semibold text-white truncate drop-shadow-sm">
-              {title}
-            </h2>
+          <div className="min-w-0 flex flex-col">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-xs sm:text-sm font-semibold text-white truncate drop-shadow-sm">
+                {title}
+              </h2>
+              {folder && (
+                <span className="font-handwriting text-amber-200/90 text-xs sm:text-sm font-bold tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] opacity-90 select-none rotate-[-1deg]">
+                  #{getFolderMatricule(folder)}
+                </span>
+              )}
+            </div>
             <p className="text-[10px] sm:text-[11px] text-white/50 truncate">
               {cards.length} fichier{cards.length > 1 ? 's' : ''} indexé{cards.length > 1 ? 's' : ''}
             </p>

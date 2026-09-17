@@ -1,10 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Epilogue:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&family=Urbanist:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Chakra+Petch:wght@500;600;700&family=Epilogue:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Nanum+Pen+Script&family=Outfit:wght@300;400;500;600;700;800&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&family=Urbanist:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: 'Outfit', 'Sora', 'Plus Jakarta Sans', sans-serif;
   --font-display: 'Syne', 'Epilogue', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --font-handwriting: 'Caveat', 'Kalam', 'Nanum Pen Script', cursive;
 
   --color-border: rgba(255, 255, 255, 0.12);
   --color-card: #0c181b;
@@ -18,12 +19,24 @@
   --color-ring: #10b981;
 }
 
-html, body, button, input, select, textarea {
+html, body {
   font-family: 'Outfit', 'Sora', 'Plus Jakarta Sans', system-ui, sans-serif;
   background-color: #030809;
   color: #e6f1f2;
   overflow-x: hidden;
   user-select: none;
+}
+
+button {
+  font-family: inherit;
+  background-color: transparent;
+  color: inherit;
+  overflow: visible;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  color: inherit;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -56,6 +69,20 @@ h1, h2, h3, h4, h5, h6 {
 .font-chakra {
   font-family: 'Chakra Petch', sans-serif !important;
   letter-spacing: 0.03em;
+}
+
+/* Calligraphie humaine manuscrite d'archiviste (sans fond, texte libre) */
+.font-handwriting,
+.font-calligraphy {
+  font-family: 'Caveat', 'Kalam', 'Nanum Pen Script', 'Permanent Marker', cursive !important;
+}
+
+.engraved-matricule {
+  font-family: 'Caveat', 'Kalam', cursive !important;
+  letter-spacing: 0.05em;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* Custom scrollbar for dark glass UI */

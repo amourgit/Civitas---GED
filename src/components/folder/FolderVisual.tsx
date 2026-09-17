@@ -13,6 +13,7 @@ import {
   MoreHorizontal
 } from 'lucide-react';
 import { FolderItem } from '../../types/document';
+import { getFolderMatricule } from '../../data/mockFolders';
 
 interface FolderVisualProps {
   folder: FolderItem;
@@ -20,6 +21,8 @@ interface FolderVisualProps {
 }
 
 export function FolderVisual({ folder }: FolderVisualProps) {
+  const matricule = getFolderMatricule(folder);
+
   // If it's a special photo gallery with photo preview
   if (folder.isSpecialGallery && folder.coverImage) {
     return (
@@ -29,8 +32,12 @@ export function FolderVisual({ folder }: FolderVisualProps) {
         
         {/* Staged photo preview mimicking the mini fan-out - completely free in space */}
         <div className="relative w-28 h-20 transition-transform duration-300 group-hover:scale-108 group-hover:-translate-y-1">
-          {/* Back folder flap */}
-          <div className="absolute -top-3 left-1 w-12 h-4 rounded-t-lg bg-gradient-to-t from-[#1a1a1a] to-[#2a2a2a] border-t border-l border-r border-white/20" />
+          {/* Back folder flap (dos du dossier) avec matricule gravé */}
+          <div className="absolute -top-3 left-1 w-16 h-4 rounded-t-lg bg-gradient-to-t from-[#1a1a1a] to-[#2a2a2a] border-t border-l border-r border-white/20 flex items-center px-1 overflow-visible">
+            <span className="font-handwriting text-amber-200/90 text-[10px] font-bold tracking-wider drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] opacity-90 select-none whitespace-nowrap">
+              {matricule}
+            </span>
+          </div>
           <div className="absolute -top-1 left-0 right-0 h-16 rounded-lg bg-gradient-to-b from-[#222] to-[#111] border border-white/10 opacity-85 shadow-md" />
 
           {/* Secondary back photo edge */}
@@ -54,9 +61,12 @@ export function FolderVisual({ folder }: FolderVisualProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           </div>
 
-          {/* Front folder base edge */}
-          <div className="absolute bottom-0 left-0 right-0 h-8 rounded-b-xl bg-gradient-to-b from-[#2a2a2a]/95 to-[#111] border-b border-l border-r border-white/20 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2)] flex items-center justify-center">
-            <div className="w-10 h-1 bg-white/20 rounded-full" />
+          {/* Front folder base edge avec gravure manuscrite */}
+          <div className="absolute bottom-0 left-0 right-0 h-8 rounded-b-xl bg-gradient-to-b from-[#2a2a2a]/95 to-[#111] border-b border-l border-r border-white/20 shadow-[inset_0_1px_3px_rgba(255,255,255,0.2)] flex items-center justify-between px-2">
+            <div className="w-6 h-1 bg-white/20 rounded-full" />
+            <span className="font-handwriting text-white/80 text-[9px] font-bold tracking-wider drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] select-none">
+              N° {matricule}
+            </span>
           </div>
         </div>
       </div>
@@ -218,10 +228,14 @@ export function FolderVisual({ folder }: FolderVisualProps) {
           filter: `drop-shadow(0 10px 20px ${theme.glow})`
         }}
       >
-        {/* Back folder flap (tab at top left) */}
+        {/* Back folder flap (tab at top left - dos supérieur du dossier avec gravure manuscrite sans background) */}
         <div 
-          className={`absolute top-0 left-2 w-12 h-4 rounded-t-lg bg-gradient-to-t ${theme.back} border-t border-l border-r border-white/20`} 
-        />
+          className={`absolute top-0 left-2 w-16 h-4 rounded-t-lg bg-gradient-to-t ${theme.back} border-t border-l border-r border-white/20 flex items-center px-1 overflow-visible`} 
+        >
+          <span className="font-handwriting text-amber-200/95 text-[10px] font-bold tracking-wider drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] opacity-90 select-none whitespace-nowrap">
+            {matricule}
+          </span>
+        </div>
         <div 
           className={`absolute top-2 left-0 right-0 h-16 rounded-lg bg-gradient-to-b ${theme.back} border border-white/15 opacity-90`} 
         />
@@ -239,6 +253,13 @@ export function FolderVisual({ folder }: FolderVisualProps) {
           {/* Centered icon */}
           <div className="relative z-10 flex items-center justify-center">
             {renderIcon()}
+          </div>
+
+          {/* Matricule gravé en bas de la face avant (sans background, calligraphie humaine d'archiviste) */}
+          <div className="absolute bottom-0.5 right-1.5 z-10 pointer-events-none select-none">
+            <span className="font-handwriting text-white/85 text-[9px] font-bold tracking-wider drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] opacity-90 rotate-[-1deg] inline-block">
+              N° {matricule}
+            </span>
           </div>
         </div>
       </div>

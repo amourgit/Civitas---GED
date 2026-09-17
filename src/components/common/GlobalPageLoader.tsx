@@ -95,7 +95,7 @@ export function GlobalPageLoader({
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } }}
-          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden select-none bg-[#020506] pointer-events-auto cursor-wait"
+          className="fixed inset-x-0 bottom-0 top-[96px] z-30 flex flex-col items-center justify-center overflow-hidden select-none bg-[#020506] pointer-events-auto cursor-wait"
         >
           {/* Arrière-plan 3D Call of Duty - Vue FPS dans la salle d'archivage moderne */}
           <div className="absolute inset-0 z-0 pointer-events-none">
