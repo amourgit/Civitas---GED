@@ -717,14 +717,14 @@ export const SGAI_MODULES = [
     badgeColor: 'text-emerald-300 bg-emerald-500/20 border-emerald-500/30'
   },
   {
-    id: 'services',
-    name: 'Services territoriaux',
-    shortName: 'Services',
+    id: 'sites',
+    name: 'Sites collaboratifs (Alfresco)',
+    shortName: 'Sites',
     code: '02',
-    icon: 'Landmark',
-    description: 'Espace métier central : État civil, Urbanisme, Conseil municipal, Finances, RH, Marchés...',
-    path: '/services',
-    badge: 'CŒUR MÉTIER',
+    icon: 'Layers',
+    description: 'Espaces collaboratifs Alfresco : tableaux de bord, membres et bibliothèques documentaires.',
+    path: '/sites',
+    badge: 'ALFRESCO',
     badgeColor: 'text-sky-300 bg-sky-500/20 border-sky-500/40'
   },
   {

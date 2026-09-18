@@ -83,7 +83,7 @@ export function RecherchePage() {
           </h4>
 
           <div 
-            onClick={() => navigate('/services')}
+            onClick={() => navigate('/dossiers')}
             className="p-3.5 rounded-[3px] bg-[#050b12] border border-white/10 hover:border-teal-400 transition-colors cursor-pointer flex items-center justify-between"
           >
             <div className="space-y-1">
@@ -94,7 +94,7 @@ export function RecherchePage() {
                 <span className="text-[11px] font-mono text-purple-300 bg-purple-950/40 px-1.5 py-0.2 rounded-[2px] border border-purple-500/30">
                   Cote : 4 E 1245 / 2026
                 </span>
-                <span className="text-xs text-white/50">Service État civil</span>
+                <span className="text-xs text-white/50">Dossier d'instruction</span>
               </div>
               <h5 className="text-sm font-bold text-white">
                 Acte de naissance — Alexandre MAVOUNGOU
@@ -107,7 +107,7 @@ export function RecherchePage() {
           </div>
 
           <div 
-            onClick={() => navigate('/services')}
+            onClick={() => navigate('/dossiers')}
             className="p-3.5 rounded-[3px] bg-[#050b12] border border-white/10 hover:border-teal-400 transition-colors cursor-pointer flex items-center justify-between"
           >
             <div className="space-y-1">
@@ -118,7 +118,7 @@ export function RecherchePage() {
                 <span className="text-[11px] font-mono text-purple-300 bg-purple-950/40 px-1.5 py-0.2 rounded-[2px] border border-purple-500/30">
                   Cote : PC 2026 / 00421
                 </span>
-                <span className="text-xs text-white/50">Service Urbanisme</span>
+                <span className="text-xs text-white/50">Dossier d'instruction</span>
               </div>
               <h5 className="text-sm font-bold text-white">
                 Permis de construire — Complexe Médical Quartier Nord

@@ -49,7 +49,7 @@ export interface XboxSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateHome?: () => void;
-  onNavigateServices?: () => void;
+  onNavigateDossiers?: () => void;
   onNavigateDocuments?: () => void;
   onNavigateSuivi?: () => void;
   onNavigateIngestion?: () => void;
@@ -76,7 +76,7 @@ export function XboxSidebar({
   isOpen,
   onClose,
   onNavigateHome,
-  onNavigateServices,
+  onNavigateDossiers,
   onNavigateDocuments,
   onNavigateSuivi,
   onNavigateIngestion,
@@ -274,25 +274,25 @@ export function XboxSidebar({
             <span className="text-base font-medium tracking-wide">Tableau de bord</span>
           </button>
 
-          {/* 1.B PRIMARY FOCUSED ITEM: SERVICES TERRITORIAUX (Métier) */}
+          {/* 1.B PRIMARY FOCUSED ITEM: DOSSIERS MÉTIER */}
           <button
             type="button"
             onClick={() => {
               playXboxSound('select');
-              if (onNavigateServices) onNavigateServices();
-              else onSelect('services');
+              if (onNavigateDossiers) onNavigateDossiers();
+              else onSelect('dossiers');
               onClose();
             }}
             className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-150 cursor-pointer text-left ${
-              activeId === 'services'
+              activeId === 'dossiers'
                 ? 'bg-sky-500/20 text-white border-2 border-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.35)]'
                 : 'bg-white/[0.03] hover:bg-white/[0.08] text-white/80 hover:text-white border border-transparent'
             }`}
           >
-            <Landmark className="w-5 h-5 text-sky-400 shrink-0" />
-            <span className="text-sm font-medium tracking-wide flex-1">Services territoriaux</span>
+            <FileText className="w-5 h-5 text-sky-400 shrink-0" />
+            <span className="text-sm font-medium tracking-wide flex-1">Dossiers métier</span>
             <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 font-bold">
-              11
+              Actif
             </span>
           </button>
 

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   FolderPlus, 
   Search, 
@@ -148,10 +148,9 @@ const LIFECYCLE_OPTIONS: LifecycleFilterOption[] = [
 
 export function DossiersMetierPage() {
   const navigate = useNavigate();
-  const { serviceId: paramServiceId } = useParams<{ serviceId?: string }>();
 
-  // Context: default to 'etat-civil' or parameter
-  const [selectedServiceId, setSelectedServiceId] = useState<string>(paramServiceId || 'etat-civil');
+  // Tenant context: current tenant service
+  const [selectedServiceId] = useState<string>('etat-civil');
   
   // Active filters
   const [activeLifecycle, setActiveLifecycle] = useState<LifecycleFilterKey>('tous');
@@ -383,7 +382,7 @@ export function DossiersMetierPage() {
       {/* 1. TOP BREADCRUMB & CONTEXT SWITCHER */}
       <header className="border-b border-white/[0.08] bg-[#0c121e]/90 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          {/* Context path: Intranet -> Service -> SGAI -> Dossiers */}
+          {/* Context path: Intranet -> Service courant -> SGAI -> Dossiers */}
           <div className="flex items-center gap-2 text-xs sm:text-sm text-white/60">
             <span 
               onClick={() => navigate('/')} 
@@ -393,39 +392,21 @@ export function DossiersMetierPage() {
             </span>
             <ChevronRight className="w-3.5 h-3.5 text-white/30" />
             
-            {/* Service selector dropdown */}
-            <div className="relative group">
-              <select
-                aria-label="Sélectionner le service territorial"
-                value={selectedServiceId}
-                onChange={(e) => {
-                  playXboxSound('select');
-                  setSelectedServiceId(e.target.value);
-                  setActiveCategory('all');
-                }}
-                className="bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-white text-xs sm:text-sm font-semibold rounded-lg px-2.5 py-1 pr-7 appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-sky-400"
-              >
-                {INSTITUTIONAL_SERVICES.map(serv => (
-                  <option key={serv.id} value={serv.id} className="bg-[#0f172a] text-white">
-                    {serv.name}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white/50">
-                <ChevronRight className="w-3 h-3 rotate-90" />
-              </div>
-            </div>
+            {/* Service & Tenant context directly displayed */}
+            <span className="font-semibold text-white/90">
+              {currentService.name}
+            </span>
 
             <ChevronRight className="w-3.5 h-3.5 text-white/30" />
             <span className="font-mono text-white/80">SGAI</span>
             <ChevronRight className="w-3.5 h-3.5 text-white/30" />
-            <span className="text-sky-400 font-bold tracking-wide">Dossiers</span>
+            <span className="text-sky-400 font-bold tracking-wide">Dossiers métier</span>
           </div>
 
-          {/* Service badge */}
+          {/* Tenant context badge */}
           <div className="flex items-center gap-2">
-            <span className={`text-xs px-2.5 py-1 rounded-md border font-semibold ${currentService.badgeColor}`}>
-              {currentService.name} • {currentDossiers.length} dossiers
+            <span className="text-xs px-2.5 py-1 rounded-md border font-semibold text-emerald-300 bg-emerald-500/20 border-emerald-500/30 font-mono">
+              TENANT ACTIF • {currentDossiers.length} dossiers
             </span>
           </div>
         </div>

@@ -44,7 +44,6 @@ import { PageLoadingProvider } from './context/PageLoadingContext';
 import { SupremeIntranetTopBar } from './components/shell/SupremeIntranetTopBar';
 import { XboxSidebar, XboxSidebarItem, XboxSidebarSection } from './components/shell/XboxSidebar';
 import { AccueilPage } from './components/views/AccueilPage';
-import { ServicesPage } from './components/views/ServicesPage';
 import { SuiviDossiersPage } from './components/views/SuiviDossiersPage';
 import { CirculationPage } from './components/views/CirculationPage';
 import { PilotagePage } from './components/views/PilotagePage';
@@ -55,9 +54,11 @@ import { RayonsPage } from './components/views/RayonsPage';
 import { CasiersPage } from './components/views/CasiersPage';
 import { DossiersPage } from './components/views/DossiersPage';
 import { DossiersMetierPage } from './components/views/DossiersMetierPage';
+import { SitesPage } from './components/views/SitesPage';
 import { DocumentsPage } from './components/views/DocumentsPage';
 import { Dossier3DRoutePage } from './components/views/Dossier3DRoutePage';
 import { IngestionPage } from './components/views/IngestionPage';
+import { RepositoryPage } from './components/views/RepositoryPage';
 import { ScannerPage } from './components/views/ScannerPage';
 import { IngestionSidebar } from './components/ingestion/IngestionSidebar';
 import { InteractiveFolderModal } from './components/folder/InteractiveFolderModal';
@@ -210,7 +211,6 @@ function AppContent() {
       path.startsWith('/casier') || 
       path.startsWith('/dossier')
     ) return 'documents';
-    if (path === '/services' || path.startsWith('/services/')) return 'services';
     if (path === '/depots' || path === '/ingestion') return 'entrees';
     if (path === '/suivi' || path === '/circulation') return 'suivi';
     if (path === '/recherche') return 'recherche';
@@ -477,18 +477,11 @@ function AppContent() {
             onClick: () => navigate('/')
           },
           {
-            id: 'dossiers',
-            label: 'Dossiers métier',
-            icon: <FileText className="w-5 h-5 text-sky-400" strokeWidth={2} />,
-            badge: 'Actif',
-            onClick: () => navigate('/dossiers')
-          },
-          {
-            id: 'services',
-            label: 'Services territoriaux',
-            icon: <Landmark className="w-5 h-5 text-indigo-400" strokeWidth={2} />,
-            badge: '11',
-            onClick: () => navigate('/services')
+            id: 'sites',
+            label: 'Sites (Alfresco)',
+            icon: <Layers className="w-5 h-5 text-sky-400" strokeWidth={2} />,
+            badge: 'Alfresco',
+            onClick: () => navigate('/sites')
           },
           {
             id: 'entrees',
@@ -606,7 +599,7 @@ function AppContent() {
           setIsMobileSidebarOpen(false);
         }}
         onNavigateHome={() => navigate('/')}
-        onNavigateServices={() => navigate('/services')}
+        onNavigateDossiers={() => navigate('/dossiers')}
         onNavigateDocuments={() => navigate(buildDocumentationUrl())}
         onNavigateSuivi={() => navigate('/suivi')}
         onNavigateIngestion={() => navigate('/depots')}
@@ -641,16 +634,20 @@ function AppContent() {
               element={<Navigate to="/" replace />} 
             />
 
-            {/* SGAI Module: Dossiers Métier — Cœur documentaire du service */}
-            <Route path="/dossiers" element={<DossiersMetierPage />} />
-            <Route path="/dossiers/:serviceId" element={<DossiersMetierPage />} />
+            {/* Alfresco Sites Architecture — Espaces Collaboratifs & Bibliothèques Documentaires */}
+            <Route path="/sites" element={<SitesPage />} />
+            <Route path="/sites/:siteId" element={<SitesPage />} />
+            <Route path="/sites/:siteId/:siteTab" element={<SitesPage />} />
+            <Route path="/dossiers" element={<SitesPage />} />
+            <Route path="/dossiers/*" element={<SitesPage />} />
+            <Route path="/services" element={<Navigate to="/sites" replace />} />
+            <Route path="/services/*" element={<Navigate to="/sites" replace />} />
 
-            {/* SGAI Module 02: Services Territoriaux & Activités Métier */}
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/services/:serviceId" element={<ServicesPage />} />
-
-            {/* SGAI Module 03: Dépôts & Ingestion */}
-            <Route path="/depots" element={<IngestionPage onShowToast={showToast} />} />
+            {/* SGAI Module 03: Dépôt Central & Repository Alfresco */}
+            <Route path="/depots" element={<RepositoryPage onShowNotification={showToast} />} />
+            <Route path="/repository" element={<RepositoryPage onShowNotification={showToast} />} />
+            <Route path="/ingestion" element={<IngestionPage onShowToast={showToast} />} />
+            <Route path="/scanner" element={<ScannerPage />} />
 
             {/* SGAI Module 05: Recherche Unifiée Transversale */}
             <Route path="/recherche" element={<RecherchePage />} />

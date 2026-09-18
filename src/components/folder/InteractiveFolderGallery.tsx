@@ -55,48 +55,48 @@ export function InteractiveFolderGallery({
     <div className={`w-full relative overflow-visible pt-1 sm:pt-2 md:pt-3 lg:pt-5 xl:pt-8 ${className || ""}`}>
       <div className="relative w-full flex flex-col items-center justify-center overflow-visible">
 
-        {/* Responsive folder container size: compact for 2-col mobile & 3-col tablet */}
-        <div className="relative w-[145px] sm:w-[185px] md:w-[215px] lg:w-[280px] xl:w-[320px] h-[125px] sm:h-[155px] md:h-[175px] lg:h-[220px] xl:h-[250px] flex justify-center pointer-events-none z-0 overflow-visible">
+        {/* Responsive folder container size: calibrated so open/hover states never collide in grid layouts */}
+        <div className="relative w-[140px] sm:w-[170px] md:w-[195px] lg:w-[220px] xl:w-[240px] h-[120px] sm:h-[145px] md:h-[160px] lg:h-[185px] xl:h-[200px] flex justify-center pointer-events-none z-0 overflow-visible">
 
           {/* Folder Back (le dos du dossier avec gravure manuscrite sans background) */}
           <motion.div 
-            className="absolute bottom-2 sm:bottom-3 md:bottom-4 lg:bottom-5 w-[138px] sm:w-[178px] md:w-[205px] lg:w-[270px] xl:w-[305px] h-24 sm:h-32 md:h-36 lg:h-46 xl:h-52 drop-shadow-xl"
-            animate={{ opacity: isFolderOpen ? 0 : 1, scale: isFolderOpen ? 0.9 : 1 }}
+            className="absolute bottom-2 sm:bottom-3 md:bottom-3.5 lg:bottom-4 w-[134px] sm:w-[164px] md:w-[188px] lg:w-[212px] xl:w-[232px] h-22 sm:h-28 md:h-32 lg:h-38 xl:h-42 drop-shadow-xl"
+            animate={{ opacity: isFolderOpen ? 0 : 1, scale: isFolderOpen ? 0.92 : 1 }}
           >
             {/* Onglet / dos supérieur avec matricule gravé */}
-            <div className="absolute top-0 left-0 w-18 sm:w-26 md:w-32 lg:w-40 h-3.5 sm:h-5 md:h-6 lg:h-8 bg-linear-to-t from-[#1e1e1e] to-[#2a2a2a] rounded-t-md sm:rounded-t-lg lg:rounded-t-xl border-t border-l border-r border-white/10 flex items-center px-1.5 sm:px-2 overflow-visible">
-              <span className="font-handwriting text-amber-200/95 text-[10px] sm:text-xs md:text-sm lg:text-base font-bold tracking-widest drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] opacity-90 select-none whitespace-nowrap rotate-[-1deg]">
+            <div className="absolute top-0 left-0 w-16 sm:w-22 md:w-26 lg:w-32 h-3.5 sm:h-4.5 md:h-5 lg:h-6 bg-linear-to-t from-[#1e1e1e] to-[#2a2a2a] rounded-t-md sm:rounded-t-lg lg:rounded-t-xl border-t border-l border-r border-white/10 flex items-center px-1.5 sm:px-2 overflow-visible">
+              <span className="font-handwriting text-amber-200/95 text-[9px] sm:text-[11px] md:text-xs lg:text-sm font-bold tracking-wider drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] opacity-90 select-none whitespace-nowrap rotate-[-1deg]">
                 #{displayMatricule}
               </span>
             </div>
-            <div className="absolute top-3 sm:top-4 md:top-5 lg:top-7 left-0 right-0 bottom-0 bg-linear-to-b from-[#1e1e1e] to-[#0a0a0a] rounded-b-md sm:rounded-b-lg lg:rounded-b-xl rounded-tr-md sm:rounded-tr-lg lg:rounded-tr-xl border border-white/10 shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
-            <div className="absolute top-4 sm:top-6 md:top-7 lg:top-9 left-1 sm:left-1.5 md:left-2 right-1 sm:right-1.5 md:right-2 bottom-1 sm:bottom-1.5 md:bottom-2 bg-black rounded-sm sm:rounded-md lg:rounded-lg shadow-inner pointer-events-none" />
+            <div className="absolute top-3 sm:top-3.5 md:top-4 lg:top-5 left-0 right-0 bottom-0 bg-linear-to-b from-[#1e1e1e] to-[#0a0a0a] rounded-b-md sm:rounded-b-lg lg:rounded-b-xl rounded-tr-md sm:rounded-tr-lg lg:rounded-tr-xl border border-white/10 shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
+            <div className="absolute top-4 sm:top-5 md:top-6 lg:top-7 left-1 sm:left-1.5 md:left-2 right-1 sm:right-1.5 md:right-2 bottom-1 sm:bottom-1.5 md:bottom-2 bg-black rounded-sm sm:rounded-md lg:rounded-lg shadow-inner pointer-events-none" />
           </motion.div>
 
           {/* Photos Stack */}
-          <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 lg:bottom-8 z-10 flex justify-center">
+          <div className="absolute bottom-2.5 sm:bottom-3 md:bottom-4 lg:bottom-5 z-10 flex justify-center">
             {photos.map((photo, i) => {
               const offset = i - 2;
 
-              // Responsive offsets tuned for 2-col mobile and 3-col tablet
+              // Controlled offsets tuned so adjacent cards in grid never overlap
               const stackY = hoverFolder 
-                ? (isMobile ? offset * -2.5 - 10 : isTablet ? offset * -4 - 16 : offset * -7 - 28)
-                : (isMobile ? offset * -1.5 : isTablet ? offset * -2.5 : offset * -4);
+                ? (isMobile ? offset * -2 - 6 : isTablet ? offset * -3 - 10 : offset * -4 - 14)
+                : (isMobile ? offset * -1.2 : isTablet ? offset * -1.8 : offset * -2.5);
 
               const stackX = hoverFolder 
-                ? (isMobile ? offset * 6 : isTablet ? offset * 12 : offset * 22)
-                : (isMobile ? offset * 1 : isTablet ? offset * 1.5 : offset * 2.5);
+                ? (isMobile ? offset * 3.5 : isTablet ? offset * 5.5 : offset * 7)
+                : (isMobile ? offset * 0.8 : isTablet ? offset * 1.2 : offset * 1.6);
 
               const stackRotate = hoverFolder 
-                ? (isMobile ? offset * 3 : isTablet ? offset * 5 : offset * 7)
-                : (isMobile ? offset * 1 : offset * 2);
+                ? (isMobile ? offset * 2 : isTablet ? offset * 3 : offset * 4)
+                : (isMobile ? offset * 0.8 : offset * 1.5);
 
-              const stackScale = 1 - Math.abs(offset) * 0.03;
+              const stackScale = 1 - Math.abs(offset) * 0.025;
 
-              const openY = isMobile ? -36 : isTablet ? -56 : -96;
-              const openX = isMobile ? offset * 18 : isTablet ? offset * 32 : offset * 65;
-              const openRotate = 0;
-              const openScale = isMobile ? 0.88 : isTablet ? 0.95 : 1.05;
+              const openY = isMobile ? -26 : isTablet ? -38 : -50;
+              const openX = isMobile ? offset * 11 : isTablet ? offset * 16 : offset * 22;
+              const openRotate = offset * 1.5;
+              const openScale = isMobile ? 0.9 : isTablet ? 0.94 : 0.98;
 
               return (
                 <motion.div
@@ -109,7 +109,7 @@ export function InteractiveFolderGallery({
                       setHoverFolder(false);
                     }
                   }}
-                  className={`absolute bottom-0 w-20 h-28 sm:w-26 sm:h-36 md:w-30 md:h-42 lg:w-42 lg:h-58 xl:w-46 xl:h-62 rounded-md sm:rounded-lg lg:rounded-xl shadow-[0_10px_20px_rgba(0,0,0,0.5)] overflow-hidden border border-white/20 origin-bottom ${isFolderOpen ? "cursor-grab active:cursor-grabbing pointer-events-auto" : "pointer-events-none"}`}
+                  className={`absolute bottom-0 w-16 h-24 sm:w-20 sm:h-30 md:w-24 md:h-34 lg:w-28 lg:h-40 xl:w-30 xl:h-42 rounded-md sm:rounded-lg lg:rounded-xl shadow-[0_8px_16px_rgba(0,0,0,0.5)] overflow-hidden border border-white/20 origin-bottom ${isFolderOpen ? "cursor-grab active:cursor-grabbing pointer-events-auto" : "pointer-events-none"}`}
                   animate={!isFolderOpen ? {
                     y: stackY,
                     x: stackX,
@@ -135,40 +135,40 @@ export function InteractiveFolderGallery({
 
           {/* Front Flap */}
           <motion.div 
-            className="absolute bottom-0 w-[138px] sm:w-[178px] md:w-[205px] lg:w-[270px] xl:w-[305px] h-18 sm:h-24 md:h-28 lg:h-36 xl:h-40 drop-shadow-[0_-10px_20px_rgba(0,0,0,0.8)] cursor-pointer z-20 pointer-events-auto"
+            className="absolute bottom-0 w-[134px] sm:w-[164px] md:w-[188px] lg:w-[212px] xl:w-[232px] h-16 sm:h-20 md:h-24 lg:h-28 xl:h-32 drop-shadow-[0_-8px_16px_rgba(0,0,0,0.8)] cursor-pointer z-20 pointer-events-auto"
             style={{ transformOrigin: "bottom" }}
             animate={{ 
               opacity: isFolderOpen ? 0 : 1, 
-              rotateX: hoverFolder ? -22 : 0, 
-              y: hoverFolder ? 5 : 0,
+              rotateX: hoverFolder ? -18 : 0, 
+              y: hoverFolder ? 3 : 0,
               pointerEvents: isFolderOpen ? "none" : "auto" 
             }}
             onMouseEnter={() => setHoverFolder(true)}
             onMouseLeave={() => setHoverFolder(false)}
             onClick={() => setIsFolderOpen(true)}
           >
-            <div className="w-full h-full bg-linear-to-b from-[#2a2a2a] to-[#111] rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 shadow-[inset_0_2px_8px_rgba(255,255,255,0.1)] relative overflow-hidden flex flex-col items-center justify-between p-1.5 sm:p-2.5 md:p-3 pb-2.5 sm:pb-3.5 md:pb-4 lg:pb-6">
+            <div className="w-full h-full bg-linear-to-b from-[#2a2a2a] to-[#111] rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 shadow-[inset_0_2px_8px_rgba(255,255,255,0.1)] relative overflow-hidden flex flex-col items-center justify-between p-1.5 sm:p-2 md:p-2.5 pb-2 sm:pb-3 md:pb-3.5 lg:pb-4">
               <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/40 to-transparent" />
 
-              {/* Gravure manuscrite libre du matricule sur la tranche supérieure du volet (texte libre, calligraphie humaine sans fond) */}
-              <div className="w-full flex justify-end pr-1 sm:pr-2 pt-0.5 pointer-events-none select-none">
-                <span className="font-handwriting text-emerald-300/90 text-[10px] sm:text-xs md:text-sm lg:text-base font-bold tracking-widest drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] opacity-90 rotate-[-1.5deg]">
+              {/* Gravure manuscrite libre du matricule sur la tranche supérieure du volet */}
+              <div className="w-full flex justify-end pr-1 sm:pr-1.5 pt-0.5 pointer-events-none select-none">
+                <span className="font-handwriting text-emerald-300/90 text-[9px] sm:text-[11px] md:text-xs lg:text-sm font-bold tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] opacity-90 rotate-[-1.5deg]">
                   N° {displayMatricule}
                 </span>
               </div>
 
-              {/* Titre du dossier libre sans fond noir */}
-              <div className="px-2 py-0.5 sm:px-2.5 sm:py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 flex items-center justify-center max-w-[95%] truncate">
-                <span className="text-white/95 text-[10px] sm:text-[11px] md:text-xs lg:text-sm font-medium tracking-wide truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+              {/* Titre du dossier libre */}
+              <div className="px-1.5 py-0.5 sm:px-2 sm:py-1 flex items-center justify-center max-w-[95%] truncate">
+                <span className="text-white/95 text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs font-medium tracking-wide truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
                   {folderName}
                 </span>
               </div>
             </div>
           </motion.div>
 
-          {/* Bouton "Voir plus" - Visible quand le dossier est ouvert, juste en dessous des fichiers alignés */}
+          {/* Bouton "Voir plus" - Visible quand le dossier est ouvert */}
           <motion.div 
-            className="absolute bottom-1 sm:bottom-2 md:bottom-2.5 z-30 flex items-center justify-center pointer-events-none"
+            className="absolute bottom-1 sm:bottom-1.5 md:bottom-2 z-30 flex items-center justify-center pointer-events-none"
             animate={{ 
               opacity: isFolderOpen ? 1 : 0, 
               y: isFolderOpen ? 0 : 8,

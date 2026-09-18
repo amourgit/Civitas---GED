@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scan, ArrowRight, RefreshCw, Cpu, CheckCircle2, Play, FilePlus } from 'lucide-react';
+import { Cpu, Play } from 'lucide-react';
 import { playXboxSound } from '../../utils/xboxAudio';
 
 interface IngestionSessionsSectionProps {
@@ -47,31 +47,8 @@ export function IngestionSessionsSection({
   onNavigateToIngestion
 }: IngestionSessionsSectionProps) {
   return (
-    <section className="w-full flex flex-col gap-2.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Scan className="w-4 h-4 text-amber-400" />
-          <h3 className="text-sm sm:text-base font-bold text-white tracking-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-            Sessions d’ingestion & Numérisation en cours
-          </h3>
-          <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono border border-amber-500/30">
-            {INGESTION_SESSIONS.length} sessions actives
-          </span>
-        </div>
-        <button 
-          type="button"
-          onClick={() => {
-            playXboxSound('select');
-            onNavigateToIngestion();
-          }}
-          className="text-xs text-white/60 hover:text-white transition-colors flex items-center gap-1 cursor-pointer font-medium"
-        >
-          <span>Espace Ingestion</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-1.5">
+    <section className="w-full flex flex-col justify-center select-none">
+      <div className="grid grid-cols-2 gap-1.5 sm:gap-2 md:gap-3 items-stretch">
         {INGESTION_SESSIONS.map((session) => (
           <div
             key={session.id}
@@ -84,9 +61,9 @@ export function IngestionSessionsSection({
               playXboxSound('hover');
               setActiveCardId(session.id);
             }}
-            className={`relative group cursor-pointer h-40 sm:h-44 rounded-[3px] overflow-hidden transition-all duration-150 ${
+            className={`relative group cursor-pointer h-28 sm:h-36 md:h-44 rounded-[3px] overflow-hidden transition-all duration-150 ${
               activeCardId === session.id
-                ? 'border-2 border-[#22c55e] shadow-[0_0_24px_rgba(34,197,94,0.4)] ring-1 ring-[#22c55e]/50'
+                ? 'border-2 border-[#22c55e] shadow-[0_0_20px_rgba(34,197,94,0.4)] ring-1 ring-[#22c55e]/50'
                 : 'border border-white/10 hover:border-[#22c55e]'
             }`}
           >
@@ -97,38 +74,38 @@ export function IngestionSessionsSection({
             />
 
             {/* Top Bar with Session ID & Status */}
-            <div className="absolute top-2.5 left-2.5 right-2.5 z-10 flex items-center justify-between">
-              <span className={`px-2 py-0.5 rounded-[2px] backdrop-blur-md text-[9px] font-mono font-bold border ${session.statusColor}`}>
+            <div className="absolute top-1.5 left-1.5 right-1.5 sm:top-2 sm:left-2 sm:right-2 z-10 flex items-center justify-between gap-1">
+              <span className={`px-1.5 py-0.2 rounded-xs backdrop-blur-md text-[7px] sm:text-[8px] md:text-[9px] font-mono font-bold border truncate ${session.statusColor}`}>
                 {session.status}
               </span>
-              <span className="text-[10px] text-amber-300 font-mono font-bold bg-black/75 px-2 py-0.5 rounded-[2px] border border-white/10 flex items-center gap-1">
-                <Cpu className="w-2.5 h-2.5 text-amber-400" />
-                OCR {session.ocrConfidence}
+              <span className="text-[7px] sm:text-[8px] md:text-[9px] text-amber-300 font-mono font-bold bg-black/75 px-1 py-0.2 rounded-xs border border-white/10 flex items-center gap-0.5 shrink-0">
+                <Cpu className="w-2 h-2 text-amber-400" />
+                <span>OCR {session.ocrConfidence}</span>
               </span>
             </div>
 
             <div className="absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-[#020508]/98 via-[#020508]/80 to-transparent" />
 
-            <div className="absolute inset-x-0 bottom-0 p-3.5 flex flex-col justify-end">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-[10px] font-mono text-emerald-400 font-bold">
+            <div className="absolute inset-x-0 bottom-0 p-1.5 sm:p-2.5 md:p-3 flex flex-col justify-end">
+              <div className="flex items-center gap-1 mb-0.5 flex-wrap">
+                <span className="text-[8px] sm:text-[9px] font-mono text-emerald-400 font-bold">
                   {session.sessionId}
                 </span>
-                <span className="text-white/50 text-[10px]">•</span>
-                <span className="text-white/60 text-[10px] font-mono">{session.type}</span>
+                <span className="text-white/50 text-[8px] hidden sm:inline">•</span>
+                <span className="text-white/60 text-[8px] sm:text-[9px] font-mono truncate hidden sm:inline">{session.type}</span>
               </div>
 
-              <span className="text-white font-bold text-xs sm:text-sm tracking-tight truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+              <span className="text-white font-bold text-[10px] sm:text-xs md:text-sm tracking-tight truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
                 {session.title}
               </span>
 
               {/* Progress bar */}
-              <div className="mt-2">
-                <div className="w-full flex items-center justify-between text-[9px] text-white/70 font-mono mb-1">
-                  <span>{session.processedCount} / {session.docCount} docs traités</span>
-                  <span className="text-amber-300 font-bold">{session.progress}%</span>
+              <div className="mt-1">
+                <div className="w-full flex items-center justify-between text-[7px] sm:text-[8px] md:text-[9px] text-white/70 font-mono mb-0.5">
+                  <span className="truncate">{session.processedCount}/{session.docCount} traités</span>
+                  <span className="text-amber-300 font-bold ml-1">{session.progress}%</span>
                 </div>
-                <div className="w-full h-1.5 rounded-full bg-white/15 overflow-hidden">
+                <div className="w-full h-1 sm:h-1.5 rounded-full bg-white/15 overflow-hidden">
                   <div 
                     className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-300"
                     style={{ width: `${session.progress}%` }}
@@ -136,11 +113,11 @@ export function IngestionSessionsSection({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-[10px] text-white/50 font-mono mt-2 pt-1 border-t border-white/10">
-                <span>Vers : {session.targetRoom}</span>
-                <span className="text-emerald-400 flex items-center gap-1 group-hover:underline">
-                  <Play className="w-2.5 h-2.5 fill-emerald-400" />
-                  Reprendre la session
+              <div className="flex items-center justify-between text-[7px] sm:text-[8px] md:text-[9px] text-white/50 font-mono mt-1 pt-0.5 border-t border-white/10 gap-1">
+                <span className="truncate">Vers : {session.targetRoom}</span>
+                <span className="text-emerald-400 flex items-center gap-0.5 group-hover:underline shrink-0">
+                  <Play className="w-2 h-2 fill-emerald-400" />
+                  <span>Reprendre</span>
                 </span>
               </div>
             </div>

@@ -650,7 +650,7 @@ export function SuiviDossiersPage() {
             <div className="flex items-center justify-between border-b border-white/10 pb-2">
               <h2 className="text-sm font-bold text-white uppercase font-mono tracking-wider flex items-center gap-2">
                 <FolderOpen className="w-4 h-4 text-emerald-400" />
-                Dossiers en cours d'instruction dans les services
+                Dossiers en cours d'instruction
               </h2>
               <span className="text-xs text-white/50">
                 {dossiersEnCours.length} dossier(s) actif(s)
@@ -683,11 +683,11 @@ export function SuiviDossiersPage() {
                         type="button"
                         onClick={() => {
                           playXboxSound('select');
-                          navigate('/services');
+                          navigate('/dossiers');
                         }}
                         className="px-2.5 py-1 rounded-[2px] bg-white/[0.06] hover:bg-white/15 text-xs text-white flex items-center gap-1 cursor-pointer"
                       >
-                        <span>Ouvrir dans {d.service}</span>
+                        <span>Consulter le dossier métier</span>
                         <ArrowRight className="w-3 h-3" />
                       </button>
                     </div>

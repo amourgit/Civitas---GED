@@ -1,5 +1,5 @@
 import React from 'react';
-import { History, ArrowRight, CheckCircle2, Share2, Upload, FileCheck, Scan, User } from 'lucide-react';
+import { CheckCircle2, Share2, FileCheck, Scan } from 'lucide-react';
 import { playXboxSound } from '../../utils/xboxAudio';
 
 interface RecentActivityAuditSectionProps {
@@ -63,32 +63,8 @@ export function RecentActivityAuditSection({
   onQuickAction
 }: RecentActivityAuditSectionProps) {
   return (
-    <section className="w-full flex flex-col gap-2.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <History className="w-4 h-4 text-emerald-400" />
-          <h3 className="text-sm sm:text-base font-bold text-white tracking-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-            Activité récente & Journal d'audit
-          </h3>
-          <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono border border-emerald-500/30">
-            Flux temps réel
-          </span>
-        </div>
-        <button 
-          type="button"
-          onClick={() => {
-            playXboxSound('select');
-            if (onQuickAction) onQuickAction('journal_audit');
-            else onNavigateToDocuments();
-          }}
-          className="text-xs text-white/60 hover:text-white transition-colors flex items-center gap-1 cursor-pointer font-medium"
-        >
-          <span>Journal complet</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1 sm:gap-1.5">
+    <section className="w-full flex flex-col justify-center select-none">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2 items-stretch">
         {AUDIT_ACTIVITIES.map((activity) => (
           <div
             key={activity.id}
@@ -100,40 +76,38 @@ export function RecentActivityAuditSection({
               playXboxSound('hover');
               setActiveCardId(activity.id);
             }}
-            className={`p-3 rounded-[3px] bg-[#070e17]/85 backdrop-blur-md transition-all duration-150 cursor-pointer flex flex-col justify-between ${
+            className={`p-2 sm:p-2.5 rounded-[3px] bg-[#070e17]/90 backdrop-blur-md transition-all duration-150 cursor-pointer flex flex-col justify-between h-28 sm:h-32 md:h-36 ${
               activeCardId === activity.id
                 ? 'border-2 border-[#22c55e] shadow-[0_0_18px_rgba(34,197,94,0.35)] ring-1 ring-[#22c55e]/50'
                 : 'border border-white/10 hover:border-[#22c55e]/70'
             }`}
           >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/15">
-                  {activity.icon}
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-white font-bold text-xs">
-                      {activity.user}
-                    </span>
-                    <span className="text-white/60 text-[11px]">
-                      {activity.action}
-                    </span>
-                  </div>
-                  <p className="text-emerald-400 font-medium text-xs truncate mt-0.5">
-                    {activity.target}
-                  </p>
-                </div>
+            <div>
+              <div className="flex items-center justify-between gap-1 mb-1">
+                <span className={`px-1.5 py-0.2 rounded-xs text-[7px] sm:text-[8px] font-mono font-bold border truncate ${activity.badgeColor}`}>
+                  {activity.badge}
+                </span>
+                <span className="text-[7px] sm:text-[8px] text-white/50 font-mono shrink-0">
+                  {activity.time}
+                </span>
               </div>
 
-              <span className={`px-1.5 py-0.5 rounded-[2px] text-[8px] font-mono font-bold border shrink-0 ${activity.badgeColor}`}>
-                {activity.badge}
-              </span>
+              <div className="flex items-center gap-1.5 mb-1">
+                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center shrink-0 border border-white/15">
+                  {activity.icon}
+                </div>
+                <span className="text-white font-bold text-[11px] sm:text-xs truncate">
+                  {activity.user}
+                </span>
+              </div>
+
+              <p className="text-emerald-300 font-medium text-[9px] sm:text-[10px] truncate">
+                {activity.target}
+              </p>
             </div>
 
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10 text-[10px] text-white/50 font-mono">
-              <span>{activity.details}</span>
-              <span>{activity.time}</span>
+            <div className="mt-1 pt-1 border-t border-white/10 text-[8px] sm:text-[9px] text-white/50 font-mono">
+              <span className="truncate block">{activity.details}</span>
             </div>
           </div>
         ))}
