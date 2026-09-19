@@ -900,12 +900,12 @@ function AppContent() {
           </Routes>
         </main>
 
-        {/* RightContent: composant distinct avec son propre scroll */}
+        {/* RightContent: composant distinct avec son propre scroll (masqué sur mobile et tablette) */}
         {rightContent && (
           <aside
             ref={rightContentScrollRef}
             id="rightcontent"
-            className="w-full lg:w-[360px] xl:w-[400px] 2xl:w-[440px] shrink-0 h-full min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar relative z-20 flex flex-col gap-6 p-4 sm:p-6 lg:py-8 lg:pr-8 lg:pl-0"
+            className="hidden lg:flex w-full lg:w-[360px] xl:w-[400px] 2xl:w-[440px] shrink-0 h-full min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar relative z-20 flex-col gap-6 p-4 sm:p-6 lg:py-8 lg:pr-8 lg:pl-0"
           >
             {rightContent}
           </aside>

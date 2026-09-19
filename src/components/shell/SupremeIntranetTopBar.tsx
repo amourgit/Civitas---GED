@@ -244,14 +244,14 @@ export function SupremeIntranetTopBar({
           {/* LEFT SECTION: Hamburger (Mobile/Tablet) + Sidebar Button (à gauche du Logo) + Logo & Brand + Workspace Selector Pill */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-4 lg:gap-6 h-full min-w-0 overflow-visible">
           
-          {/* Mobile / Tablet Menu Button (Visible on < lg screens) */}
+          {/* Mobile Menu Button (Visible on screens < sm / mobile where sub-nav is collapsed) */}
           <button
             type="button"
             onClick={() => {
               playXboxSound('toggle');
               setIsMobileMenuOpen(prev => !prev);
             }}
-            className="lg:hidden p-1.5 -ml-1 text-slate-600 hover:text-[#008080] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center"
+            className="sm:hidden p-1.5 -ml-1 text-slate-600 hover:text-[#008080] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center"
             title="Menu Intranet"
             aria-label="Menu Intranet"
           >
@@ -261,30 +261,6 @@ export function SupremeIntranetTopBar({
               <Menu className="w-5 h-5 text-slate-700" />
             )}
           </button>
-
-          {/* Bouton de contrôle Sidebar / Guide (placé à gauche du Logo principal) */}
-          {onToggleSidebar && (
-            <button
-              type="button"
-              onClick={() => {
-                playXboxSound('toggle');
-                onToggleSidebar();
-              }}
-              className={`p-1.5 rounded-lg transition-all duration-150 cursor-pointer flex items-center justify-center outline-none ${
-                isSidebarOpen 
-                  ? 'bg-teal-50 text-[#008080] border border-teal-200 shadow-xs' 
-                  : 'text-slate-600 hover:text-[#008080] hover:bg-slate-100 border border-transparent'
-              }`}
-              title={isSidebarOpen ? "Fermer le volet latéral" : "Ouvrir le volet latéral"}
-              aria-label="Contrôle de la navigation latérale"
-            >
-              {isSidebarOpen ? (
-                <PanelLeftClose className="w-4.5 h-4.5 text-[#008080]" />
-              ) : (
-                <PanelLeft className="w-4.5 h-4.5 text-slate-700" />
-              )}
-            </button>
-          )}
 
           {/* EGEN Official Logo & Brand */}
           <div 
@@ -726,7 +702,7 @@ export function SupremeIntranetTopBar({
         </div>
 
         {/* SUB-SECTION DE NAVIGATION PRINCIPALE POUR L'ESPACE ACTIF (NIVEAU 1) */}
-        <div className="hidden lg:flex items-center w-full px-2 sm:px-4 md:px-6 lg:px-7 h-9 bg-slate-50/80 border-t border-slate-100/90 overflow-visible">
+        <div className="hidden sm:flex items-center w-full px-2 sm:px-4 md:px-6 lg:px-7 h-9 bg-slate-50/80 border-t border-slate-100/90 overflow-visible">
           <AnimatePresence mode="wait">
             <motion.nav 
               key={currentWorkspace.id}
