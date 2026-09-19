@@ -2,9 +2,9 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 /**
- * Composant Loader SVG exact fourni par l'utilisateur
+ * Composant Loader SVG exact
  */
-export function CodSvgSpinner({ size = 180 }: { size?: number }) {
+export function CodSvgSpinner({ size = 160 }: { size?: number }) {
   return (
     <div className="cod-loader-wrapper relative flex items-center justify-center pointer-events-none">
       <div>
@@ -38,7 +38,7 @@ export function CodSvgSpinner({ size = 180 }: { size?: number }) {
           <circle className="strecken" cx={100} cy={100} r={64} />
         </svg>
 
-        {/* Spinner principal snurra avec filtre visqueux gegga */}
+        {/* Spinner principal snurra */}
         <svg
           className="snurra relative z-10"
           width={size}
@@ -80,9 +80,10 @@ export interface GlobalPageLoaderProps {
 }
 
 /**
- * Écran de chargement immersif :
- * - Arrière-plan 3D "Call of Duty" (Salle d'archivage moderne avec casiers, cartons et documents)
- * - Spinner totalement libre (aucun fond noir, aucune boîte), avec son reflet en bas
+ * Écran de chargement transparent & flouté :
+ * - Aucune image de fond
+ * - Aucun fond noir (100% transparent avec backdrop-blur)
+ * - Pleine hauteur d'écran, sous la topbar qui reste z-50
  */
 export function GlobalPageLoader({
   isLoading,
@@ -92,48 +93,14 @@ export function GlobalPageLoader({
       {isLoading && (
         <motion.div
           key="global-page-loader"
-          initial={{ opacity: 1 }}
+          initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.5, ease: 'easeInOut' } }}
-          className="fixed inset-x-0 bottom-0 top-[96px] z-30 flex flex-col items-center justify-center overflow-hidden select-none bg-[#020506] pointer-events-auto cursor-wait"
+          exit={{ opacity: 0, transition: { duration: 0.3, ease: 'easeInOut' } }}
+          className="fixed inset-0 w-screen h-screen z-40 flex flex-col items-center justify-center overflow-hidden select-none bg-transparent backdrop-blur-md pointer-events-auto cursor-wait"
         >
-          {/* Arrière-plan 3D Call of Duty - Vue FPS dans la salle d'archivage moderne */}
-          <div className="absolute inset-0 z-0 pointer-events-none">
-            <img
-              src="/assets/cod_archive_vault.jpg"
-              alt="Salle d'archivage 3D moderne Call of Duty"
-              className="w-full h-full object-cover object-center scale-100 filter brightness-100 contrast-105"
-              referrerPolicy="no-referrer"
-            />
-          </div>
-
-          {/* Le Spinner totalement libre avec son reflet miroir en bas */}
-          <div className="relative z-20 flex flex-col items-center justify-center">
-            {/* Spinner principal libre flottant */}
-            <div className="relative z-10 filter drop-shadow-[0_0_20px_rgba(247,0,168,0.7)] drop-shadow-[0_0_40px_rgba(255,128,0,0.5)]">
-              <CodSvgSpinner size={190} />
-            </div>
-
-            {/* Reflet miroir en bas */}
-            <div
-              className="relative -mt-8 sm:-mt-10 pointer-events-none select-none filter blur-[1px] opacity-45 transform scale-y-[-1]"
-              style={{
-                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 45%, transparent 80%)',
-                WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 45%, transparent 80%)',
-              }}
-              aria-hidden="true"
-            >
-              <CodSvgSpinner size={190} />
-            </div>
-
-            {/* Halo lumineux de projection au sol sous le reflet */}
-            <div
-              className="w-64 h-8 -mt-6 rounded-full blur-xl opacity-60 pointer-events-none"
-              style={{
-                background: 'radial-gradient(ellipse at center, rgba(247,0,168,0.7) 0%, rgba(255,128,0,0.35) 50%, transparent 80%)',
-              }}
-              aria-hidden="true"
-            />
+          {/* Spinner principal libre flottant */}
+          <div className="relative z-10 filter drop-shadow-[0_0_25px_rgba(0,128,128,0.6)]">
+            <CodSvgSpinner size={160} />
           </div>
         </motion.div>
       )}

@@ -8,6 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { XboxAudioController } from '../shared/XboxAudioController';
 import { playXboxSound } from '../../utils/xboxAudio';
+import { EgenLogo } from '../ui/EgenLogo';
 
 interface TopBarProps {
   onSearchClick: () => void;
@@ -77,43 +78,16 @@ export function TopBar({
           </button>
         )}
 
-        {/* Logo EGEN Compact (Texte masqué sur mobile) */}
+        {/* Logo EGEN Official */}
         <div 
           onClick={() => {
             playXboxSound('select');
             navigate('/');
           }}
-          className="flex items-center gap-2 cursor-pointer group"
-          title="Retour Accueil"
+          className="flex items-center gap-2 cursor-pointer group hover:opacity-95 transition-opacity"
+          title="EGEN — Écosystème Gouvernemental de l’Économie Numérique"
         >
-          <div className="relative flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 shrink-0">
-            <svg className="w-6 h-6 sm:w-7 sm:h-7 transition-transform group-hover:scale-105 duration-200" viewBox="0 0 50 50" fill="none">
-              <path
-                d="M14 20 C14 10, 36 10, 36 20 C36 28, 14 26, 14 36 C14 44, 36 44, 36 36"
-                stroke="url(#egen-logo-grad)"
-                strokeWidth="6"
-                strokeLinecap="round"
-                className="drop-shadow-[0_0_10px_rgba(74,222,128,0.8)]"
-              />
-              <defs>
-                <linearGradient id="egen-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#38bdf8" />
-                  <stop offset="50%" stopColor="#4ade80" />
-                  <stop offset="100%" stopColor="#22c55e" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-
-          {/* Nom du projet compact (masqué en version mobile) */}
-          <div className="hidden sm:flex items-center gap-1.5">
-            <span className="text-white font-black text-sm sm:text-base tracking-wider leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-              EGEN
-            </span>
-            <span className="text-white/80 font-light text-xs sm:text-sm tracking-widest leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-              DOCUMENTS
-            </span>
-          </div>
+          <EgenLogo size="sm" showSubtitle={true} className="brightness-125" />
         </div>
       </div>
 

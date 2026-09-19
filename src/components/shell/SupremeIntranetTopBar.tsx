@@ -40,12 +40,20 @@ import {
   CheckSquare,
   GitFork,
   Plus,
-  LogOut
+  LogOut,
+  Grid,
+  Newspaper,
+  BarChart3,
+  Database
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { DropdownNavigation, NavItem } from './DropdownNavigation';
 import { XboxAudioController } from '../shared/XboxAudioController';
 import { playXboxSound } from '../../utils/xboxAudio';
+import { useWorkspace } from '../../context/WorkspaceContext';
+import { WorkspaceId } from '../../types/workspace';
+import { EgenLogo } from '../ui/EgenLogo';
 
 export interface SupremeIntranetTopBarProps {
   // Global Intranet Props (Level 1)
@@ -87,12 +95,14 @@ export function SupremeIntranetTopBar({
 }: SupremeIntranetTopBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentWorkspace, setWorkspaceId, availableWorkspaces, currentApps } = useWorkspace();
 
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
   const [currentLang, setCurrentLang] = useState<'English' | 'Français' | 'Español' | 'Deutsch'>('English');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [timeStr, setTimeStr] = useState("10:50");
   const [dateLongStr, setDateLongStr] = useState("");
@@ -122,11 +132,23 @@ export function SupremeIntranetTopBar({
     return () => clearInterval(interval);
   }, []);
 
+  // Determine if current route is within GED
+  const isGedRoute = React.useMemo(() => {
+    const path = location.pathname;
+    return path.startsWith('/ged') || 
+           path.startsWith('/documentation') || 
+           path.startsWith('/salles') || 
+           path.startsWith('/casier') || 
+           path.startsWith('/rayon') || 
+           path.startsWith('/dossier');
+  }, [location.pathname]);
+
   // Determine current active route in GED
   const currentAppRoute = React.useMemo(() => {
     const path = location.pathname;
     if (path === '/' || path === '/accueil') return 'accueil';
     if (
+      path.startsWith('/ged/documentation') ||
       path.startsWith('/documentation') ||
       path === '/salles' || 
       path === '/documents' || 
@@ -135,8 +157,8 @@ export function SupremeIntranetTopBar({
       path.startsWith('/casier') || 
       path.startsWith('/dossier')
     ) return 'documentation';
-    if (path === '/ingestion') return 'ingestion';
-    if (path === '/espaces') return 'espaces';
+    if (path === '/ged/ingestion' || path === '/ingestion') return 'ingestion';
+    if (path === '/ged/sites' || path === '/espaces') return 'espaces';
     if (path === '/taches') return 'taches';
     if (path === '/workflows') return 'workflows';
     return 'accueil';
@@ -183,13 +205,44 @@ export function SupremeIntranetTopBar({
     }
   };
 
+  const desktopNavItems = React.useMemo<NavItem[]>(() => {
+    return currentWorkspace.navItems.map((navItem) => ({
+      ...navItem,
+      subMenus: navItem.subMenus?.map((subMenu) => ({
+        ...subMenu,
+        items: subMenu.items.map((item) => ({
+          ...item,
+          onClick: () => {
+            playXboxSound('select');
+            if (item.link) {
+              if (['intranet', 'extranet', 'public', 'personnel', 'rh'].includes(item.link)) {
+                setWorkspaceId(item.link as WorkspaceId);
+                if (onShowNotification) {
+                  onShowNotification(`Espace activé : ${item.label}`, 'success');
+                }
+              } else if (item.link.startsWith('/')) {
+                navigate(item.link);
+              }
+            } else {
+              if (onShowNotification) {
+                onShowNotification(`${item.label} (${currentWorkspace.name})`, 'info');
+              }
+            }
+          }
+        }))
+      }))
+    }));
+  }, [currentWorkspace, setWorkspaceId, navigate, onShowNotification]);
+
   return (
     <div ref={menuRef} className="w-full shrink-0 z-50 select-none relative font-sans text-slate-800 overflow-visible">
       {/* 1. SUPREME TOPBAR: EXACT POWELL SOFTWARE LIGHT INTRANET TOPBAR */}
-      <header className="w-full bg-white border-b border-slate-200/80 px-2 sm:px-4 md:px-6 lg:px-7 h-12 flex items-center justify-between shadow-xs transition-colors overflow-visible">
-        
-        {/* LEFT SECTION: Hamburger (Mobile/Tablet) + Logo & Brand + Desktop Navigation Links */}
-        <div className="flex items-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 h-full min-w-0 overflow-visible">
+      <header className="w-full bg-white border-b border-slate-200/80 shadow-xs transition-colors overflow-visible flex flex-col">
+        {/* ROW 1: BRAND & ACTIONS TOP ROW */}
+        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-7 h-12 flex items-center justify-between">
+          
+          {/* LEFT SECTION: Hamburger (Mobile/Tablet) + Sidebar Button (à gauche du Logo) + Logo & Brand + Workspace Selector Pill */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-4 lg:gap-6 h-full min-w-0 overflow-visible">
           
           {/* Mobile / Tablet Menu Button (Visible on < lg screens) */}
           <button
@@ -209,372 +262,99 @@ export function SupremeIntranetTopBar({
             )}
           </button>
 
-          {/* Powell Software 4-Petal Pinwheel Logo */}
+          {/* Bouton de contrôle Sidebar / Guide (placé à gauche du Logo principal) */}
+          {onToggleSidebar && (
+            <button
+              type="button"
+              onClick={() => {
+                playXboxSound('toggle');
+                onToggleSidebar();
+              }}
+              className={`p-1.5 rounded-lg transition-all duration-150 cursor-pointer flex items-center justify-center outline-none ${
+                isSidebarOpen 
+                  ? 'bg-teal-50 text-[#008080] border border-teal-200 shadow-xs' 
+                  : 'text-slate-600 hover:text-[#008080] hover:bg-slate-100 border border-transparent'
+              }`}
+              title={isSidebarOpen ? "Fermer le volet latéral" : "Ouvrir le volet latéral"}
+              aria-label="Contrôle de la navigation latérale"
+            >
+              {isSidebarOpen ? (
+                <PanelLeftClose className="w-4.5 h-4.5 text-[#008080]" />
+              ) : (
+                <PanelLeft className="w-4.5 h-4.5 text-slate-700" />
+              )}
+            </button>
+          )}
+
+          {/* EGEN Official Logo & Brand */}
           <div 
             onClick={() => {
               playXboxSound('select');
-              notify("Portail Intranet Powell Software");
+              navigate('/');
             }}
-            className="flex items-center gap-2 sm:gap-2.5 cursor-pointer shrink-0 py-1 group overflow-visible"
-            title="Powell Software Intranet Supreme"
+            className="flex items-center gap-2 sm:gap-2.5 cursor-pointer shrink-0 py-1 group overflow-visible hover:opacity-95 transition-opacity"
+            title="EGEN — Écosystème Gouvernemental de l’Économie Numérique"
           >
-            {/* Exact 4-Petal Pinwheel Vector Logo */}
-            <div className="w-6.5 h-6.5 sm:w-8 sm:h-8 shrink-0 relative flex items-center justify-center overflow-visible">
-              <svg 
-                viewBox="0 0 100 100" 
-                className="w-full h-full drop-shadow-xs transition-transform duration-200 group-hover:scale-105 overflow-visible"
-                fill="none"
-              >
-                {/* Top petal: deep purple */}
-                <path 
-                  d="M50 50 C50 32, 38 16, 26 24 C14 32, 28 50, 50 50 Z" 
-                  fill="#472C5B" 
-                />
-                {/* Right petal: coral red */}
-                <path 
-                  d="M50 50 C68 50, 84 38, 76 26 C68 14, 50 28, 50 50 Z" 
-                  fill="#F25F4C" 
-                />
-                {/* Bottom petal: bright magenta pink */}
-                <path 
-                  d="M50 50 C50 68, 62 84, 74 76 C86 68, 72 50, 50 50 Z" 
-                  fill="#C42662" 
-                />
-                {/* Left petal: vibrant teal cyan */}
-                <path 
-                  d="M50 50 C32 50, 16 62, 24 74 C32 86, 50 72, 50 50 Z" 
-                  fill="#00A499" 
-                />
-              </svg>
-            </div>
-
-            {/* Brand Typography */}
-            <div className="flex items-center gap-1 sm:gap-1.5 tracking-tight">
-              <span className="text-[#1e293b] font-bold text-xs sm:text-sm md:text-base leading-none">
-                Powell
-              </span>
-              <span className="text-[#475569] font-normal text-xs sm:text-sm md:text-base leading-none">
-                Software
-              </span>
-            </div>
+            <EgenLogo size="md" variant="full" />
           </div>
 
-          {/* Intranet Navigation Links (Visible on desktop & large tablets lg+) */}
-          <nav className="hidden lg:flex items-center gap-1 lg:gap-2.5 xl:gap-3.5 h-full text-[13px] font-medium text-[#334155]">
-            
-            {/* Home Link with Chevron */}
-            <div className="relative h-full flex items-center">
+          {/* Workspace Selector Dropdown Pill */}
+          <div className="relative ml-1 sm:ml-2">
               <button
                 type="button"
-                onClick={() => handleMenuClick('home')}
-                className={`flex items-center gap-1 px-2 py-1.5 rounded-md transition-colors cursor-pointer bg-transparent border-none text-[#334155] hover:text-[#008080] ${
-                  activeMenu === 'home' ? 'text-[#008080] font-semibold' : ''
-                }`}
+                onClick={() => {
+                  playXboxSound('toggle');
+                  setIsWorkspaceDropdownOpen(prev => !prev);
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200/90 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all cursor-pointer shadow-xs"
+                title="Changer d'espace de travail"
               >
-                <span>Home</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${activeMenu === 'home' ? 'rotate-180 text-[#008080]' : ''}`} />
+                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                <span className="hidden sm:inline text-slate-400 font-normal">Espace :</span>
+                <span className="text-teal-700 font-bold max-w-[120px] truncate">{currentWorkspace.name}</span>
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isWorkspaceDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* Home Dropdown Menu */}
-              {activeMenu === 'home' && (
-                <div className="absolute top-11 left-0 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Accueil Global
+              {isWorkspaceDropdownOpen && (
+                <div className="absolute left-0 top-full mt-2 w-64 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1">
+                    Sélectionner un Espace
                   </div>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Fil d'actualité intranet"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Actualités de l'entreprise</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Événements et plannings"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Calendrier général</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Documents récents"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Dernières publications</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                  </button>
+                  {availableWorkspaces.map(ws => {
+                    const isActive = ws.id === currentWorkspace.id;
+                    return (
+                      <button
+                        key={ws.id}
+                        onClick={() => {
+                          playXboxSound('select');
+                          setWorkspaceId(ws.id);
+                          setIsWorkspaceDropdownOpen(false);
+                          if (onShowNotification) {
+                            onShowNotification(`Espace activé : ${ws.name}`, 'success');
+                          }
+                        }}
+                        className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all cursor-pointer ${
+                          isActive 
+                            ? 'bg-teal-50 text-teal-800 font-bold border border-teal-200/60' 
+                            : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium'
+                        }`}
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-xs">{ws.name}</span>
+                          <span className="text-[10px] text-slate-400 font-normal">{ws.subtitle}</span>
+                        </div>
+                        {isActive && (
+                          <span className="text-[10px] bg-teal-600 text-white font-semibold px-2 py-0.5 rounded-full">
+                            Actif
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
-
-            {/* Mon espace Link with Chevron (Extranet, Public, Cellule, Personnel) */}
-            <div className="relative h-full flex items-center">
-              <button
-                type="button"
-                onClick={() => handleMenuClick('monespace')}
-                className={`flex items-center gap-1 px-2 py-1.5 rounded-md transition-colors cursor-pointer bg-transparent border-none text-[#334155] hover:text-[#008080] ${
-                  activeMenu === 'monespace' ? 'text-[#008080] font-semibold' : ''
-                }`}
-              >
-                <span>Mon espace</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${activeMenu === 'monespace' ? 'rotate-180 text-[#008080]' : ''}`} />
-              </button>
-
-              {/* Mon Espace Dropdown Menu */}
-              {activeMenu === 'monespace' && (
-                <div className="absolute top-11 left-0 w-60 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Espaces de travail
-                  </div>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Accès à l'Extranet Partenaires"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Globe className="w-3.5 h-3.5 text-sky-500" />
-                      <span className="font-medium">Extranet</span>
-                    </div>
-                    <span className="text-[10px] text-slate-400">Partenaires</span>
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Accès à l'Espace Public"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Radio className="w-3.5 h-3.5 text-emerald-500" />
-                      <span className="font-medium">Public</span>
-                    </div>
-                    <span className="text-[10px] text-slate-400">Diffusion</span>
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Accès à l'Espace Cellule"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Users className="w-3.5 h-3.5 text-purple-500" />
-                      <span className="font-medium">Cellule</span>
-                    </div>
-                    <span className="text-[10px] text-slate-400">Équipe</span>
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Accès à l'Espace Personnel"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <User className="w-3.5 h-3.5 text-teal-600" />
-                      <span className="font-medium">Personnel</span>
-                    </div>
-                    <span className="text-[10px] text-slate-400">Privé</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Administration Link with Chevron */}
-            <div className="relative h-full flex items-center">
-              <button
-                type="button"
-                onClick={() => handleMenuClick('administration')}
-                className={`flex items-center gap-1 px-2 py-1.5 rounded-md transition-colors cursor-pointer bg-transparent border-none text-[#334155] hover:text-[#008080] ${
-                  activeMenu === 'administration' ? 'text-[#008080] font-semibold' : ''
-                }`}
-              >
-                <span>Administration</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${activeMenu === 'administration' ? 'rotate-180 text-[#008080]' : ''}`} />
-              </button>
-
-              {/* Administration Dropdown Menu */}
-              {activeMenu === 'administration' && (
-                <div className="absolute top-11 left-0 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Gestion & Contrôle
-                  </div>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Gestion des utilisateurs et rôles"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Utilisateurs & Rôles</span>
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Gestion des droits d'accès et sécurité"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Droits & Sécurité</span>
-                    <Lock className="w-3.5 h-3.5 text-amber-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Journaux d'audit et flux d'archivage"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Journaux d'audit & Flux</span>
-                    <FileText className="w-3.5 h-3.5 text-sky-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Configuration globale du système"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Configuration Système</span>
-                    <Settings className="w-3.5 h-3.5 text-slate-400" />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Raccourci Link with Chevron */}
-            <div className="relative h-full flex items-center">
-              <button
-                type="button"
-                onClick={() => handleMenuClick('raccourci')}
-                className={`flex items-center gap-1 px-2 py-1.5 rounded-md transition-colors cursor-pointer bg-transparent border-none text-[#334155] hover:text-[#008080] ${
-                  activeMenu === 'raccourci' ? 'text-[#008080] font-semibold' : ''
-                }`}
-              >
-                <span>Raccourci</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${activeMenu === 'raccourci' ? 'rotate-180 text-[#008080]' : ''}`} />
-              </button>
-
-              {/* Raccourci Dropdown Menu */}
-              {activeMenu === 'raccourci' && (
-                <div className="absolute top-11 left-0 w-60 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Accès Rapide
-                  </div>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Accès rapide aux bordereaux en cours"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Bordereaux en cours</span>
-                    <Zap className="w-3.5 h-3.5 text-amber-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Recherche d'archives express"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Recherche Express</span>
-                    <Search className="w-3.5 h-3.5 text-[#008080]" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Documents récents"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Documents récents</span>
-                    <FolderOpen className="w-3.5 h-3.5 text-teal-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Scanner & Import rapide"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Scanner & Import</span>
-                    <CirclePlus className="w-3.5 h-3.5 text-emerald-500" />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Favori Link with Chevron */}
-            <div className="relative h-full flex items-center">
-              <button
-                type="button"
-                onClick={() => handleMenuClick('favori')}
-                className={`flex items-center gap-1 px-2 py-1.5 rounded-md transition-colors cursor-pointer bg-transparent border-none text-[#334155] hover:text-[#008080] ${
-                  activeMenu === 'favori' ? 'text-[#008080] font-semibold' : ''
-                }`}
-              >
-                <span>Favori</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${activeMenu === 'favori' ? 'rotate-180 text-[#008080]' : ''}`} />
-              </button>
-
-              {/* Favori Dropdown Menu */}
-              {activeMenu === 'favori' && (
-                <div className="absolute top-11 left-0 w-60 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Mes Favoris
-                  </div>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Dossiers et séries épinglés"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Dossiers épinglés</span>
-                    <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Bordereaux suivis"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Bordereaux suivis</span>
-                    <Bookmark className="w-3.5 h-3.5 text-emerald-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Modèles types et fiches d'archivage"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Modèles types</span>
-                    <FileText className="w-3.5 h-3.5 text-sky-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Espaces favoris"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Espaces favoris</span>
-                    <Compass className="w-3.5 h-3.5 text-purple-500" />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Paramètre Link with Chevron */}
-            <div className="relative h-full flex items-center">
-              <button
-                type="button"
-                onClick={() => handleMenuClick('parametre')}
-                className={`flex items-center gap-1 px-2 py-1.5 rounded-md transition-colors cursor-pointer bg-transparent border-none text-[#334155] hover:text-[#008080] ${
-                  activeMenu === 'parametre' ? 'text-[#008080] font-semibold' : ''
-                }`}
-              >
-                <span>Paramètre</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${activeMenu === 'parametre' ? 'rotate-180 text-[#008080]' : ''}`} />
-              </button>
-
-              {/* Paramètre Dropdown Menu */}
-              {activeMenu === 'parametre' && (
-                <div className="absolute top-11 left-0 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                    Préférences & Réglages
-                  </div>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Préférences d'affichage et thèmes"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Affichage & Thème</span>
-                    <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Notifications et alertes de suivi"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Alertes & Notifications</span>
-                    <Sparkles className="w-3.5 h-3.5 text-teal-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Langue et formats régionaux"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Langue & Formats</span>
-                    <Globe className="w-3.5 h-3.5 text-sky-500" />
-                  </button>
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Workflows et circuits de validation"); }}
-                    className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer"
-                  >
-                    <span>Workflows de validation</span>
-                    <Layers className="w-3.5 h-3.5 text-emerald-500" />
-                  </button>
-                </div>
-              )}
-            </div>
-
-          </nav>
-        </div>
+          </div>
 
         {/* RIGHT SECTION: Minimal Dimension Buttons without background (Free text/icons) */}
         <div className="flex items-center gap-1 sm:gap-2 md:gap-3 lg:gap-3.5 shrink-0 overflow-visible">
@@ -686,91 +466,90 @@ export function SupremeIntranetTopBar({
               </span>
             </button>
 
-            {/* App Launcher Drawer / Dropdown (Responsive width on mobile) */}
+            {/* App Launcher Drawer / Dropdown in Glassmorphism */}
             {activeMenu === 'appLauncher' && (
-              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-16px)] sm:w-80 max-w-sm bg-white rounded-2xl shadow-2xl border border-slate-200 p-3 sm:p-4 z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100">
-                  <span className="font-semibold text-sm text-slate-800">Applications Intranet</span>
-                  <span className="text-[10px] sm:text-[11px] bg-emerald-50 text-emerald-700 font-medium px-2 py-0.5 rounded-full border border-emerald-200">
-                    Suite Connectée
+              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-16px)] sm:w-88 max-w-sm bg-slate-900/90 backdrop-blur-2xl border border-white/20 shadow-2xl p-3.5 sm:p-4 rounded-2xl z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150 text-white">
+                <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-white/10">
+                  <span className="font-semibold text-sm text-white tracking-tight">Applications ({currentWorkspace.name})</span>
+                  <span className="text-[10px] bg-teal-500/20 text-teal-300 font-medium px-2 py-0.5 rounded-full border border-teal-400/30">
+                    {currentApps.length} Application{currentApps.length > 1 ? 's' : ''}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
-                  {/* Current GED App (Highlighted) */}
-                  <button 
+                <div className="grid grid-cols-3 gap-2 sm:gap-2.5 max-h-72 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/20">
+                  {currentApps.length > 0 ? (
+                    currentApps.map((app) => (
+                      <button
+                        key={app.id}
+                        onClick={() => {
+                          playXboxSound('select');
+                          setActiveMenu(null);
+                          if (app.id === 'ged' && onOpenGED) {
+                            onOpenGED();
+                          } else {
+                            navigate(app.url);
+                          }
+                          notify(`Application ${app.name} active`);
+                        }}
+                        className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl bg-white/5 hover:bg-white/15 text-slate-200 hover:text-white transition-all cursor-pointer group text-center max-w-full overflow-hidden"
+                      >
+                        <div className="relative mb-2 flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-lg bg-teal-600/80 border border-teal-400/40 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
+                            {app.icon === 'FolderOpen' ? (
+                              <FolderOpen className="w-5 h-5 text-teal-100" />
+                            ) : app.icon === 'Calendar' ? (
+                              <Calendar className="w-5 h-5 text-teal-100" />
+                            ) : app.icon === 'ShieldCheck' ? (
+                              <ShieldCheck className="w-5 h-5 text-teal-100" />
+                            ) : app.icon === 'Newspaper' ? (
+                              <Newspaper className="w-5 h-5 text-teal-100" />
+                            ) : (
+                              <Grid className="w-5 h-5 text-teal-100" />
+                            )}
+                          </div>
+                          {app.status && (
+                            <span className="absolute -top-1 -right-2 text-[8px] font-bold px-1.5 py-0.2 bg-teal-500 text-white rounded-full shadow-xs">
+                              {app.status}
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-semibold text-[11px] sm:text-xs text-white group-hover:text-teal-200 leading-tight truncate w-full px-1" title={app.name}>
+                          {app.name}
+                        </span>
+                        <span className="text-[9px] sm:text-[10px] text-slate-300 truncate w-full px-1 mt-0.5" title={app.description}>
+                          {app.description}
+                        </span>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="col-span-3 text-center py-6 px-2 text-slate-300">
+                      <p className="text-xs font-semibold mb-1 text-teal-200">Aucune application active</p>
+                      <p className="text-[10px] text-slate-400 mb-3">L'espace {currentWorkspace.name} n'a pas d'apps configurées.</p>
+                      <button
+                        onClick={() => {
+                          playXboxSound('select');
+                          setWorkspaceId('intranet');
+                        }}
+                        className="px-3 py-1.5 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 text-xs font-medium border border-teal-400/30 transition-all cursor-pointer"
+                      >
+                        Voir l'Intranet Général
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer Link: Voir tous -> /applications */}
+                <div className="pt-3 mt-3 border-t border-white/10 flex items-center justify-between">
+                  <button
                     onClick={() => {
+                      playXboxSound('select');
                       setActiveMenu(null);
-                      if (onOpenGED) onOpenGED();
-                      notify("Application GED EGEN Documents active");
+                      navigate('/applications');
                     }}
-                    className="flex flex-col items-center justify-center p-2 rounded-xl bg-emerald-500/10 border border-emerald-400/40 text-emerald-800 hover:bg-emerald-500/20 transition-all cursor-pointer group/app text-center overflow-visible"
+                    className="w-full py-2 px-3 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-teal-400/30 backdrop-blur-sm"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white shadow-xs mb-1.5">
-                      <FolderOpen className="w-4.5 h-4.5" />
-                    </div>
-                    <span className="font-semibold text-[11px] leading-tight line-clamp-1">GED Docs</span>
-                    <span className="text-[9px] text-emerald-600 font-medium">Actif</span>
-                  </button>
-
-                  {/* Teams */}
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Ouverture de Microsoft Teams"); }}
-                    className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all cursor-pointer text-center bg-transparent"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#464EB8] flex items-center justify-center text-white shadow-xs mb-1.5">
-                      <MessageSquare className="w-4.5 h-4.5" />
-                    </div>
-                    <span className="font-medium text-[11px] text-slate-700 leading-tight">MS Teams</span>
-                    <span className="text-[9px] text-slate-400">Collaboration</span>
-                  </button>
-
-                  {/* Outlook */}
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Ouverture de Microsoft Outlook"); }}
-                    className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all cursor-pointer text-center bg-transparent"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#0078D4] flex items-center justify-center text-white shadow-xs mb-1.5">
-                      <Mail className="w-4.5 h-4.5" />
-                    </div>
-                    <span className="font-medium text-[11px] text-slate-700 leading-tight">Outlook</span>
-                    <span className="text-[9px] text-slate-400">Messagerie</span>
-                  </button>
-
-                  {/* OneDrive */}
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Ouverture de OneDrive Cloud"); }}
-                    className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all cursor-pointer text-center bg-transparent"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#0078D4] flex items-center justify-center text-white shadow-xs mb-1.5">
-                      <Cloud className="w-4.5 h-4.5" />
-                    </div>
-                    <span className="font-medium text-[11px] text-slate-700 leading-tight">OneDrive</span>
-                    <span className="text-[9px] text-slate-400">Stockage</span>
-                  </button>
-
-                  {/* HR Portal */}
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Portail RH Laura Denvida"); }}
-                    className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all cursor-pointer text-center bg-transparent"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#D83B01] flex items-center justify-center text-white shadow-xs mb-1.5">
-                      <Briefcase className="w-4.5 h-4.5" />
-                    </div>
-                    <span className="font-medium text-[11px] text-slate-700 leading-tight">Portail RH</span>
-                    <span className="text-[9px] text-slate-400">Carrières</span>
-                  </button>
-
-                  {/* Intranet V2 */}
-                  <button 
-                    onClick={() => { setActiveMenu(null); notify("Intranet V2 Dashboard"); }}
-                    className="flex flex-col items-center justify-center p-2 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-all cursor-pointer text-center bg-transparent"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#008080] flex items-center justify-center text-white shadow-xs mb-1.5">
-                      <Layers className="w-4.5 h-4.5" />
-                    </div>
-                    <span className="font-medium text-[11px] text-slate-700 leading-tight">Intranet V2</span>
-                    <span className="text-[9px] text-slate-400">Portail</span>
+                    <span>Voir toutes les applications</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -851,10 +630,10 @@ export function SupremeIntranetTopBar({
                   Permissions & Sécurité
                 </button>
                 <button 
-                  onClick={() => { setActiveMenu(null); notify("À propos de Powell Intranet v4.2"); }}
+                  onClick={() => { setActiveMenu(null); notify("À propos d'EGEN v4.2 — Écosystème Gouvernemental"); }}
                   className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] cursor-pointer bg-transparent border-none"
                 >
-                  À propos de Powell Intranet
+                  À propos d'EGEN
                 </button>
               </div>
             )}
@@ -944,116 +723,111 @@ export function SupremeIntranetTopBar({
           </div>
 
         </div>
+        </div>
+
+        {/* SUB-SECTION DE NAVIGATION PRINCIPALE POUR L'ESPACE ACTIF (NIVEAU 1) */}
+        <div className="hidden lg:flex items-center w-full px-2 sm:px-4 md:px-6 lg:px-7 h-9 bg-slate-50/80 border-t border-slate-100/90 overflow-visible">
+          <AnimatePresence mode="wait">
+            <motion.nav 
+              key={currentWorkspace.id}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="flex items-center h-full w-full gap-1 overflow-visible"
+            >
+              <DropdownNavigation navItems={desktopNavItems} />
+            </motion.nav>
+          </AnimatePresence>
+        </div>
 
       </header>
 
-      {/* 2. DEUXIÈME NIVEAU (INFÉRIEUR) : TOPBAR EXTENSIBLE DE L'APPLICATION ACTIVE (GED / EGEN) */}
-      <div className="w-full bg-[#070d14]/95 backdrop-blur-md border-b border-white/[0.08] text-white px-2 sm:px-4 md:px-6 lg:px-7 h-12 flex items-center justify-between shadow-md transition-all overflow-visible z-40 relative">
-        
-        {/* ZONE GAUCHE : Sidebar Toggle + Logo/App Identity + Status Badge + Slot Extensible Gauche */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0 overflow-visible">
-          {/* Bouton de contrôle Sidebar / Guide Xbox */}
-          {onToggleSidebar && (
-            <button
-              type="button"
+      {/* 2. DEUXIÈME NIVEAU (INFÉRIEUR) : TOPBAR EXTENSIBLE DE L'APPLICATION ACTIVE (GED / EGEN) - UNIQUEMENT SI DANS LA GED */}
+      {isGedRoute && (
+        <div className="w-full bg-[#070d14]/95 backdrop-blur-md border-b border-white/[0.08] text-white px-2 sm:px-4 md:px-6 lg:px-7 h-12 flex items-center justify-between shadow-md transition-all overflow-visible z-40 relative">
+          
+          {/* ZONE GAUCHE : Logo/App Identity + Status Badge + Slot Extensible Gauche */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 overflow-visible">
+            {/* Logo & Identité de l'Application Active */}
+            <div 
               onClick={() => {
-                playXboxSound('toggle');
-                onToggleSidebar();
+                playXboxSound('select');
+                navigate('/ged');
               }}
-              className={`p-1.5 rounded-lg transition-all duration-150 cursor-pointer flex items-center justify-center outline-none ${
-                isSidebarOpen 
-                  ? 'bg-sky-500/25 text-sky-300 border border-sky-400/50 shadow-[0_0_12px_rgba(56,189,248,0.4)]' 
-                  : 'bg-white/[0.04] hover:bg-white/10 text-white/80 hover:text-white border border-white/[0.06]'
-              }`}
-              title={isSidebarOpen ? "Fermer le volet latéral" : "Ouvrir le volet latéral"}
-              aria-label="Contrôle de la navigation latérale"
+              className="flex items-center gap-2 cursor-pointer group select-none"
+              title="Accueil GED EGEN"
             >
-              {isSidebarOpen ? (
-                <PanelLeftClose className="w-4 h-4 text-sky-400" />
-              ) : (
-                <PanelLeft className="w-4 h-4 text-white/90" />
-              )}
-            </button>
-          )}
+              <div className="relative flex items-center justify-center w-7 h-7 shrink-0">
+                <svg className="w-6 h-6 transition-transform group-hover:scale-105 duration-200" viewBox="0 0 50 50" fill="none">
+                  <path
+                    d="M14 20 C14 10, 36 10, 36 20 C36 28, 14 26, 14 36 C14 44, 36 44, 36 36"
+                    stroke="url(#egen-logo-grad-sub)"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    className="drop-shadow-[0_0_8px_rgba(74,222,128,0.7)]"
+                  />
+                  <defs>
+                    <linearGradient id="egen-logo-grad-sub" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#38bdf8" />
+                      <stop offset="50%" stopColor="#4ade80" />
+                      <stop offset="100%" stopColor="#22c55e" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
 
-          {/* Logo & Identité de l'Application Active */}
-          <div 
-            onClick={() => {
-              playXboxSound('select');
-              navigate('/');
-            }}
-            className="flex items-center gap-2 cursor-pointer group select-none"
-            title="Accueil GED"
-          >
-            <div className="relative flex items-center justify-center w-7 h-7 shrink-0">
-              <svg className="w-6 h-6 transition-transform group-hover:scale-105 duration-200" viewBox="0 0 50 50" fill="none">
-                <path
-                  d="M14 20 C14 10, 36 10, 36 20 C36 28, 14 26, 14 36 C14 44, 36 44, 36 36"
-                  stroke="url(#egen-logo-grad-sub)"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  className="drop-shadow-[0_0_8px_rgba(74,222,128,0.7)]"
-                />
-                <defs>
-                  <linearGradient id="egen-logo-grad-sub" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#38bdf8" />
-                    <stop offset="50%" stopColor="#4ade80" />
-                    <stop offset="100%" stopColor="#22c55e" />
-                  </linearGradient>
-                </defs>
-              </svg>
+              <div className="flex items-center gap-1.5">
+                <span className="text-white font-black text-xs sm:text-sm tracking-wider leading-none">
+                  EGEN
+                </span>
+                <span className="text-emerald-400 font-medium text-[10px] sm:text-xs tracking-widest leading-none hidden sm:inline">
+                  DOCUMENTS
+                </span>
+                <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold tracking-tight uppercase hidden md:inline-flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  GED
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <span className="text-white font-black text-xs sm:text-sm tracking-wider leading-none">
-                EGEN
+            {/* Mini-Slot d'extension Gauche (Flexible & Sans limitation pour toute app) */}
+            {appSlotLeft && (
+              <div className="flex items-center gap-1 pl-1 border-l border-white/10">
+                {appSlotLeft}
+              </div>
+            )}
+          </div>
+
+          {/* ZONE CENTRE : Slot Extensible Optionnel ou Espace libre (Navigation centrale retirée) */}
+          <div className="flex-1 flex items-center justify-center max-w-3xl mx-2 overflow-x-auto scrollbar-none">
+            {appSlotCenter || null}
+          </div>
+
+          {/* ZONE DROITE : Heure & Date longue au format discret/réduit */}
+          <div className="flex items-center gap-2 shrink-0 overflow-visible">
+            {appSlotRight && (
+              <div className="flex items-center gap-1 pr-1 border-r border-white/10">
+                {appSlotRight}
+              </div>
+            )}
+
+            <div className="flex flex-col items-end justify-center text-right select-none pr-1">
+              <span className="text-white font-bold text-xs sm:text-sm tracking-tight leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                {timeStr}
               </span>
-              <span className="text-emerald-400 font-medium text-[10px] sm:text-xs tracking-widest leading-none hidden sm:inline">
-                DOCUMENTS
-              </span>
-              <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold tracking-tight uppercase hidden md:inline-flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                GED
+              <span className="text-[10px] sm:text-[11px] text-white/50 font-normal tracking-tight leading-tight mt-0.5 capitalize">
+                {dateLongStr}
               </span>
             </div>
           </div>
 
-          {/* Mini-Slot d'extension Gauche (Flexible & Sans limitation pour toute app) */}
-          {appSlotLeft && (
-            <div className="flex items-center gap-1 pl-1 border-l border-white/10">
-              {appSlotLeft}
-            </div>
-          )}
         </div>
-
-        {/* ZONE CENTRE : Slot Extensible Optionnel ou Espace libre (Navigation centrale retirée) */}
-        <div className="flex-1 flex items-center justify-center max-w-3xl mx-2 overflow-x-auto scrollbar-none">
-          {appSlotCenter || null}
-        </div>
-
-        {/* ZONE DROITE : Heure & Date longue au format discret/réduit */}
-        <div className="flex items-center gap-2 shrink-0 overflow-visible">
-          {appSlotRight && (
-            <div className="flex items-center gap-1 pr-1 border-r border-white/10">
-              {appSlotRight}
-            </div>
-          )}
-
-          <div className="flex flex-col items-end justify-center text-right select-none pr-1">
-            <span className="text-white font-bold text-xs sm:text-sm tracking-tight leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-              {timeStr}
-            </span>
-            <span className="text-[10px] sm:text-[11px] text-white/50 font-normal tracking-tight leading-tight mt-0.5 capitalize">
-              {dateLongStr}
-            </span>
-          </div>
-        </div>
-
-      </div>
+      )}
 
       {/* MOBILE & TABLET DRAWER / MENU SLIDEOVER (Visible on < lg screens when hamburger is clicked) */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-[96px] z-40 bg-slate-900/40 backdrop-blur-xs flex animate-in fade-in duration-150">
+        <div className={`lg:hidden fixed inset-0 ${isGedRoute ? 'top-[96px]' : 'top-[48px]'} z-40 bg-slate-900/40 backdrop-blur-xs flex animate-in fade-in duration-150`}>
           <div className="w-full max-w-xs sm:max-w-sm bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto border-r border-slate-200">
             {/* Header info in drawer */}
             <div className="p-4 border-b border-slate-100 bg-slate-50/70">
@@ -1063,7 +837,7 @@ export function SupremeIntranetTopBar({
                 </div>
                 <div>
                   <h4 className="font-semibold text-slate-800 text-sm">Laura Denvida</h4>
-                  <p className="text-xs text-slate-500">Portail Intranet Powell Software</p>
+                  <p className="text-xs text-slate-500">EGEN — Écosystème Gouvernemental</p>
                 </div>
               </div>
             </div>
@@ -1074,44 +848,7 @@ export function SupremeIntranetTopBar({
                 Navigation Principale
               </div>
 
-              {/* Home Accordion */}
-              <div className="rounded-xl overflow-hidden border border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => toggleMobileCategory('home')}
-                  className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Home className="w-4 h-4 text-[#008080]" />
-                    <span>Home</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${expandedMobileCategory === 'home' ? 'rotate-180' : ''}`} />
-                </button>
-                {expandedMobileCategory === 'home' && (
-                  <div className="bg-slate-50/80 px-4 py-2 space-y-1.5 border-t border-slate-100 text-xs">
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Fil d'actualité"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Actualités de l'entreprise
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Calendrier général"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Calendrier & Plannings
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Publications récentes"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Dernières publications
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Mon Espace Accordion (Extranet, Public, Cellule, Personnel) */}
+              {/* Mon Espace Accordion (Extranet, Public, Intranet, Personnel) */}
               <div className="rounded-xl overflow-hidden border border-slate-100">
                 <button
                   type="button"
@@ -1141,10 +878,10 @@ export function SupremeIntranetTopBar({
                       <Radio className="w-3.5 h-3.5 text-emerald-500" />
                     </button>
                     <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Cellule Opérationnelle"); }}
+                      onClick={() => { setIsMobileMenuOpen(false); notify("Espace Intranet"); }}
                       className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] flex items-center justify-between"
                     >
-                      <span>Cellule</span>
+                      <span>Intranet</span>
                       <Users className="w-3.5 h-3.5 text-purple-500" />
                     </button>
                     <button 

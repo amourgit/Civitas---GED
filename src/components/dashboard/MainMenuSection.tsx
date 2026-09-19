@@ -42,7 +42,7 @@ export function MainMenuSection({
           onClick={() => {
             setActiveCardId('bento-sites');
             playXboxSound('select');
-            navigate('/sites');
+            navigate('/ged/sites');
           }}
           onMouseEnter={() => {
             playXboxSound('hover');
@@ -172,7 +172,7 @@ export function MainMenuSection({
           onClick={() => {
             setActiveCardId('bento-depots');
             playXboxSound('select');
-            navigate('/depots');
+            navigate('/ged/depots');
           }}
           onMouseEnter={() => {
             playXboxSound('hover');
@@ -212,7 +212,7 @@ export function MainMenuSection({
           onClick={() => {
             setActiveCardId('bento-recherche');
             playXboxSound('select');
-            navigate('/recherche');
+            navigate('/ged/recherche');
           }}
           onMouseEnter={() => {
             playXboxSound('hover');
@@ -252,7 +252,7 @@ export function MainMenuSection({
           onClick={() => {
             setActiveCardId('bento-administration');
             playXboxSound('select');
-            navigate('/administration');
+            navigate('/ged/administration');
           }}
           onMouseEnter={() => {
             playXboxSound('hover');
@@ -292,7 +292,7 @@ export function MainMenuSection({
           onClick={() => {
             setActiveCardId('bento-rapports');
             playXboxSound('select');
-            navigate('/rapports');
+            navigate('/ged/rapports');
           }}
           onMouseEnter={() => {
             playXboxSound('hover');

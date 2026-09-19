@@ -13,13 +13,13 @@
 import * as React from "react"
 import {
   AnimatePresence,
-  animate,
   motion,
-  useMotionValue,
   useReducedMotion,
 } from "framer-motion"
+import { LayoutGrid } from "lucide-react"
 
 import { cn } from "../../lib/utils"
+import { ToolDock, ToolDockItem, ToolDockTile } from "../ui/ToolDock"
 
 export interface HeroCarouselItem {
   /** Stable key; falls back to the index. @default undefined */
@@ -30,6 +30,8 @@ export interface HeroCarouselItem {
   title: string
   /** Image URL, used both in the card and as the graded background. */
   image: string
+  /** Representative icon component for the slide indicator */
+  icon?: React.ComponentType<{ className?: string }>
   /** Byline printed beside the headline, e.g. "BY AURELIA STUDIO." @default undefined */
   credit?: string
   /** Right-aligned facts, e.g. ["SAT NOV 15", "5-10 PM", "MIAMI"]. @default undefined */
@@ -99,7 +101,6 @@ export function HeroCarousel({
   const stageRef = React.useRef<HTMLDivElement>(null)
   const [box, setBox] = React.useState({ w: 0, h: 0 })
   const [uncontrolled, setUncontrolled] = React.useState(defaultIndex)
-  const [dragging, setDragging] = React.useState(false)
   const [paused, setPaused] = React.useState(false)
   const reduced = useReducedMotion()
 
@@ -127,21 +128,8 @@ export function HeroCarousel({
     return () => ro.disconnect()
   }, [])
 
-  const fullH = clamp(box.h * CARD_H, 68, 105)
-  const halfH = Math.max(34, Math.round(fullH * 0.52))
-  const cardW = Math.round(fullH * CARD_AR)
-  const gap = Math.max(4, Math.round(cardW * GAP))
-  const step = cardW + gap
   const pad = Math.max(16, Math.round(box.w * PAD))
   const label = Math.max(9, Math.round(box.h * LABEL))
-
-  // Centre the focused card: the track slides, the card never moves itself.
-  const xFor = React.useCallback(
-    (i: number) => box.w / 2 - (i * step + cardW / 2),
-    [box.w, step, cardW]
-  )
-  const x = useMotionValue(0)
-  const target = xFor(index)
 
   const swing = reduced
     ? { duration: 0 }
@@ -150,26 +138,14 @@ export function HeroCarousel({
     ? { duration: 0 }
     : { type: "spring" as const, stiffness: 260, damping: 34, mass: 0.9 }
 
-  // The track is driven by a motion value rather than an `animate` prop so a
-  // drag that starts mid-spring reads the real position, not where the spring
-  // was headed - otherwise the release snaps a card off.
   React.useEffect(() => {
-    if (dragging) return
-    const run = animate(x, target, spring)
-    return () => run.stop()
-    // `spring` is a literal, so `reduced` (all it derives from) stands in for it.
-  }, [target, dragging, reduced, x]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Drag and selection control the carousel position (scroll/wheel reaction disabled)
-
-  React.useEffect(() => {
-    if (!autoplay || paused || dragging || items.length < 2) return
+    if (!autoplay || paused || items.length < 2) return
     const id = window.setTimeout(
       () => go(index === last ? 0 : index + 1),
       autoplayDelay
     )
     return () => window.clearTimeout(id)
-  }, [autoplay, autoplayDelay, dragging, go, index, items.length, last, paused])
+  }, [autoplay, autoplayDelay, go, index, items.length, last, paused])
 
   const active = items[index]
   if (!active) return null
@@ -355,92 +331,78 @@ export function HeroCarousel({
         </div>
       </div>
 
-      {/* ── Les slides de représentation en bas de l'écran ── */}
+      {/* ── Slide Navigation Dock (Exact ToolDock implementation) ── */}
       <div
-        className="relative z-20 w-full shrink-0 overflow-hidden"
+        className="relative z-20 w-full shrink-0 flex flex-col items-center justify-center pointer-events-auto"
         style={{
-          height: fullH,
-          marginBottom: Math.max(20, Math.round(box.h * 0.024)),
+          paddingLeft: pad,
+          paddingRight: pad,
+          marginBottom: Math.max(14, Math.round(box.h * 0.016)),
         }}
       >
-        <motion.div
-          className="flex items-start"
-          style={{ gap, x, cursor: dragging ? "grabbing" : "grab" }}
-          drag="x"
-          dragMomentum={false}
-          dragElastic={0.08}
-          dragConstraints={{ left: xFor(last), right: xFor(0) }}
-          onDragStart={() => setDragging(true)}
-          onDragEnd={(_, info) => {
-            setDragging(false)
-            // Land on whatever card the release sits nearest, nudged by throw
-            // velocity so a flick clears more than one card.
-            const thrown = x.get() + info.velocity.x * 0.12
-            go(Math.round((box.w / 2 - thrown - cardW / 2) / step))
-          }}
-        >
-          {items.map((item, i) => (
-            <motion.button
-              key={item.id ?? i}
-              type="button"
-              aria-label={item.title.replace(/\n/g, " ")}
-              aria-current={i === index}
-              onClick={() => go(i)}
-              className="relative shrink-0 overflow-hidden rounded-[2px] bg-white/5 cursor-pointer border border-white/15 hover:border-white/50 transition-colors group"
-              style={{ width: cardW }}
-              animate={{ height: i === index ? fullH : halfH }}
-              transition={spring}
-            >
-              {/* Le nom de section en haut sur chaque représentant de slide */}
-              <div className="absolute top-0 inset-x-0 z-20 bg-gradient-to-b from-black/95 via-black/80 to-transparent pt-1.5 px-1.5 sm:px-2 pb-3 pointer-events-none text-left flex items-center gap-1">
-                <span className={cn(
-                  "w-1.5 h-1.5 rounded-full shrink-0 transition-all",
-                  i === index ? "bg-[#22c55e] shadow-[0_0_6px_#22c55e]" : "bg-white/30"
-                )} />
-                <span className={cn(
-                  "font-mono text-[8px] sm:text-[9.5px] font-bold tracking-wide uppercase truncate leading-none",
-                  i === index ? "text-[#22c55e]" : "text-white/90"
-                )}>
-                  {item.sectionName ?? item.title.split('\n')[0]}
-                </span>
-              </div>
+        <ToolDock
+          items={items.map((item, i) => {
+            const IconComp = item.icon || LayoutGrid;
+            const itemAccent = item.accent || "#22c55e";
+            const isActive = i === index;
 
-              {/* The focused card photo */}
-              <img
-                src={item.image}
-                alt=""
-                draggable={false}
-                className="h-full w-full object-cover"
-                style={{ objectPosition: "50% 26%" }}
-              />
-              {/* Unfocused cards sit back a touch without going grey. */}
-              <motion.span
-                aria-hidden
-                className="absolute inset-0 bg-black pointer-events-none"
-                animate={{ opacity: i === index ? 0 : 0.22 }}
-                transition={spring}
-              />
-            </motion.button>
-          ))}
-        </motion.div>
+            return {
+              label: item.sectionName ?? item.title.split('\n')[0],
+              accent: itemAccent,
+              icon: (
+                <ToolDockTile
+                  className={cn(
+                    "transition-all duration-300",
+                    isActive
+                      ? "bg-slate-900 border-2 shadow-[0_0_22px_rgba(34,197,94,0.45)] ring-1 ring-white/20"
+                      : "bg-slate-950/80 border border-white/10 opacity-70 hover:opacity-100 hover:border-white/30"
+                  )}
+                  style={{
+                    borderColor: isActive ? itemAccent : undefined,
+                    boxShadow: isActive ? `0 0 20px ${itemAccent}60, 0 4px 12px rgba(0,0,0,0.6)` : undefined,
+                  }}
+                >
+                  <IconComp
+                    className={cn(
+                      "size-[52%] transition-all duration-200",
+                      isActive
+                        ? "text-white filter drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+                        : "text-slate-300 group-hover:text-white"
+                    )}
+                  />
+                </ToolDockTile>
+              ),
+            };
+          })}
+          activeIndex={index}
+          onSelect={(newIndex) => go(newIndex)}
+          size={Math.max(46, Math.min(58, Math.round(box.h * 0.078)))}
+          overlap={0.12}
+          magnification={0.32}
+          tilt={true}
+          label="Navigation des modules"
+          className="w-full max-w-3xl"
+        />
       </div>
 
-      {/* ── Position rail ── */}
+      {/* ── Position rail discreet at bottom left ── */}
       <div
-        className="absolute z-20"
-        style={{ left: pad, bottom: Math.max(8, box.h * 0.01), width: box.w * RAIL }}
+        className="absolute z-20 hidden md:block"
+        style={{ left: pad, bottom: Math.max(8, box.h * 0.01), width: box.w * 0.14 }}
       >
         <div
-          className="flex justify-between font-mono tabular-nums opacity-80"
-          style={{ fontSize: label }}
+          className="flex justify-between font-mono tabular-nums opacity-60 text-[10px]"
         >
           <span>{String(index + 1).padStart(2, "0")}</span>
           <span>{String(items.length).padStart(2, "0")}</span>
         </div>
-        <div className="relative mt-1.5 h-px w-full bg-white/25">
+        <div className="relative mt-1 h-0.5 w-full bg-white/20 rounded-full overflow-hidden">
           <motion.div
-            className="absolute inset-y-0 bg-white"
-            style={{ width: `${100 / items.length}%` }}
+            className="absolute inset-y-0 rounded-full"
+            style={{ 
+              width: `${100 / items.length}%`,
+              backgroundColor: active.accent ?? "#22c55e"
+            }}
             animate={{ left: `${(index / items.length) * 100}%` }}
             transition={spring}
           />

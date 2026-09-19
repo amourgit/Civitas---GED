@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { 
   BrowserRouter, 
   Routes, 
@@ -41,9 +41,16 @@ import { FolderItem } from './types/document';
 import { AmbientBackground } from './components/shell/AmbientBackground';
 import { PageBackgroundProvider } from './components/shell/PageBackground';
 import { PageLoadingProvider } from './context/PageLoadingContext';
+import { RightContentProvider, useRightContent } from './context/RightContentContext';
+import { WorkspaceProvider } from './context/WorkspaceContext';
 import { SupremeIntranetTopBar } from './components/shell/SupremeIntranetTopBar';
 import { XboxSidebar, XboxSidebarItem, XboxSidebarSection } from './components/shell/XboxSidebar';
 import { AccueilPage } from './components/views/AccueilPage';
+import { IntranetPortalPage } from './components/views/IntranetPortalPage';
+import { ApplicationsGridPage } from './components/views/ApplicationsGridPage';
+import { CalendrierPage } from './components/views/CalendrierPage';
+import { AnnuairePage } from './components/views/AnnuairePage';
+import { ActualitesPage } from './components/views/ActualitesPage';
 import { SuiviDossiersPage } from './components/views/SuiviDossiersPage';
 import { CirculationPage } from './components/views/CirculationPage';
 import { PilotagePage } from './components/views/PilotagePage';
@@ -67,6 +74,7 @@ import { GlobalSearchModal } from './components/search/GlobalSearchModal';
 import { NotificationModal } from './components/shared/NotificationModal';
 import { slugify, getFolderSlug } from './utils/slug';
 import { useXboxGlobalSounds } from './utils/useXboxGlobalSounds';
+import { PortalFooterNewsEvents } from './components/portal/PortalFooterNewsEvents';
 import { playXboxSound } from './utils/xboxAudio';
 import { 
   buildDocumentationUrl, 
@@ -87,6 +95,50 @@ interface ToastData {
 function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { rightContent } = useRightContent();
+  const isHomePage = location.pathname === '/' || location.pathname === '/accueil';
+
+  // Refs pour le conteneur parent et ses deux sous-composants à scroll distinct
+  const pageScrollRef = useRef<HTMLDivElement>(null);
+  const mainScrollRef = useRef<HTMLElement>(null);
+  const rightContentScrollRef = useRef<HTMLElement>(null);
+
+  // Transition vers le footer : passage au footer uniquement si le scroll de main ou rightcontent est à son terme
+  useEffect(() => {
+    if (!isHomePage) return;
+    const pageScrollEl = pageScrollRef.current;
+    const mainEl = mainScrollRef.current;
+    const rightEl = rightContentScrollRef.current;
+    if (!pageScrollEl) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Défilement vers le bas
+      if (e.deltaY > 0) {
+        if (mainEl && mainEl.contains(e.target as Node)) {
+          const isMainAtBottom = Math.ceil(mainEl.scrollTop + mainEl.clientHeight) >= mainEl.scrollHeight - 4;
+          if (isMainAtBottom) {
+            // Le main est à son terme : défilement du conteneur parent pour amener le footer
+            pageScrollEl.scrollTop += e.deltaY;
+          }
+        } else if (rightEl && rightEl.contains(e.target as Node)) {
+          const isRightAtBottom = Math.ceil(rightEl.scrollTop + rightEl.clientHeight) >= rightEl.scrollHeight - 4;
+          if (isRightAtBottom) {
+            // Le rightcontent est à son terme : défilement du conteneur parent pour amener le footer
+            pageScrollEl.scrollTop += e.deltaY;
+          }
+        }
+      } else if (e.deltaY < 0) {
+        // Défilement vers le haut : si la page est descendue vers le footer, remonter d'abord
+        if (pageScrollEl.scrollTop > 0) {
+          e.preventDefault();
+          pageScrollEl.scrollTop = Math.max(0, pageScrollEl.scrollTop + e.deltaY);
+        }
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, [isHomePage]);
 
   // Initialize global Xbox audio listeners (click, hover, scroll, keyboard)
   useXboxGlobalSounds();
@@ -200,9 +252,17 @@ function AppContent() {
   // Determine active navigation ID from pathname
   const activeNavId = useMemo(() => {
     const path = location.pathname;
-    if (path === '/' || path === '/accueil') return 'accueil';
-    if (path.startsWith('/dossiers')) return 'dossiers';
+    if (path === '/') return 'portal';
+    if (path === '/ged' || path === '/ged/accueil' || path === '/accueil') return 'accueil';
+    if (path.startsWith('/ged/dossiers') || path.startsWith('/ged/sites') || path.startsWith('/dossiers') || path.startsWith('/sites')) return 'dossiers';
     if (
+      path.startsWith('/ged/documentation') ||
+      path.startsWith('/ged/salles') || 
+      path.startsWith('/ged/documents') || 
+      path.startsWith('/ged/salle') || 
+      path.startsWith('/ged/rayon') || 
+      path.startsWith('/ged/casier') || 
+      path.startsWith('/ged/dossier') ||
       path.startsWith('/documentation') ||
       path === '/salles' || 
       path === '/documents' || 
@@ -211,12 +271,28 @@ function AppContent() {
       path.startsWith('/casier') || 
       path.startsWith('/dossier')
     ) return 'documents';
-    if (path === '/depots' || path === '/ingestion') return 'entrees';
-    if (path === '/suivi' || path === '/circulation') return 'suivi';
-    if (path === '/recherche') return 'recherche';
-    if (path === '/pilotage' || path === '/rapports') return 'pilotage';
-    if (path === '/administration') return 'administration';
+    if (path.startsWith('/ged/depots') || path.startsWith('/ged/ingestion') || path.startsWith('/ged/scanner') || path === '/depots' || path === '/ingestion') return 'entrees';
+    if (path.startsWith('/ged/suivi') || path.startsWith('/ged/circulation') || path === '/suivi' || path === '/circulation') return 'suivi';
+    if (path.startsWith('/ged/recherche') || path === '/recherche') return 'recherche';
+    if (path.startsWith('/ged/pilotage') || path.startsWith('/ged/rapports') || path === '/pilotage' || path === '/rapports') return 'pilotage';
+    if (path.startsWith('/ged/administration') || path === '/administration') return 'administration';
+    if (path.startsWith('/calendrier')) return 'calendrier';
+    if (path.startsWith('/annuaire')) return 'annuaire';
+    if (path.startsWith('/actualites')) return 'actualites';
     return 'accueil';
+  }, [location.pathname]);
+
+  const currentAppName = useMemo(() => {
+    const path = location.pathname;
+    if (path === '/') return 'Portail Intranet Global';
+    if (path.startsWith('/applications') || path.startsWith('/clouds')) return 'Applications & Services Connectés';
+    if (path.startsWith('/ged')) return 'EGEN GED Documents';
+    if (path.startsWith('/calendrier')) return 'Calendrier & Planning';
+    if (path.startsWith('/annuaire')) return 'Annuaire Collaborateurs';
+    if (path.startsWith('/actualites')) return 'Actualités & Communication';
+    if (path.startsWith('/projets')) return 'Espaces & Projets';
+    if (path.startsWith('/rh')) return 'Services RH';
+    return 'EGEN GED Documents';
   }, [location.pathname]);
 
   const isDossierView = location.pathname.startsWith('/dossier') || location.pathname.includes('/dossiers/');
@@ -571,8 +647,8 @@ function AppContent() {
       {/* 0. SUPREME TOPBAR DE L'INTRANET AVEC 2ÈME NIVEAU EXTENSIBLE DE L'APPLICATION ACTIVE */}
       <SupremeIntranetTopBar
         onOpenGlobalSearch={openSearchModal}
-        onOpenGED={() => navigate(buildDocumentationUrl())}
-        currentAppName="EGEN GED Documents"
+        onOpenGED={() => navigate('/ged')}
+        currentAppName={currentAppName}
         onShowNotification={showToast}
         onToggleSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
         isSidebarOpen={isMobileSidebarOpen}
@@ -598,24 +674,63 @@ function AppContent() {
           if (item && item.onClick) item.onClick();
           setIsMobileSidebarOpen(false);
         }}
-        onNavigateHome={() => navigate('/')}
-        onNavigateDossiers={() => navigate('/dossiers')}
+        onNavigateHome={() => navigate('/ged')}
+        onNavigateDossiers={() => navigate('/ged/sites')}
         onNavigateDocuments={() => navigate(buildDocumentationUrl())}
-        onNavigateSuivi={() => navigate('/suivi')}
-        onNavigateIngestion={() => navigate('/depots')}
+        onNavigateSuivi={() => navigate('/ged/suivi')}
+        onNavigateIngestion={() => navigate('/ged/depots')}
         onOpenSearch={openSearchModal}
         onOpenNotifications={openNotificationModal}
         onCreateFolder={handleCreateFolder}
       />
 
-      {/* Main Body Layout - overflow-visible allows 3D carousel cards to extend naturally */}
-      <div className="flex-1 flex overflow-visible relative min-h-0">
-        {/* Dynamic Route View Content - min-h-0 ensures inner scroll areas (like document grids) scroll properly */}
-        <main className="flex-1 flex flex-col overflow-visible relative min-w-0 min-h-0">
+      {/* Scrollable Page Wrapper: Contient le composant parent (100vh) et le footer qui vient après */}
+      <div 
+        ref={pageScrollRef}
+        className={`flex-1 flex flex-col ${isHomePage ? 'overflow-y-auto overflow-x-hidden' : 'overflow-hidden'} no-scrollbar relative min-h-0`}
+      >
+        {/* Composant Parent: Prend toute la page en hauteur, ajusté exactement selon la page */}
+        <div 
+          id="main-rightcontent-parent"
+          className={`w-full flex flex-col lg:flex-row relative min-w-0 ${
+            isHomePage 
+              ? 'min-h-[calc(100vh-48px)] h-[calc(100vh-48px)] shrink-0' 
+              : 'h-full flex-1 min-h-0'
+          }`}
+        >
+          {/* Main: composant distinct avec son propre scroll */}
+          <main 
+            ref={mainScrollRef}
+            id="portal-main-scroll"
+            className="flex-1 h-full min-h-0 min-w-0 overflow-y-auto overflow-x-hidden no-scrollbar relative flex flex-col"
+          >
           <Routes>
-            {/* Route 1: Accueil Dashboard Page */}
+            {/* 1. PORTAIL PRINCIPAL INTRANET (Épuré, WebGL Waves 3D & Applications) */}
             <Route 
               path="/" 
+              element={<IntranetPortalPage />} 
+            />
+            <Route 
+              path="/accueil" 
+              element={<Navigate to="/" replace />} 
+            />
+
+            {/* 2. APPLICATIONS INTRANET (Routes racine pour chaque application) */}
+            <Route path="/applications" element={<ApplicationsGridPage />} />
+            <Route path="/clouds" element={<ApplicationsGridPage />} />
+            <Route path="/calendrier" element={<CalendrierPage />} />
+            <Route path="/calendrier/*" element={<CalendrierPage />} />
+            <Route path="/annuaire" element={<AnnuairePage />} />
+            <Route path="/annuaire/*" element={<AnnuairePage />} />
+            <Route path="/actualites" element={<ActualitesPage />} />
+            <Route path="/actualites/*" element={<ActualitesPage />} />
+            <Route path="/projets" element={<SitesPage />} />
+            <Route path="/rh" element={<SuiviDossiersPage />} />
+
+            {/* 3. APPLICATION GED (EGEN DOCUMENTS) — Routes sous /ged/... */}
+            {/* Accueil / Dashboard GED */}
+            <Route 
+              path="/ged" 
               element={
                 <AccueilPage
                   onNavigateToDocuments={() => navigate(buildDocumentationUrl())}
@@ -629,68 +744,58 @@ function AppContent() {
                 />
               } 
             />
+            <Route path="/ged/accueil" element={<Navigate to="/ged" replace />} />
+
+            {/* GED: Alfresco Sites Architecture & Dossiers */}
+            <Route path="/ged/sites" element={<SitesPage />} />
+            <Route path="/ged/sites/:siteId" element={<SitesPage />} />
+            <Route path="/ged/sites/:siteId/:siteTab" element={<SitesPage />} />
+            <Route path="/ged/dossiers" element={<SitesPage />} />
+            <Route path="/ged/dossiers/*" element={<SitesPage />} />
+
+            {/* GED: SGAI Module 03 Dépôts & Repository */}
+            <Route path="/ged/depots" element={<RepositoryPage onShowNotification={showToast} />} />
+            <Route path="/ged/repository" element={<RepositoryPage onShowNotification={showToast} />} />
+            <Route path="/ged/ingestion" element={<IngestionPage onShowToast={showToast} />} />
+            <Route path="/ged/scanner" element={<ScannerPage onShowToast={showToast} />} />
+
+            {/* GED: SGAI Module 05 Recherche Unifiée */}
+            <Route path="/ged/recherche" element={<RecherchePage />} />
+
+            {/* GED: SGAI Module 06 Suivi & Traçabilité */}
+            <Route path="/ged/suivi" element={<SuiviDossiersPage />} />
+            <Route path="/ged/circulation" element={<SuiviDossiersPage />} />
+
+            {/* GED: SGAI Module 07 Rapports & Statistiques */}
+            <Route path="/ged/rapports" element={<PilotagePage />} />
+            <Route path="/ged/pilotage" element={<PilotagePage />} />
+
+            {/* GED: SGAI Module 08 Administration */}
+            <Route path="/ged/administration" element={<AdministrationPage />} />
+
+            {/* GED: Plan de classement & Archives Physiques (Salles / Rayons / Casiers) */}
+            <Route path="/ged/documentation" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/ged/documentation/salles" element={<SallesPage />} />
+            <Route path="/ged/salles" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/ged/documents" element={<Navigate to="/ged/documentation/salles" replace />} />
+
+            <Route path="/ged/documentation/salles/:salleId" element={<RayonsPage />} />
+            <Route path="/ged/documentation/salles/:salleId/rayons" element={<RayonsPage />} />
+            <Route path="/ged/salle/:salleId" element={<RayonsPage />} />
+            <Route path="/ged/salle/:salleId/rayons" element={<RayonsPage />} />
+
+            <Route path="/ged/documentation/salles/:salleId/rayons/:rayonId" element={<CasiersPage />} />
+            <Route path="/ged/documentation/salles/:salleId/rayons/:rayonId/casiers" element={<CasiersPage />} />
+            <Route path="/ged/rayon/:rayonId" element={<CasiersPage />} />
+            <Route path="/ged/rayon/:rayonId/casiers" element={<CasiersPage />} />
+
             <Route 
-              path="/accueil" 
-              element={<Navigate to="/" replace />} 
-            />
-
-            {/* Alfresco Sites Architecture — Espaces Collaboratifs & Bibliothèques Documentaires */}
-            <Route path="/sites" element={<SitesPage />} />
-            <Route path="/sites/:siteId" element={<SitesPage />} />
-            <Route path="/sites/:siteId/:siteTab" element={<SitesPage />} />
-            <Route path="/dossiers" element={<SitesPage />} />
-            <Route path="/dossiers/*" element={<SitesPage />} />
-            <Route path="/services" element={<Navigate to="/sites" replace />} />
-            <Route path="/services/*" element={<Navigate to="/sites" replace />} />
-
-            {/* SGAI Module 03: Dépôt Central & Repository Alfresco */}
-            <Route path="/depots" element={<RepositoryPage onShowNotification={showToast} />} />
-            <Route path="/repository" element={<RepositoryPage onShowNotification={showToast} />} />
-            <Route path="/ingestion" element={<IngestionPage onShowToast={showToast} />} />
-            <Route path="/scanner" element={<ScannerPage />} />
-
-            {/* SGAI Module 05: Recherche Unifiée Transversale */}
-            <Route path="/recherche" element={<RecherchePage />} />
-
-            {/* SGAI Module 06: Suivi des Dossiers & Mouvements des Archives */}
-            <Route path="/suivi" element={<SuiviDossiersPage />} />
-            <Route path="/circulation" element={<SuiviDossiersPage />} />
-
-            {/* SGAI Module 07: Rapports & Statistiques */}
-            <Route path="/rapports" element={<PilotagePage />} />
-            <Route path="/pilotage" element={<PilotagePage />} />
-
-            {/* SGAI Module 08: Administration & Plan de Classement */}
-            <Route path="/administration" element={<AdministrationPage />} />
-
-            {/* Level 1: Documentation / Salles */}
-            <Route path="/documentation" element={<Navigate to="/documentation/salles" replace />} />
-            <Route path="/documentation/salles" element={<SallesPage />} />
-            <Route path="/salles" element={<Navigate to="/documentation/salles" replace />} />
-            <Route path="/documents" element={<Navigate to="/documentation/salles" replace />} />
-
-            {/* Level 2: Rayons d'une salle */}
-            <Route path="/documentation/salles/:salleId" element={<RayonsPage />} />
-            <Route path="/documentation/salles/:salleId/rayons" element={<RayonsPage />} />
-            <Route path="/salle/:salleId" element={<RayonsPage />} />
-            <Route path="/salle/:salleId/rayons" element={<RayonsPage />} />
-
-            {/* Level 3: Casiers d'un rayon */}
-            <Route path="/documentation/salles/:salleId/rayons/:rayonId" element={<CasiersPage />} />
-            <Route path="/documentation/salles/:salleId/rayons/:rayonId/casiers" element={<CasiersPage />} />
-            <Route path="/rayon/:rayonId" element={<CasiersPage />} />
-            <Route path="/rayon/:rayonId/casiers" element={<CasiersPage />} />
-
-            {/* Level 4: Dossiers d'un casier (Nested full hierarchy) */}
-            <Route 
-              path="/documentation/salles/:salleId/rayons/:rayonId/casiers/:casierId" 
+              path="/ged/documentation/salles/:salleId/rayons/:rayonId/casiers/:casierId" 
               element={
                 <DossiersPage
                   folders={folders}
                   selectedFolderId={selectedFolderId}
-                  onSelectFolder={(f) => {
-                    setSelectedFolderId(f.id);
-                  }}
+                  onSelectFolder={(f) => setSelectedFolderId(f.id)}
                   onToggleFavorite={handleToggleFavorite}
                   onDeleteFolder={handleDeleteFolder}
                   onViewProperties={openProperties}
@@ -701,14 +806,12 @@ function AppContent() {
               } 
             />
             <Route 
-              path="/documentation/salles/:salleId/rayons/:rayonId/casiers/:casierId/dossiers" 
+              path="/ged/documentation/salles/:salleId/rayons/:rayonId/casiers/:casierId/dossiers" 
               element={
                 <DossiersPage
                   folders={folders}
                   selectedFolderId={selectedFolderId}
-                  onSelectFolder={(f) => {
-                    setSelectedFolderId(f.id);
-                  }}
+                  onSelectFolder={(f) => setSelectedFolderId(f.id)}
                   onToggleFavorite={handleToggleFavorite}
                   onDeleteFolder={handleDeleteFolder}
                   onViewProperties={openProperties}
@@ -719,14 +822,12 @@ function AppContent() {
               } 
             />
             <Route 
-              path="/casier/:casierId" 
+              path="/ged/casier/:casierId" 
               element={
                 <DossiersPage
                   folders={folders}
                   selectedFolderId={selectedFolderId}
-                  onSelectFolder={(f) => {
-                    setSelectedFolderId(f.id);
-                  }}
+                  onSelectFolder={(f) => setSelectedFolderId(f.id)}
                   onToggleFavorite={handleToggleFavorite}
                   onDeleteFolder={handleDeleteFolder}
                   onViewProperties={openProperties}
@@ -737,14 +838,12 @@ function AppContent() {
               } 
             />
             <Route 
-              path="/casier/:casierId/dossiers" 
+              path="/ged/casier/:casierId/dossiers" 
               element={
                 <DossiersPage
                   folders={folders}
                   selectedFolderId={selectedFolderId}
-                  onSelectFolder={(f) => {
-                    setSelectedFolderId(f.id);
-                  }}
+                  onSelectFolder={(f) => setSelectedFolderId(f.id)}
                   onToggleFavorite={handleToggleFavorite}
                   onDeleteFolder={handleDeleteFolder}
                   onViewProperties={openProperties}
@@ -755,44 +854,70 @@ function AppContent() {
               } 
             />
 
-            {/* Level 5 débranché : redirection vers la documentation */}
             <Route 
-              path="/documentation/salles/:salleId/rayons/:rayonId/casiers/:casierId/dossiers/:slug" 
-              element={<Navigate to="/documentation/salles" replace />} 
+              path="/ged/documentation/salles/:salleId/rayons/:rayonId/casiers/:casierId/dossiers/:slug" 
+              element={<Navigate to="/ged/documentation/salles" replace />} 
             />
             <Route 
-              path="/documentation/salles/:salleId/rayons/:rayonId/casiers/:casierId/dossier/:slug" 
-              element={<Navigate to="/documentation/salles" replace />} 
+              path="/ged/dossier/:dossierId/galerie" 
+              element={<Dossier3DRoutePage folders={folders} />} 
             />
             <Route 
-              path="/dossier/:slug" 
-              element={<Navigate to="/documentation/salles" replace />} 
-            />
-
-            {/* Route 4: Ingestion dedicated URL Route (/ingestion) */}
-            <Route 
-              path="/ingestion" 
-              element={
-                <IngestionPage 
-                  onShowToast={showToast}
-                />
-              } 
+              path="/ged/dossier/:slug" 
+              element={<Navigate to="/ged/documentation/salles" replace />} 
             />
 
-            {/* Route 5: Dedicated Live Scanner Page (/scanner) */}
-            <Route 
-              path="/scanner" 
-              element={
-                <ScannerPage 
-                  onShowToast={showToast}
-                />
-              } 
-            />
+            {/* 4. REDIRECTIONS RÉTROCOMPATIBLES VERS /ged/... */}
+            <Route path="/sites" element={<Navigate to="/ged/sites" replace />} />
+            <Route path="/sites/:siteId" element={<Navigate to="/ged/sites" replace />} />
+            <Route path="/sites/:siteId/:siteTab" element={<Navigate to="/ged/sites" replace />} />
+            <Route path="/dossiers" element={<Navigate to="/ged/dossiers" replace />} />
+            <Route path="/dossiers/*" element={<Navigate to="/ged/dossiers" replace />} />
+            <Route path="/services" element={<Navigate to="/ged/sites" replace />} />
+            <Route path="/services/*" element={<Navigate to="/ged/sites" replace />} />
+            <Route path="/depots" element={<Navigate to="/ged/depots" replace />} />
+            <Route path="/repository" element={<Navigate to="/ged/repository" replace />} />
+            <Route path="/ingestion" element={<Navigate to="/ged/ingestion" replace />} />
+            <Route path="/scanner" element={<Navigate to="/ged/scanner" replace />} />
+            <Route path="/recherche" element={<Navigate to="/ged/recherche" replace />} />
+            <Route path="/suivi" element={<Navigate to="/ged/suivi" replace />} />
+            <Route path="/circulation" element={<Navigate to="/ged/circulation" replace />} />
+            <Route path="/rapports" element={<Navigate to="/ged/rapports" replace />} />
+            <Route path="/pilotage" element={<Navigate to="/ged/pilotage" replace />} />
+            <Route path="/administration" element={<Navigate to="/ged/administration" replace />} />
+            <Route path="/documentation" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/documentation/salles" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/salles" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/documents" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/documentation/*" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/salle/:salleId" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/rayon/:rayonId" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/casier/:casierId" element={<Navigate to="/ged/documentation/salles" replace />} />
+            <Route path="/dossier/:slug" element={<Navigate to="/ged/documentation/salles" replace />} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+
+        {/* RightContent: composant distinct avec son propre scroll */}
+        {rightContent && (
+          <aside
+            ref={rightContentScrollRef}
+            id="rightcontent"
+            className="w-full lg:w-[360px] xl:w-[400px] 2xl:w-[440px] shrink-0 h-full min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar relative z-20 flex flex-col gap-6 p-4 sm:p-6 lg:py-8 lg:pr-8 lg:pl-0"
+          >
+            {rightContent}
+          </aside>
+        )}
+        </div>
+
+        {/* Après le composant parent, on a le footer */}
+        {isHomePage && (
+          <div className="w-full shrink-0 relative z-30">
+            <PortalFooterNewsEvents onShowToast={(msg, type) => showToast(msg, type)} />
+          </div>
+        )}
       </div>
 
       {/* Floating Action Feedback Toast with dedicated Xbox Alert Colors & Icons */}
@@ -860,7 +985,11 @@ export default function App() {
     <BrowserRouter>
       <PageLoadingProvider>
         <PageBackgroundProvider>
-          <AppContent />
+          <WorkspaceProvider>
+            <RightContentProvider>
+              <AppContent />
+            </RightContentProvider>
+          </WorkspaceProvider>
         </PageBackgroundProvider>
       </PageLoadingProvider>
     </BrowserRouter>

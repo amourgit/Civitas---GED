@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { 
+  LayoutGrid, 
+  Globe, 
+  FileSignature, 
+  Activity, 
+  Star, 
+  Clock, 
+  Sparkles, 
+  Fingerprint 
+} from 'lucide-react';
 import { playXboxSound } from '../../utils/xboxAudio';
 
 // Hero Carousel & Item types
@@ -50,13 +60,14 @@ export function AccueilPage({
     navigate('/depots');
   };
 
-  // 8 Distinct Slides corresponding to the 8 sections of the Home Page
+  // 8 Distinct Slides with Representative Icons corresponding to the 8 sections
   const carouselItems: HeroCarouselItem[] = [
     {
       id: 'menu-principal',
       sectionName: 'MODULES SGAI',
       title: "MODULES SGAI\nCONSERVATION & ESPACE MÉTIER",
       image: codVaultImg,
+      icon: LayoutGrid,
       credit: "SYSTÈME INTÉGRÉ D'ARCHIVAGE",
       meta: ["07 MODULES", "MAGASINS & SALLES", "INSTRUCTION"],
       accent: "#0284c7"
@@ -66,6 +77,7 @@ export function AccueilPage({
       sectionName: 'MES SITES',
       title: "MES SITES\nESPACES COLLABORATIFS",
       image: coverCasierImg,
+      icon: Globe,
       credit: "PORTAIL COLLABORATIF ALFRESCO",
       meta: ["08 SITES", "RBAC & MEMBRES", "ESPACES DOCS"],
       accent: "#0ea5e9"
@@ -75,6 +87,7 @@ export function AccueilPage({
       sectionName: 'ACTIONS REQUISES',
       title: "ACTIONS REQUISES\nVISAS & SIGNATURES",
       image: singleLockersImg,
+      icon: FileSignature,
       credit: "WORKFLOWS EN COURS DE VALIDATION",
       meta: ["8 DOCUMENTS", "3 SIGNATURES", "URGENCE ÉLEVÉE"],
       accent: "#d97706"
@@ -84,6 +97,7 @@ export function AccueilPage({
       sectionName: 'MES ACTIONS',
       title: "MES ACTIONS\nJOURNAL & TRAÇABILITÉ OPÉRATEUR",
       image: casierOuvertImg,
+      icon: Activity,
       credit: "ACTIONS DE L'UTILISATEUR • CYCLE DOCUMENTAIRE",
       meta: ["CRÉATIONS & MODIFS", "SIGNATURES & DUA", "VALEUR PROBATOIRE"],
       accent: "#10b981"
@@ -93,6 +107,7 @@ export function AccueilPage({
       sectionName: 'DOSSIERS FAVORIS',
       title: "DOSSIERS FAVORIS\nARBORESCENCE MÉTIER",
       image: libraryShelvesImg,
+      icon: Star,
       credit: "ESPACES DOCUMENTAIRES ÉPINGLÉS",
       meta: ["5 DOSSIERS", "ÉTAT CIVIL", "URBANISME"],
       accent: "#7c3aed"
@@ -102,6 +117,7 @@ export function AccueilPage({
       sectionName: 'TÂCHES & ÉCHÉANCES',
       title: "TÂCHES & ÉCHÉANCES\nRÉGLEMENTAIRES",
       image: modernLockersImg,
+      icon: Clock,
       credit: "CONTRÔLE DUA & SORT FINAL",
       meta: ["12 TÂCHES", "SORT FINAL", "3 ÉCHÉANCES"],
       accent: "#dc2626"
@@ -111,6 +127,7 @@ export function AccueilPage({
       sectionName: 'ENTRÉES & DÉPÔTS',
       title: "ENTRÉES & DÉPÔTS\nNUMÉRISATION & IA",
       image: energyBgImg,
+      icon: Sparkles,
       credit: "CHAÎNE D'ACQUISITION OPTIQUE",
       meta: ["OCR MULTI-PAGE", "ANALYSE IA", "99.4% FIABILITÉ"],
       accent: "#0891b2"
@@ -120,6 +137,7 @@ export function AccueilPage({
       sectionName: 'JOURNAL D\'AUDIT',
       title: "JOURNAL D'AUDIT\nINTÉGRITÉ & TRAÇABILITÉ",
       image: roomDoorImg,
+      icon: Fingerprint,
       credit: "HISTORIQUE CERTIFIÉ SÉCURISÉ",
       meta: ["HASH SHA-256", "CONFORME RGPD", "LOGS SÉCURISÉS"],
       accent: "#4f46e5"

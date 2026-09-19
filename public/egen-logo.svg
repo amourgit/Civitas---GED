@@ -1,0 +1,47 @@
+<svg viewBox="0 0 500 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="egenYellowGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EAB308" />
+      <stop offset="45%" stop-color="#84CC16" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+    <linearGradient id="egenNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F255C" />
+      <stop offset="100%" stop-color="#0B193D" />
+    </linearGradient>
+  </defs>
+
+  {/* EGEN Typography Wordmark */}
+  <g transform="translate(40, 20)">
+    {/* E */}
+    <g transform="translate(0, 0)">
+      <path d="M 12 10 L 68 10 C 74 10, 78 14, 78 20 C 78 26, 74 28, 68 28 L 26 28 C 21 28, 18 31, 18 36 L 18 42 L 72 42 L 72 56 L 18 56 L 18 64 C 18 69, 21 72, 26 72 L 68 72 C 74 72, 78 74, 78 80 C 78 86, 74 90, 68 90 L 12 90 C 5 90, 0 85, 0 78 L 0 22 C 0 15, 5 10, 12 10 Z" fill="url(#egenNavy)"/>
+      <path d="M 2 44 L 68 44 C 71 44, 73 46, 73 49 L 73 51 C 73 54, 71 56, 68 56 L 2 56 C 0.8 56, 0 54.8, 0 53.6 L 0 46.4 C 0 45.2, 0.8 44, 2 44 Z" fill="url(#egenYellowGreen)"/>
+    </g>
+
+    {/* G */}
+    <g transform="translate(105, 0)">
+      <path d="M 68 24 C 64 16, 54 10, 42 10 C 22 10, 6 25, 6 50 C 6 75, 22 90, 42 90 C 58 90, 68 81, 72 70 C 73 67, 70 64, 66 64 L 42 64 C 38 64, 36 61, 36 57 L 36 53 C 36 49, 38 46, 42 46 L 72 46 C 77 46, 80 49, 80 54 L 80 62 C 80 80, 65 98, 42 98 C 16 98, 0 78, 0 50 C 0 22, 16 2, 42 2 C 58 2, 72 10, 78 20 C 80 23, 78 26, 74 26 L 68 24 Z" fill="url(#egenNavy)"/>
+      <path d="M 32 46 L 66 46 C 68 46, 70 48, 70 50 L 70 52 C 70 54, 68 56, 66 56 L 32 56 C 30 56, 28 54, 28 52 L 28 50 C 28 48, 30 46, 32 46 Z" fill="url(#egenYellowGreen)"/>
+    </g>
+
+    {/* E */}
+    <g transform="translate(210, 0)">
+      <path d="M 12 10 L 68 10 C 74 10, 78 14, 78 20 C 78 26, 74 28, 68 28 L 26 28 C 21 28, 18 31, 18 36 L 18 42 L 72 42 L 72 56 L 18 56 L 18 64 C 18 69, 21 72, 26 72 L 68 72 C 74 72, 78 74, 78 80 C 78 86, 74 90, 68 90 L 12 90 C 5 90, 0 85, 0 78 L 0 22 C 0 15, 5 10, 12 10 Z" fill="url(#egenNavy)"/>
+    </g>
+
+    {/* N */}
+    <g transform="translate(315, 0)">
+      <path d="M 0 16 C 0 12, 3 10, 7 10 L 14 10 C 18 10, 21 12, 23 15 L 56 65 L 56 16 C 56 12, 59 10, 63 10 L 70 10 C 74 10, 77 12, 77 16 L 77 84 C 77 88, 74 90, 70 90 L 62 90 C 58 90, 55 88, 53 85 L 20 35 L 20 84 C 20 88, 17 90, 13 90 L 7 90 C 3 90, 0 88, 0 84 L 0 16 Z" fill="url(#egenNavy)"/>
+      <path d="M 52 10 L 77 10 L 77 35 Z" fill="#F59E0B"/>
+    </g>
+  </g>
+
+  {/* Subtitle */}
+  <text x="250" y="142" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="22" fill="#0B193D" text-anchor="middle" letter-spacing="-0.5">
+    Écosystème Gouvernemental
+  </text>
+  <text x="250" y="172" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="20" fill="#0F255C" text-anchor="middle" letter-spacing="-0.5">
+    de l’Économie Numérique
+  </text>
+</svg>

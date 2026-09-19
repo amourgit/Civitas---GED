@@ -239,23 +239,23 @@ export function getFoldersForCasier(casierId: string, allFolders: FolderItem[]):
 }
 
 export function buildDocumentationUrl(): string {
-  return '/documentation/salles';
+  return '/ged/documentation/salles';
 }
 
 export function buildSalleUrl(salleId: string): string {
-  return `/documentation/salles/${salleId}/rayons`;
+  return `/ged/documentation/salles/${salleId}/rayons`;
 }
 
 export function buildRayonUrl(salleId: string, rayonId: string): string {
-  return `/documentation/salles/${salleId}/rayons/${rayonId}/casiers`;
+  return `/ged/documentation/salles/${salleId}/rayons/${rayonId}/casiers`;
 }
 
 export function buildCasierUrl(salleId: string, rayonId: string, casierId: string): string {
-  return `/documentation/salles/${salleId}/rayons/${rayonId}/casiers/${casierId}/dossiers`;
+  return `/ged/documentation/salles/${salleId}/rayons/${rayonId}/casiers/${casierId}/dossiers`;
 }
 
 export function buildDossierUrl(salleId: string, rayonId: string, casierId: string, slug: string): string {
-  return `/documentation/salles/${salleId}/rayons/${rayonId}/casiers/${casierId}/dossiers/${slug}`;
+  return `/ged/documentation/salles/${salleId}/rayons/${rayonId}/casiers/${casierId}/dossiers/${slug}`;
 }
 
 export function resolveMatricule(rawQuery: string): { type: 'salle' | 'rayon' | 'casier'; id: string; url: string } | null {
