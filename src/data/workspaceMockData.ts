@@ -2,136 +2,116 @@ import {
   Globe, Radio, Users, User, ShieldCheck, Lock, FileText, Settings, Zap, 
   Search, FolderOpen, CirclePlus, Star, Bookmark, Compass, SlidersHorizontal, 
   Sparkles, Layers, Briefcase, CalendarCheck, HelpCircle, FileCheck, HardDrive, 
-  ShieldAlert, BookOpen, Megaphone, Bell, Calendar, Newspaper
+  ShieldAlert, BookOpen, Megaphone, Bell, Calendar, Newspaper, Building2,
+  Key, UserCheck, CheckSquare, Grid, Activity, Shield, Info, HelpCircle as HelpIcon,
+  Share2, Contact, UserPlus, FileSearch, Library, Archive, CheckCircle2
 } from 'lucide-react';
 import { Workspace } from '../types/workspace';
 import { INTRANET_APPS_MOCK } from './intranetAppsMock';
 
 export const WORKSPACES_MOCK_DATA: Workspace[] = [
+  // 1. ESPACE ORGANISATIONNEL / INTRANET (Espace par défaut)
   {
     id: 'intranet',
-    name: 'Intranet Général',
-    subtitle: 'Espace d\'équipe et communauté d\'entreprise',
-    badge: 'Portail Intranet',
-    iconName: 'Users',
-    apps: INTRANET_APPS_MOCK, // 4 apps: GED, Calendrier, IAM, Publication & News
+    name: 'Intranet',
+    category: 'organisationnel',
+    categoryLabel: 'Espace Organisationnel',
+    subtitle: 'Portail interne, communauté et vie d\'organisation',
+    badge: 'Organisationnel / Intranet',
+    iconName: 'Building2',
+    apps: INTRANET_APPS_MOCK, // Applications: GED, Calendrier, IAM, Publication & News
     navItems: [
       {
-        id: 10,
-        label: "News & Actualités",
-        link: "/actualites",
+        id: 1,
+        label: "Accueil",
+        link: "/",
+      },
+      {
+        id: 2,
+        label: "Informations",
         subMenus: [
           {
-            title: "Actualités & Dossiers",
+            title: "News et Publications",
             items: [
               {
                 label: "À la Une",
-                description: "Les grands titres et reportages récents",
+                description: "Les grands titres, reportages et actualités phares",
                 icon: Star,
                 link: "/actualites"
               },
               {
-                label: "Articles & Analyses",
-                description: "Analyses, tendances et retours d'expérience",
+                label: "Articles & Dossiers",
+                description: "Analyses de fond, retours d'expérience et tribunes",
                 icon: BookOpen,
                 link: "/actualites"
-              }
-            ]
-          },
-          {
-            title: "Publications",
-            items: [
+              },
               {
-                label: "Toutes les publications",
-                description: "Flux complet des parutions internes",
+                label: "Toutes les Publications",
+                description: "Flux complet des publications internes",
                 icon: Newspaper,
                 link: "/actualites"
               },
               {
-                label: "Revue de presse",
-                description: "Écosystème numérique et actualités secteur",
+                label: "Revue de Presse",
+                description: "Veille médiatique, secteur public et écosystème",
                 icon: Globe,
                 link: "/actualites"
               }
             ]
-          }
-        ]
-      },
-      {
-        id: 11,
-        label: "Annonces",
-        link: "/annonces",
-        subMenus: [
+          },
           {
-            title: "Notes & Circulaires",
+            title: "Annonces",
             items: [
               {
-                label: "Communiqués Officiels",
-                description: "Notes de service et communications de la Direction",
+                label: "Salle des Annonces",
+                description: "Tableau officiel d'affichage et communiqués",
                 icon: Megaphone,
                 link: "/annonces"
               },
               {
+                label: "Communiqués Officiels",
+                description: "Notes de la Direction et décrets institutionnels",
+                icon: FileCheck,
+                link: "/annonces"
+              },
+              {
                 label: "Flash Info Entreprise",
-                description: "Alertes et informations prioritaires du personnel",
+                description: "Alertes prioritaires et alertes météo / sécurité",
                 icon: Radio,
+                link: "/annonces"
+              },
+              {
+                label: "Directives & Circulaires",
+                description: "Instructions de service et règlements internes",
+                icon: FileText,
                 link: "/annonces"
               }
             ]
           },
           {
-            title: "Affichages & Vie Interne",
+            title: "Agenda",
             items: [
               {
-                label: "Notes administratives",
-                description: "Directives, règlements et notes internes",
-                icon: FileText,
-                link: "/annonces"
-              },
-              {
-                label: "Directives & Procédures",
-                description: "Protocoles, changements et consignes d'équipe",
-                icon: Sparkles,
-                link: "/annonces"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 12,
-        label: "Agenda",
-        link: "/calendrier",
-        subMenus: [
-          {
-            title: "Planning & Rendez-vous",
-            items: [
-              {
-                label: "Calendrier d'équipe",
-                description: "Vue d'ensemble et réunions planifiées",
+                label: "Calendrier d'Équipe",
+                description: "Planning partagé et réunions de travail",
                 icon: CalendarCheck,
                 link: "/calendrier"
               },
               {
-                label: "Événements à venir",
-                description: "Séminaires, formations et ateliers",
+                label: "Événements & Séminaires",
+                description: "Conférences, salons, webinaires et ateliers",
                 icon: Calendar,
                 link: "/calendrier"
-              }
-            ]
-          },
-          {
-            title: "Ressources & Disponibilités",
-            items: [
+              },
               {
-                label: "Réservation de salles",
-                description: "Salles de réunion et équipements partagés",
+                label: "Réservation de Salles",
+                description: "Salles de conférence, visioconférences et véhicules",
                 icon: Compass,
                 link: "/calendrier"
               },
               {
-                label: "Jalons & Échéances",
-                description: "Calendrier des livrables et comités",
+                label: "Jalons & Comités",
+                description: "Comités de pilotage et échéances réglementaires",
                 icon: Zap,
                 link: "/calendrier"
               }
@@ -140,22 +120,237 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
         ]
       },
       {
-        id: 2,
-        label: "Administration",
+        id: 3,
+        label: "Services",
         subMenus: [
           {
-            title: "Accès & Identités",
+            title: "Membres",
             items: [
               {
-                label: "Utilisateurs & Rôles",
-                description: "Gestion des utilisateurs et rôles",
+                label: "Annuaire des Collaborateurs",
+                description: "Recherche de contacts, emails, postes et numéros",
+                icon: Users,
+                link: "/annonces"
+              },
+              {
+                label: "Organigramme & Équipes",
+                description: "Structure hiérarchique, directions et pôles",
+                icon: Layers,
+                link: "/annonces"
+              },
+              {
+                label: "Nouveaux Arrivants",
+                description: "Intégration, trombinoscope et parrainages",
+                icon: UserPlus,
+                link: "/annonces"
+              }
+            ]
+          },
+          {
+            title: "Applications",
+            items: [
+              {
+                label: "Catalogue des Applications",
+                description: "Accès à toutes les solutions numériques de l'organisation",
+                icon: Grid,
+                link: "/applications"
+              },
+              {
+                label: "EGEN GED Documents",
+                description: "Gestion Électronique des Documents & Archives",
+                icon: FolderOpen,
+                link: "/ged"
+              },
+              {
+                label: "EGEN IAM Sécurité",
+                description: "Gestion des identités, droits et accès",
                 icon: ShieldCheck,
                 link: "/iam"
               },
               {
-                label: "Droits & Sécurité",
-                description: "Droits d'accès et sécurité globale",
+                label: "EGEN Calendrier & Événements",
+                description: "Planification collaborative et réunions",
+                icon: Calendar,
+                link: "/calendrier"
+              }
+            ]
+          },
+          {
+            title: "Ressources",
+            items: [
+              {
+                label: "Base Documentaire & Guides",
+                description: "Guides méthodologiques et procédures métiers",
+                icon: Library,
+                link: "/ged"
+              },
+              {
+                label: "Modèles & Formulaires",
+                description: "Modèles de courriers, bordereaux types et fiches",
+                icon: FileText,
+                link: "/ged"
+              },
+              {
+                label: "Charte Graphique & Logos",
+                description: "Kits de communication et éléments de marque",
+                icon: Sparkles,
+                link: "/actualites"
+              }
+            ]
+          },
+          {
+            title: "Informations",
+            items: [
+              {
+                label: "Procédures de Service",
+                description: "Circuits de validation et démarches administratives",
+                icon: Info,
+                link: "/annonces"
+              },
+              {
+                label: "FAQ & Assistance Interne",
+                description: "Questions fréquentes et tickets de support informatique",
+                icon: HelpIcon,
+                link: "/annonces"
+              },
+              {
+                label: "Santé, Sécurité & RH",
+                description: "Consignes de sécurité au travail et numéros d'urgence",
+                icon: ShieldAlert,
+                link: "/annonces"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 4,
+        label: "Recherche",
+        link: "/ged/recherche",
+        subMenus: [
+          {
+            title: "Moteurs de Recherche",
+            items: [
+              {
+                label: "Recherche Globale Intranet",
+                description: "Index complet actualités, annonces, personnes et documents",
+                icon: Search,
+                link: "/ged/recherche"
+              },
+              {
+                label: "Recherche GED & Archives",
+                description: "Recherche avancée par métadonnées, cotes et séries",
+                icon: FileSearch,
+                link: "/ged/recherche"
+              },
+              {
+                label: "Recherche de Contacts",
+                description: "Trouver un collègue par nom, service ou compétence",
+                icon: Contact,
+                link: "/ged/recherche"
+              }
+            ]
+          },
+          {
+            title: "Filtres Rapides",
+            items: [
+              {
+                label: "Documents Récents",
+                description: "Derniers fichiers consultés et modifiés",
+                icon: FolderOpen,
+                link: "/ged"
+              },
+              {
+                label: "Bordereaux en Cours",
+                description: "Bordereaux de versement et élimination actifs",
+                icon: Zap,
+                link: "/suivi"
+              },
+              {
+                label: "Archives Validées",
+                description: "Documents officiellement scellés et classés",
+                icon: Archive,
+                link: "/ged"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 5,
+        label: "Mon espace",
+        subMenus: [
+          {
+            title: "Droits et Permissions",
+            items: [
+              {
+                label: "Mes Habilitations & Rôles",
+                description: "Consulter mes droits d'accès GED et applicatifs",
+                icon: Key,
+                link: "/iam"
+              },
+              {
+                label: "Certificats & Clés 2FA",
+                description: "Gestion des doubles facteurs et signatures électroniques",
+                icon: ShieldCheck,
+                link: "/iam"
+              },
+              {
+                label: "Journal de mes Accès",
+                description: "Historique de mes connexions et actions sécurisées",
+                icon: Activity,
+                link: "/iam"
+              }
+            ]
+          },
+          {
+            title: "Mon Espace de Travail",
+            items: [
+              {
+                label: "Dossiers Épinglés",
+                description: "Accès immédiat à mes dossiers prioritaires",
+                icon: Star,
+                link: "/ged"
+              },
+              {
+                label: "Mes Validations en Attente",
+                description: "Workflows et bordereaux nécessitant mon approbation",
+                icon: CheckSquare,
+                link: "/suivi"
+              },
+              {
+                label: "Préférences Personnelles",
+                description: "Thème d'affichage, langues et notifications",
+                icon: SlidersHorizontal,
+                link: "/annonces"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 6,
+        label: "Administration",
+        subMenus: [
+          {
+            title: "Accès & Identités (IAM)",
+            items: [
+              {
+                label: "Gestion des Utilisateurs",
+                description: "Création, modification et désactivation des comptes",
+                icon: UserCheck,
+                link: "/iam"
+              },
+              {
+                label: "Rôles & Groupes de Sécurité",
+                description: "Matrice des permissions et droits granulaires",
                 icon: Lock,
+                link: "/iam"
+              },
+              {
+                label: "Politiques de Sécurité",
+                description: "Règles de mots de passe, sessions et 2FA",
+                icon: Shield,
                 link: "/iam"
               }
             ]
@@ -164,128 +359,22 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
             title: "Système & Traçabilité",
             items: [
               {
-                label: "Journaux d'audit",
-                description: "Journaux d'audit et flux d'archivage",
+                label: "Journaux d'Audit",
+                description: "Traçabilité complète des versements et consultations",
                 icon: FileText,
                 link: "/ged/administration"
               },
               {
-                label: "Configuration Système",
-                description: "Configuration globale du système",
+                label: "Configuration Globale",
+                description: "Paramètres serveurs, connecteurs et stockage",
                 icon: Settings,
                 link: "/ged/administration"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 3,
-        label: "Raccourcis",
-        subMenus: [
-          {
-            title: "Bordereaux & Recherche",
-            items: [
-              {
-                label: "Bordereaux en cours",
-                description: "Suivi des bordereaux en cours de traitement",
-                icon: Zap,
-                link: "/suivi"
               },
               {
-                label: "Recherche Express",
-                description: "Recherche d'archives instantanée",
-                icon: Search,
-                link: "/ged/recherche"
-              }
-            ]
-          },
-          {
-            title: "Fichiers & Numérisation",
-            items: [
-              {
-                label: "Documents récents",
-                description: "Derniers documents consultés",
-                icon: FolderOpen,
-                link: "/ged"
-              },
-              {
-                label: "Scanner & Import",
-                description: "Numérisation et import express",
-                icon: CirclePlus,
-                link: "/ged/scanner"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 4,
-        label: "Favoris",
-        subMenus: [
-          {
-            title: "Mes Éléments",
-            items: [
-              {
-                label: "Dossiers épinglés",
-                description: "Dossiers et séries épinglés prioritaires",
-                icon: Star
-              },
-              {
-                label: "Bordereaux suivis",
-                description: "Suivi des bordereaux en favoris",
-                icon: Bookmark
-              }
-            ]
-          },
-          {
-            title: "Ressources Clés",
-            items: [
-              {
-                label: "Modèles types",
-                description: "Modèles types et fiches d'archivage",
-                icon: FileText
-              },
-              {
-                label: "Espaces favoris",
-                description: "Accès direct à vos hubs favoris",
-                icon: Compass
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 5,
-        label: "Paramètres",
-        subMenus: [
-          {
-            title: "Interface & Alertes",
-            items: [
-              {
-                label: "Affichage & Thème",
-                description: "Préférences d'affichage et thèmes",
-                icon: SlidersHorizontal
-              },
-              {
-                label: "Alertes & Notifications",
-                description: "Notifications et alertes de suivi",
-                icon: Sparkles
-              }
-            ]
-          },
-          {
-            title: "Organisation",
-            items: [
-              {
-                label: "Langue & Formats",
-                description: "Langue et formats régionaux",
-                icon: Globe
-              },
-              {
-                label: "Workflows de validation",
-                description: "Workflows et circuits de validation",
-                icon: Layers
+                label: "Circuits de Validation",
+                description: "Workflows de validation de versements et éliminations",
+                icon: Layers,
+                link: "/ged/administration"
               }
             ]
           }
@@ -293,14 +382,23 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       }
     ]
   },
+
+  // 2. ESPACE ORGANISATIONNEL / EXTRANET
   {
     id: 'extranet',
-    name: 'Extranet Partenaires',
-    subtitle: 'Espace de collaboration externe et filiales',
-    badge: 'Partenaires Externe',
+    name: 'Extranet',
+    category: 'organisationnel',
+    categoryLabel: 'Espace Organisationnel',
+    subtitle: 'Collaboration avec partenaires externes, filiales et prestataires',
+    badge: 'Organisationnel / Extranet',
     iconName: 'Globe',
-    apps: [], // Aucune application pour le moment
+    apps: [],
     navItems: [
+      {
+        id: 1,
+        label: "Accueil",
+        link: "/",
+      },
       {
         id: 2,
         label: "Projets Partenaires",
@@ -311,12 +409,14 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
               {
                 label: "Livrables Partagés",
                 description: "Consulter les livrables déposés par les partenaires",
-                icon: FileCheck
+                icon: FileCheck,
+                link: "/actualites"
               },
               {
                 label: "Planning Inter-entreprises",
                 description: "Calendrier des jalons et réunions de suivi",
-                icon: CalendarCheck
+                icon: CalendarCheck,
+                link: "/calendrier"
               }
             ]
           }
@@ -327,17 +427,19 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
         label: "Dépôts Sécurisés",
         subMenus: [
           {
-            title: "Echanges de Fichiers",
+            title: "Échanges de Fichiers",
             items: [
               {
-                label: "Déposer un document",
+                label: "Déposer un Document",
                 description: "Téléverser des bordereaux et contrats certifiés",
-                icon: CirclePlus
+                icon: CirclePlus,
+                link: "/ged/scanner"
               },
               {
-                label: "Historique des transferts",
+                label: "Historique des Transferts",
                 description: "Journal des réceptions et envois externes",
-                icon: HardDrive
+                icon: HardDrive,
+                link: "/ged"
               }
             ]
           }
@@ -351,14 +453,16 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
             title: "Assistance",
             items: [
               {
-                label: "Ouvrir un ticket",
+                label: "Ouvrir un Ticket",
                 description: "Support technique pour les comptes partenaires",
-                icon: HelpCircle
+                icon: HelpCircle,
+                link: "/annonces"
               },
               {
-                label: "Guide de Sécurité",
-                description: "Consignes de confidentialité et conformité RGPD",
-                icon: ShieldAlert
+                label: "Guide de Sécurité & RGPD",
+                description: "Consignes de confidentialité et conformité",
+                icon: ShieldAlert,
+                link: "/annonces"
               }
             ]
           }
@@ -366,30 +470,41 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       }
     ]
   },
+
+  // 3. ESPACES PUBLIQUE (ESPACE PUBLIC)
   {
     id: 'public',
-    name: 'Espace Public',
-    subtitle: 'Diffusion d\'informations publiques et communiqués',
+    name: 'Espaces Publique',
+    category: 'public',
+    categoryLabel: 'Espaces Publique',
+    subtitle: 'Diffusion d\'informations publiques, décrets et transparence',
     badge: 'Accès Libre',
     iconName: 'Radio',
     apps: [],
     navItems: [
       {
+        id: 1,
+        label: "Accueil",
+        link: "/",
+      },
+      {
         id: 2,
-        label: "Actualités & Pressec",
+        label: "Publications & Presse",
         subMenus: [
           {
-            title: "Publications",
+            title: "Informations Publiques",
             items: [
               {
-                label: "Communiqués Officiels",
-                description: "Annonces publiques et déclarations de presse",
-                icon: FileText
+                label: "Communiqués de Presse",
+                description: "Annonces publiques et déclarations officielles",
+                icon: FileText,
+                link: "/actualites"
               },
               {
-                label: "Événements à venir",
-                description: "Agenda des réunions et conférences publiques",
-                icon: CalendarCheck
+                label: "Événements Publics",
+                description: "Agenda des réunions et conférences ouvertes",
+                icon: CalendarCheck,
+                link: "/calendrier"
               }
             ]
           }
@@ -405,12 +520,14 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
               {
                 label: "Registres Publics",
                 description: "Consultation libre des délibérations et arrêtés",
-                icon: BookOpen
+                icon: BookOpen,
+                link: "/ged"
               },
               {
                 label: "Rapports Annuels",
                 description: "Bilan d'activité et publications réglementaires",
-                icon: FileCheck
+                icon: FileCheck,
+                link: "/ged"
               }
             ]
           }
@@ -418,14 +535,23 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       }
     ]
   },
+
+  // 4. ESPACE PERSONNEL
   {
     id: 'personnel',
     name: 'Espace Personnel',
-    subtitle: 'Coffre-fort numérique individuel et préférences',
+    category: 'personnel',
+    categoryLabel: 'Espace Personnel',
+    subtitle: 'Coffre-fort numérique individuel, documents privés et réglages',
     badge: 'Espace Privé',
     iconName: 'User',
     apps: [],
     navItems: [
+      {
+        id: 1,
+        label: "Accueil",
+        link: "/",
+      },
       {
         id: 2,
         label: "Coffre-fort Privé",
@@ -435,13 +561,15 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
             items: [
               {
                 label: "Mes Documents Personnels",
-                description: "Fichiers confidentiels et diplômes",
-                icon: Lock
+                description: "Fichiers confidentiels, attestations et contrats",
+                icon: Lock,
+                link: "/ged"
               },
               {
                 label: "Mes Notes & Pense-bêtes",
-                description: "Espace de rédaction individuel",
-                icon: FileText
+                description: "Espace de rédaction individuel et brouillons",
+                icon: FileText,
+                link: "/annonces"
               }
             ]
           }
@@ -449,72 +577,22 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       },
       {
         id: 3,
-        label: "Compte & Sécurité",
+        label: "Mon Compte & Sécurité",
         subMenus: [
           {
-            title: "Paramètres du Compte",
+            title: "Paramètres de Profil",
             items: [
               {
-                label: "Authentification 2FA",
+                label: "Authentification & 2FA",
                 description: "Gérer mes clés de sécurité et mots de passe",
-                icon: ShieldCheck
+                icon: ShieldCheck,
+                link: "/iam"
               },
               {
                 label: "Préférences Générales",
                 description: "Langues, notifications et préférences de thème",
-                icon: Settings
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'rh',
-    name: 'Espace Ressources Humaines',
-    subtitle: 'Gestion du personnel, congés et développement',
-    badge: 'Services RH',
-    iconName: 'Briefcase',
-    apps: [],
-    navItems: [
-      {
-        id: 2,
-        label: "Mon Dossier RH",
-        subMenus: [
-          {
-            title: "Documents du Personnel",
-            items: [
-              {
-                label: "Bulletins de Paie",
-                description: "Consulter et télécharger mes fiches de paie",
-                icon: FileText
-              },
-              {
-                label: "Contrat & Avenants",
-                description: "Suivi administratif du contrat de travail",
-                icon: FileCheck
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 3,
-        label: "Congés & Absences",
-        subMenus: [
-          {
-            title: "Planning RH",
-            items: [
-              {
-                label: "Demander un congé",
-                description: "Poser un congé payé, RTT ou autorisation",
-                icon: CalendarCheck
-              },
-              {
-                label: "Solde de congés",
-                description: "Consulter mon compteur de RTT et CP",
-                icon: Zap
+                icon: Settings,
+                link: "/annonces"
               }
             ]
           }

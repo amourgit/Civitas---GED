@@ -208,17 +208,7 @@ export function SupremeIntranetTopBar({
   };
 
   const desktopNavItems = React.useMemo<NavItem[]>(() => {
-    const homeItem: NavItem = {
-      id: 1,
-      label: "Accueil",
-      link: "/",
-      onClick: () => {
-        playXboxSound('select');
-        navigate('/');
-      }
-    };
-
-    const workspaceItems: NavItem[] = (currentWorkspace.navItems || []).map((navItem) => ({
+    return (currentWorkspace.navItems || []).map((navItem) => ({
       ...navItem,
       onClick: () => {
         playXboxSound('select');
@@ -252,14 +242,34 @@ export function SupremeIntranetTopBar({
         }))
       }))
     }));
-
-    return [homeItem, ...workspaceItems];
   }, [currentWorkspace, setWorkspaceId, navigate, onShowNotification]);
 
+  // Group workspaces by category
+  const workspaceGroups = React.useMemo(() => {
+    const categories: { key: string; label: string; items: typeof availableWorkspaces }[] = [
+      {
+        key: 'public',
+        label: 'Espaces Publique',
+        items: availableWorkspaces.filter(ws => ws.category === 'public')
+      },
+      {
+        key: 'organisationnel',
+        label: 'Espace Organisationnel',
+        items: availableWorkspaces.filter(ws => ws.category === 'organisationnel')
+      },
+      {
+        key: 'personnel',
+        label: 'Espace Personnel',
+        items: availableWorkspaces.filter(ws => ws.category === 'personnel')
+      }
+    ];
+    return categories.filter(cat => cat.items.length > 0);
+  }, [availableWorkspaces]);
+
   return (
-    <div ref={menuRef} className="w-full shrink-0 z-50 select-none relative font-sans text-slate-100 overflow-visible">
+    <div ref={menuRef} className="w-full shrink-0 z-50 select-none relative font-sans text-slate-100 overflow-visible border-b border-white/10">
       {/* 1. SUPREME TOPBAR: EXACT POWELL SOFTWARE LIGHT INTRANET TOPBAR */}
-      <header className="w-full bg-transparent border-b border-white/10 transition-colors overflow-visible flex flex-col">
+      <header className="w-full bg-transparent transition-colors overflow-visible flex flex-col">
         {/* ROW 1: BRAND & ACTIONS TOP ROW */}
         <div className="w-full px-2 sm:px-4 md:px-6 lg:px-7 h-11 sm:h-12 flex items-center justify-between gap-1.5 sm:gap-2">
           
@@ -325,47 +335,64 @@ export function SupremeIntranetTopBar({
 
               {/* Workspace Dropdown Panel */}
               {isWorkspaceDropdownOpen && (
-                <div className="fixed sm:absolute left-2 right-2 sm:left-0 sm:right-auto top-12 sm:top-full mt-1.5 w-auto sm:w-68 max-w-sm bg-white/95 backdrop-blur-2xl border border-slate-200/90 rounded-2xl shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1 flex items-center justify-between">
-                    <span>Espaces de Travail</span>
+                <div className="fixed sm:absolute left-2 right-2 sm:left-0 sm:right-auto top-12 sm:top-full mt-1.5 w-auto sm:w-76 max-w-sm bg-white/95 backdrop-blur-2xl border border-slate-200/90 rounded-2xl shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1.5 flex items-center justify-between">
+                    <span>Espaces & Environnements</span>
                     <span className="text-[9px] font-medium text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">
                       {availableWorkspaces.length} disponibles
                     </span>
                   </div>
-                  <div className="flex flex-col gap-1 max-h-60 overflow-y-auto pr-0.5 scrollbar-thin">
-                    {availableWorkspaces.map(ws => {
-                      const isActive = ws.id === currentWorkspace.id;
-                      return (
-                        <button
-                          key={ws.id}
-                          onClick={() => {
-                            playXboxSound('select');
-                            setWorkspaceId(ws.id);
-                            setIsWorkspaceDropdownOpen(false);
-                            if (onShowNotification) {
-                              onShowNotification(`Espace activé : ${ws.name}`, 'success');
-                            }
-                          }}
-                          className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
-                            isActive 
-                              ? 'bg-teal-50 text-teal-800 font-bold border border-teal-200/80 shadow-2xs' 
-                              : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium border border-transparent'
-                          }`}
-                        >
-                          <div className="flex flex-col min-w-0 pr-2">
-                            <span className="text-xs truncate font-semibold">{ws.name}</span>
-                            <span className="text-[10px] text-slate-400 truncate">{ws.subtitle}</span>
-                          </div>
-                          {isActive ? (
-                            <span className="text-[10px] bg-teal-600 text-white font-semibold px-2 py-0.5 rounded-full shrink-0">
-                              Actif
-                            </span>
-                          ) : (
-                            <ChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
-                          )}
-                        </button>
-                      );
-                    })}
+                  <div className="flex flex-col gap-2 max-h-72 overflow-y-auto pr-0.5 scrollbar-thin">
+                    {workspaceGroups.map(group => (
+                      <div key={group.key} className="space-y-1">
+                        <div className="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <span>{group.label}</span>
+                          <div className="flex-1 h-px bg-slate-100" />
+                        </div>
+                        <div className="space-y-0.5">
+                          {group.items.map(ws => {
+                            const isActive = ws.id === currentWorkspace.id;
+                            return (
+                              <button
+                                key={ws.id}
+                                onClick={() => {
+                                  playXboxSound('select');
+                                  setWorkspaceId(ws.id);
+                                  setIsWorkspaceDropdownOpen(false);
+                                  if (onShowNotification) {
+                                    onShowNotification(`Espace activé : ${ws.name}`, 'success');
+                                  }
+                                }}
+                                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                                  isActive 
+                                    ? 'bg-teal-50 text-teal-800 font-bold border border-teal-200/80 shadow-2xs' 
+                                    : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium border border-transparent'
+                                }`}
+                              >
+                                <div className="flex flex-col min-w-0 pr-2">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-xs truncate font-semibold">{ws.name}</span>
+                                    {ws.category === 'organisationnel' && (
+                                      <span className="text-[8px] px-1.5 py-0.2 bg-teal-100/70 text-teal-700 font-bold rounded">
+                                        Org
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="text-[10px] text-slate-400 truncate">{ws.subtitle}</span>
+                                </div>
+                                {isActive ? (
+                                  <span className="text-[10px] bg-teal-600 text-white font-semibold px-2 py-0.5 rounded-full shrink-0">
+                                    Actif
+                                  </span>
+                                ) : (
+                                  <ChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -755,7 +782,7 @@ export function SupremeIntranetTopBar({
 
         {/* ROW 2: NIVEAU 2 DE LA TOPBAR PRINCIPALE (NAVIGATION PAR ESPACE DE TRAVAIL) */}
         {!isGedRoute && (
-          <div className="w-full border-t border-white/10 bg-transparent px-2 sm:px-4 md:px-6 lg:px-7 h-10 sm:h-11 flex items-center justify-start overflow-visible z-30">
+          <div className="w-full bg-transparent px-2 sm:px-4 md:px-6 lg:px-7 h-10 sm:h-11 flex items-center justify-start overflow-visible z-30">
             <div className="w-full max-w-7xl mx-auto flex items-center overflow-visible">
               <DropdownNavigation navItems={desktopNavItems} />
             </div>
@@ -766,7 +793,7 @@ export function SupremeIntranetTopBar({
 
       {/* 2. DEUXIÈME NIVEAU (INFÉRIEUR) : TOPBAR EXTENSIBLE DE L'APPLICATION ACTIVE (GED / EGEN) - UNIQUEMENT SI DANS LA GED */}
       {isGedRoute && (
-        <div className="w-full bg-transparent border-b border-white/10 text-white px-2 sm:px-4 md:px-6 lg:px-7 h-12 flex items-center justify-between shadow-none transition-all overflow-visible z-40 relative">
+        <div className="w-full bg-transparent text-white px-2 sm:px-4 md:px-6 lg:px-7 h-12 flex items-center justify-between shadow-none transition-all overflow-visible z-40 relative">
           
           {/* ZONE GAUCHE : Logo/App Identity + Status Badge + Slot Extensible Gauche */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 overflow-visible">
@@ -860,49 +887,60 @@ export function SupremeIntranetTopBar({
                 Navigation Principale
               </div>
 
-              {/* Mon Espace Accordion (Extranet, Public, Intranet, Personnel) */}
-              <div className="rounded-xl overflow-hidden border border-slate-100">
+              {/* Espaces Switcher Accordion (Espaces Publique, Espace organisationnel, Espace personnel) */}
+              <div className="rounded-xl overflow-hidden border border-slate-100 bg-white">
                 <button
                   type="button"
-                  onClick={() => toggleMobileCategory('monespace')}
+                  onClick={() => toggleMobileCategory('espaces_switcher')}
                   className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
                 >
                   <div className="flex items-center gap-2.5">
-                    <User className="w-4 h-4 text-[#008080]" />
-                    <span>Mon espace</span>
+                    <Building2 className="w-4 h-4 text-[#008080]" />
+                    <span className="font-semibold text-xs">Changer d'Espace ({currentWorkspace.name})</span>
                   </div>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${expandedMobileCategory === 'monespace' ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${expandedMobileCategory === 'espaces_switcher' ? 'rotate-180 text-[#008080]' : ''}`} />
                 </button>
-                {expandedMobileCategory === 'monespace' && (
-                  <div className="bg-slate-50/80 px-4 py-2 space-y-1.5 border-t border-slate-100 text-xs">
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Extranet Partenaires"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] flex items-center justify-between"
-                    >
-                      <span>Extranet</span>
-                      <Globe className="w-3.5 h-3.5 text-sky-500" />
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Espace Public"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] flex items-center justify-between"
-                    >
-                      <span>Public</span>
-                      <Radio className="w-3.5 h-3.5 text-emerald-500" />
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Espace Intranet"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] flex items-center justify-between"
-                    >
-                      <span>Intranet</span>
-                      <Users className="w-3.5 h-3.5 text-purple-500" />
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Espace Personnel"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] flex items-center justify-between"
-                    >
-                      <span>Personnel</span>
-                      <User className="w-3.5 h-3.5 text-teal-600" />
-                    </button>
+                {expandedMobileCategory === 'espaces_switcher' && (
+                  <div className="bg-slate-50/80 px-3 py-2 space-y-2.5 border-t border-slate-100 text-xs">
+                    {workspaceGroups.map(group => (
+                      <div key={group.key} className="space-y-1">
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
+                          {group.label}
+                        </div>
+                        <div className="space-y-1">
+                          {group.items.map(ws => {
+                            const isWsActive = ws.id === currentWorkspace.id;
+                            return (
+                              <button
+                                key={ws.id}
+                                onClick={() => {
+                                  playXboxSound('select');
+                                  setWorkspaceId(ws.id);
+                                  setIsMobileMenuOpen(false);
+                                  if (onShowNotification) {
+                                    onShowNotification(`Espace activé : ${ws.name}`, 'success');
+                                  }
+                                }}
+                                className={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-lg text-left transition-colors ${
+                                  isWsActive 
+                                    ? 'bg-teal-50 text-teal-800 font-bold border border-teal-200' 
+                                    : 'text-slate-600 hover:bg-white hover:text-slate-900 font-medium'
+                                }`}
+                              >
+                                <span>{ws.name}</span>
+                                {isWsActive ? (
+                                  <span className="text-[9px] bg-teal-600 text-white font-bold px-1.5 py-0.2 rounded-full">
+                                    Actif
+                                  </span>
+                                ) : (
+                                  <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

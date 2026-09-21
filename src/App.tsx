@@ -999,7 +999,7 @@ function AppContent() {
           <aside
             id="rightcontent"
             onWheel={handleInnerScrollWheel}
-            className="hidden lg:flex w-full lg:w-[360px] xl:w-[400px] 2xl:w-[440px] shrink-0 h-full min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar relative z-20 flex-col gap-6 p-4 sm:p-6 lg:pt-2 lg:pb-8 lg:pr-8 lg:pl-0"
+            className="hidden lg:flex w-full lg:w-[360px] xl:w-[400px] 2xl:w-[440px] shrink-0 h-full min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar relative z-20 flex-col gap-6 p-4 sm:p-6 lg:pt-2 lg:pb-8 lg:pl-3 lg:pr-6"
           >
             {rightContent}
           </aside>

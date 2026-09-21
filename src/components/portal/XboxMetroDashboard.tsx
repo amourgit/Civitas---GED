@@ -61,19 +61,19 @@ export function XboxMetroDashboard({ onShowToast }: XboxMetroDashboardProps) {
               <div className="w-full flex flex-col gap-10">
                 
                 {/* Main Home Content Grid */}
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-3 flex flex-col gap-10">
-                  {/* Section 1 : News (Hero Mosaic Grid) */}
+                <div className="w-full max-w-7xl mx-auto pt-2 sm:pt-3 flex flex-col gap-10">
+                  {/* Section 1 : News (Hero Mosaic Grid) - SAUF 'A la Une' qui reste sans padding x */}
                   <section className="w-full block">
                     <HeroMosaicGrid onShowToast={onShowToast} />
                   </section>
 
                   {/* Section 2 : L'Actualité (Grille Blog Section) */}
-                  <section className="w-full block">
+                  <section className="w-full block px-2 sm:px-4 md:px-6">
                     <PortalBlogSection onShowToast={onShowToast} />
                   </section>
 
                   {/* Section 3 : Liens & Réseaux Sociaux (ClipPathLinks) */}
-                  <section className="w-full block">
+                  <section className="w-full block px-2 sm:px-4 md:px-6">
                     <ClipPathLinks />
                   </section>
                 </div>
@@ -101,7 +101,7 @@ export function XboxMetroDashboard({ onShowToast }: XboxMetroDashboardProps) {
                 Tuiles authentiques Xbox Metro (Vert Xbox, Sombre, Hero)
                ═════════════════════════════════════════════════════════ */}
             {activeTabId === 'administration' && (
-              <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col gap-8">
+              <div className="w-full max-w-7xl mx-auto py-6 sm:py-10 px-2 sm:px-4 md:px-6 flex flex-col gap-8">
                 
                 {/* Section Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
@@ -252,7 +252,7 @@ export function XboxMetroDashboard({ onShowToast }: XboxMetroDashboardProps) {
                 Tuiles d'accès rapide & lanceurs d'actions
                ═════════════════════════════════════════════════════════ */}
             {activeTabId === 'raccourcis' && (
-              <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col gap-8">
+              <div className="w-full max-w-7xl mx-auto py-6 sm:py-10 px-2 sm:px-4 md:px-6 flex flex-col gap-8">
                 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
                   <div>
@@ -404,7 +404,7 @@ export function XboxMetroDashboard({ onShowToast }: XboxMetroDashboardProps) {
                 Tuiles de favoris & éléments épinglés
                ═════════════════════════════════════════════════════════ */}
             {activeTabId === 'favoris' && (
-              <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col gap-8">
+              <div className="w-full max-w-7xl mx-auto py-6 sm:py-10 px-2 sm:px-4 md:px-6 flex flex-col gap-8">
                 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
                   <div>
@@ -507,7 +507,7 @@ export function XboxMetroDashboard({ onShowToast }: XboxMetroDashboardProps) {
                 Paramètres système, audio Xbox, thème et profil
                ═════════════════════════════════════════════════════════ */}
             {activeTabId === 'paramètres' && (
-              <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col gap-8">
+              <div className="w-full max-w-7xl mx-auto py-6 sm:py-10 px-2 sm:px-4 md:px-6 flex flex-col gap-8">
                 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
                   <div>

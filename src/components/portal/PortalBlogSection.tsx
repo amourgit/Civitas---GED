@@ -162,22 +162,22 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
     <section 
       id="section-actualite-blog"
       aria-label="Section News & Actualités"
-      className={`w-full bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 shadow-2xl border border-slate-200/80 text-slate-900 transition-all ${className}`}
+      className={`w-full text-foreground transition-all ${className}`}
     >
       {/* ── 1. Header Identique au Pixel Près ── */}
       <div className="w-full flex flex-col items-start text-left">
         {/* Titre avec typographie Monospace exacte du visuel */}
-        <h2 className="font-mono font-bold tracking-tight text-3xl sm:text-4xl text-slate-900 leading-tight">
+        <h2 className="font-mono font-bold tracking-tight text-3xl sm:text-4xl text-white leading-tight">
           News &amp; Actualités
         </h2>
 
         {/* Sous-titre exact du visuel */}
-        <p className="text-slate-500 font-normal text-sm sm:text-base mt-2 max-w-3xl leading-relaxed">
+        <p className="text-slate-300 font-normal text-sm sm:text-base mt-2 max-w-3xl leading-relaxed">
           Discover the latest trends and insights in the world of design and technology.
         </p>
 
         {/* Ligne pointillée séparatrice horizontale exacte */}
-        <div className="w-full border-b border-dashed border-slate-200/90 mt-6 mb-8 sm:mb-10" />
+        <div className="w-full border-b border-dashed border-white/15 mt-6 mb-8 sm:mb-10" />
       </div>
 
       {/* ── 2. Grille de 6 Cartes (3 Colonnes x 2 Rangées) ── */}
@@ -189,10 +189,10 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
             <article
               key={article.id}
               onClick={() => handleArticleClick(article)}
-              className="group flex flex-col cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-2xl"
+              className="group flex flex-col cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-2xl"
             >
               {/* Image avec coins arrondis et ratio 16:10 */}
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-slate-100 shadow-sm border border-slate-100">
+              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-black/40 shadow-sm border border-white/10">
                 <img
                   src={article.image}
                   alt={article.title}
@@ -209,7 +209,7 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
                   className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-200 shadow-md ${
                     isBookmarked 
                       ? 'bg-emerald-600 text-white opacity-100 scale-100' 
-                      : 'bg-white/90 text-slate-600 hover:text-slate-900 opacity-0 group-hover:opacity-100 hover:bg-white'
+                      : 'bg-black/60 text-slate-200 hover:text-white border border-white/15 backdrop-blur-md opacity-0 group-hover:opacity-100 hover:bg-black/80'
                   }`}
                 >
                   <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-current' : ''}`} />
@@ -219,23 +219,23 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
               {/* Contenu textuel de la carte */}
               <div className="mt-4 flex flex-col flex-1">
                 {/* Métadonnées : by Auteur • Date • Temps de lecture */}
-                <div className="text-xs sm:text-[13px] text-slate-500 font-normal flex items-center flex-wrap gap-1.5 mb-1.5">
-                  <span className="hover:text-slate-700 transition-colors">
+                <div className="text-xs sm:text-[13px] text-slate-400 font-normal flex items-center flex-wrap gap-1.5 mb-1.5">
+                  <span className="hover:text-slate-200 transition-colors">
                     by {article.author}
                   </span>
-                  <span className="text-slate-400 font-bold">•</span>
+                  <span className="text-slate-500 font-bold">•</span>
                   <span>{article.date}</span>
-                  <span className="text-slate-400 font-bold">•</span>
+                  <span className="text-slate-500 font-bold">•</span>
                   <span>{article.readTime}</span>
                 </div>
 
                 {/* Titre de l'article */}
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-snug group-hover:text-emerald-600 transition-colors mt-0.5 mb-1.5">
+                <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-snug group-hover:text-emerald-400 transition-colors mt-0.5 mb-1.5">
                   {article.title}
                 </h3>
 
                 {/* Description de l'article */}
-                <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">
+                <p className="text-sm text-slate-300 leading-relaxed line-clamp-3">
                   {article.description}
                 </p>
               </div>
@@ -247,23 +247,23 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
       {/* ── 3. Modal de lecture de l'article interactif ── */}
       <AnimatePresence>
         {selectedArticle && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ duration: 0.2 }}
-              className="relative w-full max-w-3xl max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-slate-200"
+              className="relative w-full max-w-3xl max-h-[90vh] bg-slate-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-white/15 text-white"
             >
               {/* En-tête du modal avec image bannière */}
-              <div className="relative h-64 sm:h-72 w-full shrink-0 overflow-hidden bg-slate-900">
+              <div className="relative h-64 sm:h-72 w-full shrink-0 overflow-hidden bg-slate-950">
                 <img
                   src={selectedArticle.image}
                   alt={selectedArticle.title}
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
 
                 {/* Bouton de fermeture */}
                 <button
@@ -272,7 +272,7 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
                     playXboxSound('back');
                     setSelectedArticle(null);
                   }}
-                  className="absolute top-4 right-4 p-2 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-md transition-colors"
+                  className="absolute top-4 right-4 p-2 rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/15 backdrop-blur-md transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -289,16 +289,16 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
               </div>
 
               {/* Corps de l'article scrollable */}
-              <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 text-slate-800">
+              <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 text-slate-200">
                 {/* Barre d'infos auteur et date */}
-                <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-slate-100">
+                <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-white/10">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center justify-center font-bold text-sm">
                       {selectedArticle.author.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div>
-                      <div className="font-semibold text-sm text-slate-900">{selectedArticle.author}</div>
-                      <div className="text-xs text-slate-500 flex items-center gap-2">
+                      <div className="font-semibold text-sm text-white">{selectedArticle.author}</div>
+                      <div className="text-xs text-slate-400 flex items-center gap-2">
                         <span>{selectedArticle.date}</span>
                         <span>•</span>
                         <span>{selectedArticle.readTime}</span>
@@ -310,21 +310,21 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
                     <button
                       type="button"
                       onClick={() => handleBookmark(selectedArticle)}
-                      className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors flex items-center gap-1.5 text-xs font-medium"
+                      className="p-2 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 transition-colors flex items-center gap-1.5 text-xs font-medium"
                     >
-                      <Bookmark className={`w-4 h-4 ${bookmarkedIds.includes(selectedArticle.id) ? 'fill-emerald-600 text-emerald-600' : ''}`} />
+                      <Bookmark className={`w-4 h-4 ${bookmarkedIds.includes(selectedArticle.id) ? 'fill-emerald-400 text-emerald-400' : ''}`} />
                       <span>{bookmarkedIds.includes(selectedArticle.id) ? 'Enregistré' : 'Enregistrer'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleShare(selectedArticle)}
-                      className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors flex items-center gap-1.5 text-xs font-medium"
+                      className="p-2 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-slate-200 transition-colors flex items-center gap-1.5 text-xs font-medium"
                     >
                       {copiedId === selectedArticle.id ? (
                         <>
-                          <Check className="w-4 h-4 text-emerald-600" />
-                          <span className="text-emerald-600">Lien copié</span>
+                          <Check className="w-4 h-4 text-emerald-400" />
+                          <span className="text-emerald-400">Lien copié</span>
                         </>
                       ) : (
                         <>
@@ -337,12 +337,12 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
                 </div>
 
                 {/* Chapô / Description introductive */}
-                <p className="text-base sm:text-lg font-medium text-slate-700 leading-relaxed italic">
+                <p className="text-base sm:text-lg font-medium text-slate-300 leading-relaxed italic">
                   "{selectedArticle.description}"
                 </p>
 
                 {/* Paragraphes de contenu */}
-                <div className="space-y-4 text-slate-600 leading-relaxed text-sm sm:text-base">
+                <div className="space-y-4 text-slate-300 leading-relaxed text-sm sm:text-base">
                   {selectedArticle.content?.map((paragraph, idx) => (
                     <p key={idx}>{paragraph}</p>
                   ))}
@@ -350,8 +350,8 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
               </div>
 
               {/* Pied de page du modal */}
-              <div className="p-4 sm:px-8 sm:py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-xs text-slate-500 font-mono">
+              <div className="p-4 sm:px-8 sm:py-4 bg-slate-950/80 border-t border-white/10 flex items-center justify-between">
+                <span className="text-xs text-slate-400 font-mono">
                   EGEN Intranet &bull; Blog Actualités
                 </span>
                 <button
@@ -360,7 +360,7 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
                     playXboxSound('back');
                     setSelectedArticle(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-colors"
+                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-semibold transition-colors"
                 >
                   Fermer la lecture
                 </button>

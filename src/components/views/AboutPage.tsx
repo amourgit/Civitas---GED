@@ -18,7 +18,7 @@ export function AboutPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full min-h-full flex flex-col px-4 sm:px-6 lg:px-8 pt-2 pb-8">
+    <div className="w-full min-h-full flex flex-col pt-2 pb-8">
       <div className="max-w-5xl w-full mx-auto flex flex-col gap-10">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">

@@ -58,58 +58,75 @@ export interface DocumentItem {
 
 export const PORTAL_MOCK_DATA = {
   siteHeader: {
-    title: "Contoso Electronics",
-    subtitle: "Public group | General Purpose",
+    title: "Espace Organisationnel — Internat",
+    subtitle: "Portail collaboratif unifié et gestion des services",
     avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
     isFollowing: true,
-    memberCount: 13,
-    draftStatus: "Draft saved 1/25/2019",
+    memberCount: 342,
+    draftStatus: "Système opérationnel • v3.2.0",
   },
   
+  // Navigation structurée selon la nomenclature exacte demandée
   navigation: [
-    { id: 'home', label: 'Home', route: '/' },
-    { id: 'meet-team', label: 'Meet the team', route: '/annuaire' },
-    { id: 'tracker', label: 'Team Tracker', route: '/projets' },
+    { id: 'accueil', label: 'Accueil', route: '/' },
     { 
-      id: 'customer-scripts', 
-      label: 'Guides & Scripts', 
+      id: 'informations', 
+      label: 'Informations', 
       hasChildren: true, 
       isExpanded: true,
       children: [
-        { id: 'script-1', label: 'Onboarding flows', route: '/ged/sites' },
-        { id: 'script-2', label: 'Escalation matrix', route: '/ged/sites' }
+        { id: 'news-pub', label: 'News et Publications', route: '/actualites' },
+        { id: 'annonces', label: 'Annonces', route: '/annonces' },
+        { id: 'agenda', label: 'Agenda', route: '/calendrier' }
       ]
     },
-    { id: 'expense-reporting', label: 'Expense reporting', route: '/rh' },
-    { id: 'work-guides', label: 'Work@Contoso Guides', route: '/ged/depots' },
-    { id: 'calendar', label: 'Calendar', route: '/calendrier' },
-    { id: 'documents', label: 'Documents', route: '/ged' },
-    { id: 'notebook', label: 'Notebook', route: '/actualites' },
-    { id: 'recycle-bin', label: 'Recycle bin', route: '/ged/suivi' },
+    { 
+      id: 'services', 
+      label: 'Services', 
+      hasChildren: true, 
+      isExpanded: true,
+      children: [
+        { id: 'membres', label: 'Membres', route: '/annonces' },
+        { id: 'applications', label: 'Applications', route: '/applications' },
+        { id: 'ressources', label: 'Ressources', route: '/ged' },
+        { id: 'info-services', label: 'Informations', route: '/annonces' }
+      ]
+    },
+    { id: 'recherche', label: 'Recherche', route: '/ged/recherche' },
+    { 
+      id: 'mon-espace', 
+      label: 'Mon espace', 
+      hasChildren: true, 
+      isExpanded: false,
+      children: [
+        { id: 'droits-permissions', label: 'Droits et Permissions', route: '/iam' }
+      ]
+    },
+    { id: 'administration', label: 'Administration', route: '/iam' }
   ] as NavLinkItem[],
 
   heroTiles: [
     {
       id: 'hero-main',
-      title: 'Communicating Strategic Value',
-      category: 'CONTOSO',
-      linkText: 'Learn more →',
+      title: 'Modernisation intégrale de la GED et Archivage Électronique',
+      category: 'INFORMATIONS • NEWS',
+      linkText: 'Consulter le dossier →',
       imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&auto=format&fit=crop&q=85',
-      route: '/ged',
+      route: '/actualites',
       size: 'large',
       position: 'hero-main',
     },
     {
       id: 'mid-top',
-      title: 'Nominate a project for the sales leadership award',
+      title: 'Communiqué officiel : Déploiement du nouveau protocole 2FA',
       imageUrl: 'https://images.unsplash.com/photo-1579389083078-4e7018379f7e?w=600&auto=format&fit=crop&q=85',
-      route: '/actualites',
+      route: '/annonces',
       size: 'medium',
       position: 'mid-top',
     },
     {
       id: 'mid-bottom',
-      title: 'How machine learning can drive retail sales',
+      title: 'Recherche Globale & Indexation par Métadonnées',
       imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&auto=format&fit=crop&q=85',
       route: '/ged/recherche',
       size: 'medium',
@@ -117,107 +134,107 @@ export const PORTAL_MOCK_DATA = {
     },
     {
       id: 'right-top',
-      title: '5 best tips for salespeople',
+      title: 'Guide des Services & Catalogue des Applications 2026',
       imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&q=85',
-      route: '/actualites',
+      route: '/applications',
       size: 'medium',
       position: 'right-top',
     },
     {
       id: 'right-bottom',
-      title: 'One Million Drones Sold in Q4',
+      title: 'Gouvernance IAM : Attribution des Droits & Permissions',
       imageUrl: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=600&auto=format&fit=crop&q=85',
-      route: '/ged/pilotage',
+      route: '/iam',
       size: 'medium',
       position: 'right-bottom',
     },
   ] as HeroMosaicTile[],
 
   quickLinks: [
-    { id: 'ql-1', title: 'Global Portal', iconName: 'megaphone', route: '/projets' },
-    { id: 'ql-2', title: 'FlySafe e-learning', iconName: 'graduation-cap', route: '/ged/depots' },
-    { id: 'ql-3', title: 'Service policies', iconName: 'briefcase', route: '/ged/documentation/salles' },
-    { id: 'ql-4', title: 'Consumer reports', iconName: 'files', route: '/ged/pilotage' },
-    { id: 'ql-5', title: 'Status reports', iconName: 'user', route: '/suivi' },
-    { id: 'ql-6', title: 'Financial calendar', iconName: 'calendar', route: '/calendrier' },
-    { id: 'ql-7', title: 'Branded templates', iconName: 'presentation', route: '/ged/sites' },
-    { id: 'ql-8', title: 'Expense reporting', iconName: 'receipt', route: '/rh' },
-    { id: 'ql-9', title: 'Contoso shuttle', iconName: 'bus', route: '/annuaire' },
+    { id: 'ql-1', title: 'News & Publications', iconName: 'megaphone', route: '/actualites' },
+    { id: 'ql-2', title: 'Salle des Annonces', iconName: 'files', route: '/annonces' },
+    { id: 'ql-3', title: 'Agenda & Réunions', iconName: 'calendar', route: '/calendrier' },
+    { id: 'ql-4', title: 'Catalogue Applications', iconName: 'presentation', route: '/applications' },
+    { id: 'ql-5', title: 'Recherche Globale', iconName: 'briefcase', route: '/ged/recherche' },
+    { id: 'ql-6', title: 'Droits & Permissions', iconName: 'user', route: '/iam' },
+    { id: 'ql-7', title: 'GED & Ressources', iconName: 'files', route: '/ged' },
+    { id: 'ql-8', title: 'Administration Système', iconName: 'graduation-cap', route: '/ged/administration' },
+    { id: 'ql-9', title: 'Annuaire Membres', iconName: 'bus', route: '/annonces' },
   ] as QuickLinkItem[],
 
   calendarEvents: [
     {
       id: 'ev-1',
-      month: 'Mar',
-      day: '6',
-      weekday: 'Wed',
-      title: 'CPS team meeting',
-      time: '11:00 AM',
-      location: 'Conf Room Stevens',
-      category: 'Meeting'
+      month: 'Sep',
+      day: '22',
+      weekday: 'Lun',
+      title: 'Comité de Pilotage DSI & Archivage EGEN',
+      time: '09:30 - 11:00',
+      location: 'Salle Polyvalente & Visioconférence',
+      category: 'Agenda / Réunion'
     },
     {
       id: 'ev-2',
-      month: 'Mar',
-      day: '12',
-      weekday: 'Tue',
-      title: 'GCM team lunch',
-      time: '12:00 PM',
-      location: 'Contoso Cafeteria 2F',
-      category: 'Social'
+      month: 'Sep',
+      day: '24',
+      weekday: 'Mer',
+      title: 'Atelier de Prise en Main : Droits et Permissions IAM',
+      time: '14:00 - 16:30',
+      location: 'Centre de Formation Numérique',
+      category: 'Services / Formation'
     },
     {
       id: 'ev-3',
-      month: 'Mar',
-      day: '19',
-      weekday: 'Thu',
-      title: 'Strategy Review & Roadmap Q2',
-      time: '02:30 PM',
-      location: 'Executive Boardroom',
-      category: 'Strategic'
+      month: 'Sep',
+      day: '28',
+      weekday: 'Dim',
+      title: 'Revue Trimestrielle des Publications et Décrets',
+      time: '10:00 - 12:30',
+      location: 'Grand Auditorium',
+      category: 'Informations / Séminaire'
     }
   ] as CalendarEventItem[],
 
   documents: [
     {
       id: 'doc-1',
-      name: 'Email attachments',
-      type: 'folder',
-      modifiedDate: 'Hier à 16:45',
-      author: 'Nestor Wilke',
-      size: '4 éléments'
+      name: 'Charte_Gouvernance_Informations_2026.pdf',
+      type: 'pdf',
+      modifiedDate: 'Aujourd\'hui à 11:20',
+      author: 'Direction des Systèmes d\'Information',
+      size: '2.8 MB'
     },
     {
       id: 'doc-2',
-      name: 'Contoso Annual Report [Draft].docx',
+      name: 'Guide_Services_Membres_et_Applications.docx',
       type: 'docx',
-      modifiedDate: '25 Janv. 2026',
-      author: 'Patti Fernandez',
-      size: '2.4 MB'
+      modifiedDate: 'Hier à 16:45',
+      author: 'Secrétariat Général',
+      size: '1.4 MB'
     },
     {
       id: 'doc-3',
-      name: 'Contoso Annual Report.docx',
-      type: 'docx',
-      modifiedDate: '18 Janv. 2026',
-      author: 'Henriette de Lamber',
-      size: '3.1 MB'
+      name: 'Matrice_Droits_et_Permissions_IAM.xlsx',
+      type: 'xlsx',
+      modifiedDate: '19 Sept. 2026',
+      author: 'Pôle Sécurité & IAM',
+      size: '890 KB'
     },
     {
       id: 'doc-4',
-      name: 'Contoso Company Goals Q1 - Q4.docx',
+      name: 'Rapport_Annuel_Administration_Systeme.docx',
       type: 'docx',
-      modifiedDate: '10 Janv. 2026',
+      modifiedDate: '15 Sept. 2026',
       author: 'Amour Samuel NZILA NGALA',
-      size: '1.8 MB'
+      size: '3.2 MB'
     },
     {
       id: 'doc-5',
-      name: 'Corporate Overview.pptx',
+      name: 'Presentation_Espaces_Publique_et_Organisationnels.pptx',
       type: 'pptx',
-      modifiedDate: '05 Janv. 2026',
-      author: 'Grady Archie',
-      size: '14.2 MB'
+      modifiedDate: '12 Sept. 2026',
+      author: 'Cellule Communication & Stratégie',
+      size: '15.4 MB'
     }
   ] as DocumentItem[],
 };

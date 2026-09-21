@@ -70,7 +70,7 @@ export function DossiersPage({
 
   if (!casier) {
     return (
-      <div className="w-full flex-1 flex flex-col items-center justify-center text-center p-8 gap-4">
+      <div className="w-full flex-1 flex flex-col items-center justify-center text-center py-8 gap-4">
         <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 mb-2">
           <AlertCircle className="w-8 h-8" />
         </div>

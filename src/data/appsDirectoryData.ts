@@ -48,6 +48,10 @@ export const APPS_DIRECTORY: {
     { id: 'hubic', name: 'HubiC', category: 'person', iconType: 'hubic' }
   ],
   enterprise: [
+    { id: 'egen-ged', name: 'EGEN GED Documents', category: 'enterprise', iconType: 'alfresco', badge: 'Officiel', description: 'Gestion Électronique des Documents & Archives', route: '/ged' },
+    { id: 'egen-iam', name: 'EGEN IAM Sécurité', category: 'enterprise', iconType: 'sharepoint', badge: 'Sécurisé', description: 'Gestion des Droits, Permissions & Rôles', route: '/iam' },
+    { id: 'egen-calendrier', name: 'EGEN Agenda & Calendrier', category: 'enterprise', iconType: 'onedrive', badge: 'Interne', description: 'Planning partagé et comités d\'organisation', route: '/calendrier' },
+    { id: 'egen-news', name: 'EGEN News & Publications', category: 'enterprise', iconType: 'google-workspace', badge: 'En direct', description: 'Actualités internes et revue de presse', route: '/actualites' },
     { id: 'google-workspace', name: 'Google Workspace', category: 'enterprise', iconType: 'google-workspace' },
     { id: 'drive-partage', name: 'Drive partagé', category: 'enterprise', iconType: 'drive-partage' },
     { id: 'onedrive-business', name: 'OneDrive for Business', category: 'enterprise', iconType: 'onedrive' },

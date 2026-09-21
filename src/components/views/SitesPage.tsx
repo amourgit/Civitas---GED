@@ -377,7 +377,7 @@ export function SitesPage() {
   // =========================================================================
   if (!currentSite) {
     return (
-      <div className="w-full h-full flex flex-col bg-[#030708] text-white overflow-y-auto no-scrollbar select-none p-2 sm:p-4 md:p-6">
+      <div className="w-full h-full flex flex-col bg-[#030708] text-white overflow-y-auto no-scrollbar select-none py-2 sm:py-4 md:py-6">
         
         {/* TOP BAR / BANNER: SITES ALFRESCO */}
         <div className="w-full max-w-7xl mx-auto flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">

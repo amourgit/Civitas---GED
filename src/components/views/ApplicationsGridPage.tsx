@@ -74,7 +74,7 @@ export function ApplicationsGridPage() {
   ), []);
 
   return (
-    <div className="relative w-full h-full min-h-full overflow-hidden flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8">
+    <div className="relative w-full h-full min-h-full overflow-hidden flex flex-col justify-center items-center py-4 sm:py-6 lg:py-8">
       {/* ── 1. WebGL Dynamic Gradient Wave Background ── */}
       <PageBackground customComponent={backgroundComponent} />
 

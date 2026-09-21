@@ -111,7 +111,7 @@ export function AnnuairePage() {
   });
 
   return (
-    <div className="w-full h-full overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#070e17] text-white flex flex-col gap-6">
+    <div className="w-full h-full overflow-y-auto py-4 sm:py-6 lg:py-8 bg-[#070e17] text-white flex flex-col gap-6">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div className="flex items-center gap-3">

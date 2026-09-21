@@ -29,7 +29,7 @@ export function HeroMosaicGrid({ onShowToast }: HeroMosaicGridProps) {
   return (
     <div className="w-full flex flex-col gap-3">
       {/* Section Heading "À la Une" */}
-      <div className="w-full">
+      <div className="w-full pt-2 pb-1 px-1 sm:px-2">
         <h2 className="text-2xl sm:text-3xl font-light text-white tracking-tight">
           À la Une
         </h2>

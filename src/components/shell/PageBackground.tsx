@@ -56,6 +56,12 @@ export interface DefaultBackgroundProps {
   imageAlt?: string;
 
   /**
+   * Mode d'ajustement de l'image (cover, fill, contain)
+   * @default 'cover'
+   */
+  imageFit?: 'cover' | 'fill' | 'contain';
+
+  /**
    * Injection CSS sur le conteneur racine de l'arrière-plan par défaut
    */
   className?: string;
@@ -112,6 +118,7 @@ export interface DefaultBackgroundProps {
 export function DefaultPageBackground({
   imageSrc,
   imageAlt = "Arrière-plan immersif",
+  imageFit = "cover",
   className,
   imageClassName,
   overlayClassName,
@@ -127,6 +134,8 @@ export function DefaultPageBackground({
     return <AnimatedHomeBackground className={className} />;
   }
 
+  const fitClass = imageFit === 'fill' ? 'object-fill' : imageFit === 'contain' ? 'object-contain object-center' : 'object-cover object-center';
+
   return (
     <div
       className={cn(
@@ -140,7 +149,9 @@ export function DefaultPageBackground({
         src={imageSrc}
         alt={imageAlt}
         className={cn(
-          'absolute inset-0 w-full h-full object-cover object-center select-none opacity-95 transition-all duration-700 ease-out',
+          'absolute inset-0 w-full h-full select-none transition-all duration-700 ease-out',
+          fitClass,
+          imageFit === 'fill' ? 'opacity-100' : 'opacity-95',
           imageClassName
         )}
         referrerPolicy="no-referrer"
@@ -159,6 +170,12 @@ export function DefaultPageBackground({
           />
         </>
       )}
+
+      {/* Léger dégradé noir subtil et très transparent de haut en bas pour rehausser la lisibilité de la topbar */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/55 via-black/15 via-25% to-transparent transition-opacity duration-700"
+      />
 
       {/* Voile sombre d'ambiance et de lisibilité directement intégré dans le système d'arrière-plan */}
       {showDarkWash && (
@@ -291,6 +308,7 @@ export function GlobalPageBackground() {
       <DefaultPageBackground
         imageSrc={config.imageSrc}
         imageAlt={config.imageAlt}
+        imageFit={config.imageFit}
         className={config.className}
         imageClassName={config.imageClassName}
         overlayClassName={config.overlayClassName}
@@ -320,6 +338,7 @@ export function PageBackground({
   customComponent,
   imageSrc,
   imageAlt,
+  imageFit,
   className,
   imageClassName,
   overlayClassName,
@@ -338,6 +357,7 @@ export function PageBackground({
       customComponent,
       imageSrc,
       imageAlt,
+      imageFit,
       className,
       imageClassName,
       overlayClassName,
@@ -358,6 +378,7 @@ export function PageBackground({
     customComponent,
     imageSrc,
     imageAlt,
+    imageFit,
     className,
     imageClassName,
     overlayClassName,
