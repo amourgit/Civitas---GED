@@ -23,12 +23,12 @@ export const EgenLogo: React.FC<EgenLogoProps> = ({
 
   return (
     <div className={`inline-flex items-center select-none ${className}`}>
-      {/* Official Uploaded EGEN Logo Image */}
-      <div className={`relative flex items-center shrink-0 ${currentHeight} overflow-hidden rounded-md bg-white p-0.5 shadow-xs transition-transform hover:scale-[1.01]`}>
+      {/* Official Uploaded EGEN Logo Image (Transparent) */}
+      <div className={`relative flex items-center shrink-0 ${currentHeight} transition-transform hover:scale-[1.02]`}>
         <img
-          src="/assets/egen_logo_official.png"
+          src="/assets/egen_logo_official.png?v=transparent"
           alt="EGEN — Écosystème Gouvernemental de l’Économie Numérique"
-          className="h-full w-auto object-contain mix-blend-multiply"
+          className="h-full w-auto object-contain drop-shadow-[0_1px_4px_rgba(0,0,0,0.3)]"
           referrerPolicy="no-referrer"
         />
       </div>

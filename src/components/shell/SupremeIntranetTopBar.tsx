@@ -43,6 +43,7 @@ import {
   LogOut,
   Grid,
   Newspaper,
+  Megaphone,
   BarChart3,
   Database
 } from 'lucide-react';
@@ -207,8 +208,26 @@ export function SupremeIntranetTopBar({
   };
 
   const desktopNavItems = React.useMemo<NavItem[]>(() => {
-    return currentWorkspace.navItems.map((navItem) => ({
+    const homeItem: NavItem = {
+      id: 1,
+      label: "Accueil",
+      link: "/",
+      onClick: () => {
+        playXboxSound('select');
+        navigate('/');
+      }
+    };
+
+    const workspaceItems: NavItem[] = (currentWorkspace.navItems || []).map((navItem) => ({
       ...navItem,
+      onClick: () => {
+        playXboxSound('select');
+        if (navItem.link) {
+          navigate(navItem.link);
+        } else if (onShowNotification) {
+          onShowNotification(`${navItem.label} (${currentWorkspace.name})`, 'info');
+        }
+      },
       subMenus: navItem.subMenus?.map((subMenu) => ({
         ...subMenu,
         items: subMenu.items.map((item) => ({
@@ -233,12 +252,14 @@ export function SupremeIntranetTopBar({
         }))
       }))
     }));
+
+    return [homeItem, ...workspaceItems];
   }, [currentWorkspace, setWorkspaceId, navigate, onShowNotification]);
 
   return (
-    <div ref={menuRef} className="w-full shrink-0 z-50 select-none relative font-sans text-slate-800 overflow-visible">
+    <div ref={menuRef} className="w-full shrink-0 z-50 select-none relative font-sans text-slate-100 overflow-visible">
       {/* 1. SUPREME TOPBAR: EXACT POWELL SOFTWARE LIGHT INTRANET TOPBAR */}
-      <header className="w-full bg-white border-b border-slate-200/80 shadow-xs transition-colors overflow-visible flex flex-col">
+      <header className="w-full bg-transparent border-b border-white/10 transition-colors overflow-visible flex flex-col">
         {/* ROW 1: BRAND & ACTIONS TOP ROW */}
         <div className="w-full px-2 sm:px-4 md:px-6 lg:px-7 h-11 sm:h-12 flex items-center justify-between gap-1.5 sm:gap-2">
           
@@ -252,14 +273,14 @@ export function SupremeIntranetTopBar({
                 playXboxSound('toggle');
                 setIsMobileMenuOpen(prev => !prev);
               }}
-              className="sm:hidden p-1 -ml-0.5 text-slate-600 hover:text-[#008080] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center shrink-0"
+              className="sm:hidden p-1 -ml-0.5 text-slate-300 hover:text-teal-400 hover:bg-white/10 rounded-lg transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center shrink-0"
               title="Menu Intranet"
               aria-label="Menu Intranet"
             >
               {isMobileMenuOpen ? (
-                <X className="w-4.5 h-4.5 text-slate-700" />
+                <X className="w-4.5 h-4.5 text-slate-200" />
               ) : (
-                <Menu className="w-4.5 h-4.5 text-slate-700" />
+                <Menu className="w-4.5 h-4.5 text-slate-200" />
               )}
             </button>
 
@@ -288,18 +309,18 @@ export function SupremeIntranetTopBar({
                   playXboxSound('toggle');
                   setIsWorkspaceDropdownOpen(prev => !prev);
                 }}
-                className="group flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-teal-50/90 sm:bg-slate-100/90 hover:bg-teal-100/80 sm:hover:bg-slate-200/90 border border-teal-200/80 sm:border-slate-200 text-slate-700 hover:text-slate-900 transition-all cursor-pointer shadow-2xs text-[11px] sm:text-xs font-semibold max-w-[110px] xs:max-w-[145px] sm:max-w-none"
+                className="group flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-slate-200 hover:text-white transition-all cursor-pointer shadow-2xs text-[11px] sm:text-xs font-semibold max-w-[110px] xs:max-w-[145px] sm:max-w-none"
                 title={`Espace actuel : ${currentWorkspace.name} (Changer d'espace)`}
               >
                 <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-60"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-teal-600"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-teal-400"></span>
                 </span>
-                <span className="hidden md:inline text-slate-400 font-normal">Espace :</span>
-                <span className="text-teal-800 font-bold truncate max-w-[65px] xs:max-w-[95px] sm:max-w-[130px]">
+                <span className="hidden md:inline text-slate-300 font-normal">Espace :</span>
+                <span className="text-teal-300 font-bold truncate max-w-[65px] xs:max-w-[95px] sm:max-w-[130px]">
                   {currentWorkspace.name}
                 </span>
-                <ChevronDown className={`w-3 h-3 text-teal-600 sm:text-slate-400 shrink-0 transition-transform duration-200 ${isWorkspaceDropdownOpen ? 'rotate-180 text-teal-700' : ''}`} />
+                <ChevronDown className={`w-3 h-3 text-teal-400 sm:text-slate-300 shrink-0 transition-transform duration-200 ${isWorkspaceDropdownOpen ? 'rotate-180 text-teal-300' : ''}`} />
               </button>
 
               {/* Workspace Dropdown Panel */}
@@ -366,7 +387,7 @@ export function SupremeIntranetTopBar({
                   playXboxSound('toggle');
                 }
               }}
-              className="p-1 sm:p-1.5 text-slate-500 hover:text-[#008080] transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible"
+              className="p-1 sm:p-1.5 text-slate-300 hover:text-teal-400 transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible"
               title="Rechercher dans tout l'intranet"
               aria-label="Recherche Intranet"
             >
@@ -406,12 +427,12 @@ export function SupremeIntranetTopBar({
             <button
               type="button"
               onClick={() => handleMenuClick('lang')}
-              className="flex items-center gap-0.5 sm:gap-1 text-[12px] sm:text-[13px] font-medium text-slate-600 hover:text-[#008080] transition-colors cursor-pointer bg-transparent border-none px-1 py-1 overflow-visible"
+              className="flex items-center gap-0.5 sm:gap-1 text-[12px] sm:text-[13px] font-medium text-slate-300 hover:text-teal-400 transition-colors cursor-pointer bg-transparent border-none px-1 py-1 overflow-visible"
               title="Changer de langue"
             >
-              <Globe className="w-3.5 h-3.5 sm:hidden text-slate-500" />
+              <Globe className="w-3.5 h-3.5 sm:hidden text-slate-300" />
               <span className="hidden sm:inline">{currentLang}</span>
-              <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 transition-transform duration-200 ${activeMenu === 'lang' ? 'rotate-180 text-[#008080]' : ''}`} />
+              <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 transition-transform duration-200 ${activeMenu === 'lang' ? 'rotate-180 text-teal-400' : ''}`} />
             </button>
 
             {/* Language Dropdown */}
@@ -436,27 +457,27 @@ export function SupremeIntranetTopBar({
           </div>
 
           {/* 3. Subtle Vertical Separator Line */}
-          <div className="hidden sm:block h-4 sm:h-4.5 w-px bg-slate-300/80 mx-0.5" />
+          <div className="hidden sm:block h-4 sm:h-4.5 w-px bg-white/20 mx-0.5" />
 
           {/* 4. App Launcher Grid Icon with Red Facebook-style Floating Notification Badge "2" */}
           <div className="relative overflow-visible flex items-center">
             <button
               type="button"
               onClick={() => handleMenuClick('appLauncher')}
-              className="relative p-1 text-[#008080] hover:text-emerald-700 transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible group"
+              className="relative p-1 text-teal-400 hover:text-teal-300 transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible group"
               title="Lanceur d'applications de l'intranet"
               aria-label="Lanceur d'applications"
             >
               {/* 4-square grid / Waffle icon in teal */}
               <div className="w-4.5 h-4.5 sm:w-5 sm:h-5 flex flex-wrap gap-0.5 items-center justify-center p-0.5">
-                <div className="w-1.5 h-1.5 rounded-[2px] bg-[#008080] group-hover:bg-emerald-700 transition-colors" />
-                <div className="w-1.5 h-1.5 rounded-[2px] bg-[#008080] group-hover:bg-emerald-700 transition-colors" />
-                <div className="w-1.5 h-1.5 rounded-[2px] bg-[#008080] group-hover:bg-emerald-700 transition-colors" />
-                <div className="w-1.5 h-1.5 rounded-[2px] bg-[#008080] group-hover:bg-emerald-700 transition-colors" />
+                <div className="w-1.5 h-1.5 rounded-[2px] bg-teal-400 group-hover:bg-teal-300 transition-colors" />
+                <div className="w-1.5 h-1.5 rounded-[2px] bg-teal-400 group-hover:bg-teal-300 transition-colors" />
+                <div className="w-1.5 h-1.5 rounded-[2px] bg-teal-400 group-hover:bg-teal-300 transition-colors" />
+                <div className="w-1.5 h-1.5 rounded-[2px] bg-teal-400 group-hover:bg-teal-300 transition-colors" />
               </div>
 
               {/* Red Badge "2" - Facebook notification style (Unclipped, perfectly floating at top right) */}
-              <span className="absolute -top-1.5 -right-2 bg-[#E41E3F] text-white text-[9px] sm:text-[10px] font-bold min-w-[16px] sm:min-w-[17px] h-[16px] sm:h-[17px] px-1 rounded-full flex items-center justify-center shadow-md ring-2 ring-white leading-none pointer-events-none z-30">
+              <span className="absolute -top-1.5 -right-2 bg-[#E41E3F] text-white text-[9px] sm:text-[10px] font-bold min-w-[16px] sm:min-w-[17px] h-[16px] sm:h-[17px] px-1 rounded-full flex items-center justify-center shadow-md ring-2 ring-slate-900 leading-none pointer-events-none z-30">
                 2
               </span>
             </button>
@@ -498,6 +519,8 @@ export function SupremeIntranetTopBar({
                               <ShieldCheck className="w-5 h-5 text-teal-100" />
                             ) : app.icon === 'Newspaper' ? (
                               <Newspaper className="w-5 h-5 text-teal-100" />
+                            ) : app.icon === 'Megaphone' ? (
+                              <Megaphone className="w-5 h-5 text-teal-100" />
                             ) : (
                               <Grid className="w-5 h-5 text-teal-100" />
                             )}
@@ -556,7 +579,7 @@ export function SupremeIntranetTopBar({
             <button
               type="button"
               onClick={() => handleMenuClick('create')}
-              className="p-1 text-[#008080] hover:text-emerald-700 transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible"
+              className="p-1 text-teal-400 hover:text-teal-300 transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible"
               title="Créer un nouveau contenu ou document"
               aria-label="Créer"
             >
@@ -599,7 +622,7 @@ export function SupremeIntranetTopBar({
             <button
               type="button"
               onClick={() => handleMenuClick('settings')}
-              className="p-1 text-slate-500 hover:text-[#008080] transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible"
+              className="p-1 text-slate-300 hover:text-teal-400 transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible"
               title="Paramètres de l'intranet"
               aria-label="Paramètres"
             >
@@ -639,7 +662,7 @@ export function SupremeIntranetTopBar({
             <button
               type="button"
               onClick={() => handleMenuClick('profile')}
-              className="w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-full overflow-hidden border border-slate-300 hover:border-[#008080] shadow-2xs shrink-0 bg-slate-100 ml-0.5 sm:ml-1 cursor-pointer transition-all duration-150 hover:ring-2 hover:ring-[#008080]/25 flex items-center justify-center p-0 focus:outline-none aspect-square"
+              className="w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-full overflow-hidden border border-white/30 hover:border-teal-400 shadow-2xs shrink-0 bg-slate-800 ml-0.5 sm:ml-1 cursor-pointer transition-all duration-150 hover:ring-2 hover:ring-teal-400/30 flex items-center justify-center p-0 focus:outline-none aspect-square"
               title="Profil Utilisateur"
               aria-label="Menu Profil"
             >
@@ -717,14 +740,33 @@ export function SupremeIntranetTopBar({
             </AnimatePresence>
           </div>
 
+          {/* 8. Date & Heure (visibles sur tablette et desktop, masquées sur mobile) */}
+          <div className="hidden sm:flex flex-col items-end justify-center text-right select-none pl-2 sm:pl-3 ml-0.5 sm:ml-1 border-l border-white/15 shrink-0">
+            <span className="text-white font-bold text-xs sm:text-[13px] tracking-tight leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+              {timeStr}
+            </span>
+            <span className="text-[10px] sm:text-[11px] text-white/50 font-normal tracking-tight leading-tight mt-0.5 capitalize whitespace-nowrap">
+              {dateLongStr}
+            </span>
+          </div>
+
         </div>
         </div>
+
+        {/* ROW 2: NIVEAU 2 DE LA TOPBAR PRINCIPALE (NAVIGATION PAR ESPACE DE TRAVAIL) */}
+        {!isGedRoute && (
+          <div className="w-full border-t border-white/10 bg-transparent px-2 sm:px-4 md:px-6 lg:px-7 h-10 sm:h-11 flex items-center justify-start overflow-visible z-30">
+            <div className="w-full max-w-7xl mx-auto flex items-center overflow-visible">
+              <DropdownNavigation navItems={desktopNavItems} />
+            </div>
+          </div>
+        )}
 
       </header>
 
       {/* 2. DEUXIÈME NIVEAU (INFÉRIEUR) : TOPBAR EXTENSIBLE DE L'APPLICATION ACTIVE (GED / EGEN) - UNIQUEMENT SI DANS LA GED */}
       {isGedRoute && (
-        <div className="w-full bg-[#070d14]/95 backdrop-blur-md border-b border-white/[0.08] text-white px-2 sm:px-4 md:px-6 lg:px-7 h-12 flex items-center justify-between shadow-md transition-all overflow-visible z-40 relative">
+        <div className="w-full bg-transparent border-b border-white/10 text-white px-2 sm:px-4 md:px-6 lg:px-7 h-12 flex items-center justify-between shadow-none transition-all overflow-visible z-40 relative">
           
           {/* ZONE GAUCHE : Logo/App Identity + Status Badge + Slot Extensible Gauche */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 overflow-visible">
@@ -783,22 +825,13 @@ export function SupremeIntranetTopBar({
             {appSlotCenter || null}
           </div>
 
-          {/* ZONE DROITE : Heure & Date longue au format discret/réduit */}
+          {/* ZONE DROITE : Slot Extensible Droit */}
           <div className="flex items-center gap-2 shrink-0 overflow-visible">
             {appSlotRight && (
-              <div className="flex items-center gap-1 pr-1 border-r border-white/10">
+              <div className="flex items-center gap-1">
                 {appSlotRight}
               </div>
             )}
-
-            <div className="flex flex-col items-end justify-center text-right select-none pr-1">
-              <span className="text-white font-bold text-xs sm:text-sm tracking-tight leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                {timeStr}
-              </span>
-              <span className="text-[10px] sm:text-[11px] text-white/50 font-normal tracking-tight leading-tight mt-0.5 capitalize">
-                {dateLongStr}
-              </span>
-            </div>
           </div>
 
         </div>
@@ -874,176 +907,79 @@ export function SupremeIntranetTopBar({
                 )}
               </div>
 
-              {/* Administration Accordion */}
-              <div className="rounded-xl overflow-hidden border border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => toggleMobileCategory('administration')}
-                  className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <ShieldCheck className="w-4 h-4 text-[#008080]" />
-                    <span>Administration</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${expandedMobileCategory === 'administration' ? 'rotate-180' : ''}`} />
-                </button>
-                {expandedMobileCategory === 'administration' && (
-                  <div className="bg-slate-50/80 px-4 py-2 space-y-1.5 border-t border-slate-100 text-xs">
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Gestion Utilisateurs & Rôles"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Utilisateurs & Rôles
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Droits d'accès & Sécurité"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Droits & Sécurité
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Journaux d'audit & Flux"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Journaux d'audit & Flux
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Configuration Système"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Configuration Système
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Raccourci Accordion */}
-              <div className="rounded-xl overflow-hidden border border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => toggleMobileCategory('raccourci')}
-                  className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Zap className="w-4 h-4 text-amber-500" />
-                    <span>Raccourci</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${expandedMobileCategory === 'raccourci' ? 'rotate-180' : ''}`} />
-                </button>
-                {expandedMobileCategory === 'raccourci' && (
-                  <div className="bg-slate-50/80 px-4 py-2 space-y-1.5 border-t border-slate-100 text-xs">
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Bordereaux en cours"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Bordereaux en cours
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Recherche Express"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Recherche Express
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Documents récents"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Documents récents
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Scanner & Import"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Scanner & Import rapide
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Favori Accordion */}
-              <div className="rounded-xl overflow-hidden border border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => toggleMobileCategory('favori')}
-                  className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                    <span>Favori</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${expandedMobileCategory === 'favori' ? 'rotate-180' : ''}`} />
-                </button>
-                {expandedMobileCategory === 'favori' && (
-                  <div className="bg-slate-50/80 px-4 py-2 space-y-1.5 border-t border-slate-100 text-xs">
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Dossiers épinglés"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Dossiers épinglés
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Bordereaux suivis"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Bordereaux suivis
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Modèles types d'archivage"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Modèles types
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Espaces favoris"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Espaces favoris
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Paramètre Accordion */}
-              <div className="rounded-xl overflow-hidden border border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => toggleMobileCategory('parametre')}
-                  className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <SlidersHorizontal className="w-4 h-4 text-[#008080]" />
-                    <span>Paramètre</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${expandedMobileCategory === 'parametre' ? 'rotate-180' : ''}`} />
-                </button>
-                {expandedMobileCategory === 'parametre' && (
-                  <div className="bg-slate-50/80 px-4 py-2 space-y-1.5 border-t border-slate-100 text-xs">
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Affichage & Thème"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Affichage & Thème
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Alertes & Notifications"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Alertes & Notifications
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Langue & Formats"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Langue & Formats
-                    </button>
-                    <button 
-                      onClick={() => { setIsMobileMenuOpen(false); notify("Workflows de validation"); }}
-                      className="w-full text-left py-1.5 text-slate-600 hover:text-[#008080] block"
-                    >
-                      Workflows de validation
-                    </button>
-                  </div>
-                )}
+              {/* Dynamic Workspace Navigation Accordions */}
+              <div className="pt-2 pb-1 border-t border-slate-100">
+                <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
+                  <span>Navigation — {currentWorkspace.name}</span>
+                </p>
+                <div className="space-y-1.5">
+                  {desktopNavItems.map((item) => {
+                    const hasSubMenus = item.subMenus && item.subMenus.length > 0;
+                    const isExpanded = expandedMobileCategory === String(item.id);
+                    return (
+                      <div key={item.id} className="rounded-xl overflow-hidden border border-slate-100 bg-white">
+                        {hasSubMenus ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => toggleMobileCategory(String(item.id))}
+                              className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
+                            >
+                              <span className="font-semibold text-xs">{item.label}</span>
+                              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-[#008080]' : ''}`} />
+                            </button>
+                            {isExpanded && (
+                              <div className="bg-slate-50/80 px-3 py-2 space-y-3 border-t border-slate-100 text-xs">
+                                {item.subMenus?.map((sub) => (
+                                  <div key={sub.title} className="space-y-1.5">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                      {sub.title}
+                                    </div>
+                                    <div className="space-y-1">
+                                      {sub.items.map((subItem) => {
+                                        const IconComp = subItem.icon;
+                                        return (
+                                          <button
+                                            key={subItem.label}
+                                            onClick={() => {
+                                              setIsMobileMenuOpen(false);
+                                              if (subItem.onClick) subItem.onClick();
+                                            }}
+                                            className="w-full flex items-center gap-2.5 py-1.5 px-2 rounded-lg text-left text-slate-600 hover:bg-slate-100 hover:text-[#008080] transition-colors"
+                                          >
+                                            {IconComp && <IconComp className="w-3.5 h-3.5 text-teal-600 shrink-0" />}
+                                            <div className="flex flex-col min-w-0">
+                                              <span className="font-medium text-xs text-slate-800 truncate">{subItem.label}</span>
+                                              {subItem.description && (
+                                                <span className="text-[10px] text-slate-400 truncate">{subItem.description}</span>
+                                              )}
+                                            </div>
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsMobileMenuOpen(false);
+                              if (item.onClick) item.onClick();
+                            }}
+                            className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
+                          >
+                            <span className="font-semibold text-xs">{item.label}</span>
+                            <ChevronRight className="w-4 h-4 text-slate-300" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 

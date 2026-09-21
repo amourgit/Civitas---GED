@@ -161,14 +161,14 @@ export function PortalBlogSection({ onShowToast, className = '' }: PortalBlogSec
   return (
     <section 
       id="section-actualite-blog"
-      aria-label="Section Actualités et Blog"
+      aria-label="Section News & Actualités"
       className={`w-full bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 shadow-2xl border border-slate-200/80 text-slate-900 transition-all ${className}`}
     >
       {/* ── 1. Header Identique au Pixel Près ── */}
       <div className="w-full flex flex-col items-start text-left">
         {/* Titre avec typographie Monospace exacte du visuel */}
         <h2 className="font-mono font-bold tracking-tight text-3xl sm:text-4xl text-slate-900 leading-tight">
-          Blog &nbsp;Section
+          News &amp; Actualités
         </h2>
 
         {/* Sous-titre exact du visuel */}

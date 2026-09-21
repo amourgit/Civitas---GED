@@ -176,51 +176,11 @@ export function HeroCarousel({
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
       className={cn(
-        "relative h-full w-full overflow-hidden bg-black text-white select-none flex flex-col justify-between",
+        "relative h-full w-full overflow-hidden bg-transparent text-white select-none flex flex-col justify-between",
         "outline-none focus-visible:ring-1 focus-visible:ring-white/40 focus-visible:ring-inset",
         className
       )}
     >
-      {/* ── Background: the focused photo, blown up and re-hued to its accent ── */}
-      <AnimatePresence initial={false}>
-        <motion.div
-          key={index}
-          className="absolute inset-0 z-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={swing}
-        >
-          <motion.img
-            src={active.image}
-            alt=""
-            aria-hidden
-            draggable={false}
-            className="absolute inset-0 h-full w-full object-cover"
-            initial={{ scale: reduced ? 1.28 : 1.42 }}
-            animate={{ scale: 1.28 }}
-            transition={reduced ? { duration: 0 } : { duration: 6, ease: "linear" }}
-          />
-          {/* Keep the photo's luminance, take the accent's hue. */}
-          <div
-            className="absolute inset-0"
-            style={{ backgroundColor: accent, mixBlendMode: "color" }}
-          />
-          <div
-            className="absolute inset-0 opacity-55"
-            style={{ backgroundColor: accent, mixBlendMode: "multiply" }}
-          />
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Legibility wash + grain, above the swap so they never flicker. */}
-      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/60 via-black/35 to-black/80" />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-[2] opacity-[0.22] mix-blend-overlay"
-        style={{ backgroundImage: GRAIN, backgroundSize: "180px 180px" }}
-      />
-
       {/* ── Top bar: centred brand only (no top navigation buttons) ── */}
       {brand ? (
         <div

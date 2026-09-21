@@ -12,6 +12,8 @@ export interface RandomLetterSwapProps extends React.HTMLAttributes<HTMLDivEleme
   href?: string;
   key?: React.Key;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
+  disableDefaultNavigation?: boolean;
+  forceHover?: boolean;
   [key: string]: any;
 }
 
@@ -30,9 +32,12 @@ export function RandomLetterSwap({
   className = "",
   href,
   onClick,
+  disableDefaultNavigation = false,
+  forceHover,
   ...props
 }: RandomLetterSwapProps) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHoveredInternal, setIsHoveredInternal] = useState(false);
+  const isHovered = forceHover !== undefined ? forceHover : isHoveredInternal;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -56,7 +61,7 @@ export function RandomLetterSwap({
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (onClick) {
       onClick(e);
-    } else {
+    } else if (!disableDefaultNavigation) {
       navigate(targetUrl);
     }
   };
@@ -72,8 +77,8 @@ export function RandomLetterSwap({
           handleClick(e as unknown as React.MouseEvent<HTMLDivElement>);
         }
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setIsHoveredInternal(true)}
+      onMouseLeave={() => setIsHoveredInternal(false)}
       className={`inline-flex items-center select-none relative transition-colors ${className} ${
         isActive ? "!text-white font-semibold" : ""
       }`}

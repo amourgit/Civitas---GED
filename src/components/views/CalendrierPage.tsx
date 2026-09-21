@@ -15,7 +15,9 @@ import {
   ArrowLeft,
   CalendarDays,
   Bell,
-  CheckCircle2
+  CheckCircle2,
+  Megaphone,
+  Newspaper
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { playXboxSound } from '../../utils/xboxAudio';
@@ -106,24 +108,75 @@ export function CalendrierPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono text-sky-400">
+            <div className="inline-flex items-center gap-2 text-xs font-mono text-amber-400">
               <CalendarDays className="w-4 h-4" />
-              <span>APPLICATION INTRANET : CALENDRIER & ÉVÉNEMENTS</span>
+              <span>AGENDA & PLANNING • PLANIFIER & SYNCHRONISER</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Planning & Réservations d'Espaces
+              Agenda & Planning d'Entreprise
             </h1>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Information temporelle et événementielle : réunions, formations, conférences, cérémonies et échéances.
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => playXboxSound('select')}
-            className="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-sm flex items-center gap-2 shadow-lg shadow-sky-500/20 transition-all cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold text-sm flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" strokeWidth={2.5} />
             <span>Nouvel Événement</span>
           </button>
+        </div>
+      </div>
+
+      {/* ── SECTION PÉDAGOGIQUE DES 3 APPLICATIONS DE DIFFUSION ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs">
+        <button 
+          onClick={() => { playXboxSound('select'); navigate('/actualites'); }}
+          className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/10 transition-colors text-left group cursor-pointer"
+        >
+          <div className="p-2 rounded-lg bg-sky-500/20 text-sky-300 group-hover:bg-sky-500/30">
+            <Newspaper className="w-4 h-4" />
+          </div>
+          <div className="flex-1">
+            <div className="font-bold text-slate-200 group-hover:text-white flex items-center justify-between">
+              <span>📰 Actualités & Publications</span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
+            </div>
+            <p className="text-slate-400 text-[11px]">Informer & expliquer • Information durable</p>
+          </div>
+        </button>
+
+        <button 
+          onClick={() => { playXboxSound('select'); navigate('/annonces'); }}
+          className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/10 transition-colors text-left group cursor-pointer"
+        >
+          <div className="p-2 rounded-lg bg-teal-500/20 text-teal-300 group-hover:bg-teal-500/30">
+            <Megaphone className="w-4 h-4" />
+          </div>
+          <div className="flex-1">
+            <div className="font-bold text-slate-200 group-hover:text-white flex items-center justify-between">
+              <span>📢 Annonces</span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
+            </div>
+            <p className="text-slate-400 text-[11px]">Avertir & cibler • Information immédiate et ciblée</p>
+          </div>
+        </button>
+
+        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.02]">
+          <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300">
+            <CalendarDays className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="font-bold text-white flex items-center gap-1.5">
+              <span>📅 Agenda</span>
+              <span className="text-[10px] text-amber-400 bg-amber-500/10 px-1.5 py-0.2 rounded font-normal">Page active</span>
+            </div>
+            <p className="text-slate-400 text-[11px]">Planifier & synchroniser • Dimension temporelle</p>
+          </div>
         </div>
       </div>
 

@@ -57,6 +57,7 @@ import { ApplicationsGridPage } from './components/views/ApplicationsGridPage';
 import { CalendrierPage } from './components/views/CalendrierPage';
 import { AnnuairePage } from './components/views/AnnuairePage';
 import { ActualitesPage } from './components/views/ActualitesPage';
+import { AnnoncesPage } from './components/views/AnnoncesPage';
 import { SuiviDossiersPage } from './components/views/SuiviDossiersPage';
 import { CirculationPage } from './components/views/CirculationPage';
 import { PilotagePage } from './components/views/PilotagePage';
@@ -673,9 +674,6 @@ function AppContent() {
         onCreateFolder={handleCreateFolder}
       />
 
-      {/* ── Navigation RandomLetterSwapNav (remplace la navigation du haut) ── */}
-      {isNavPage && <RandomLetterSwapNav />}
-
       {/* ── Conteneur global défilable permettant d'atteindre le footer une fois le scroll du composant parent terminé ── */}
       <div 
         ref={outerScrollRef}
@@ -725,6 +723,8 @@ function AppContent() {
             <Route path="/annuaire/*" element={<AnnuairePage />} />
             <Route path="/actualites" element={<ActualitesPage />} />
             <Route path="/actualites/*" element={<ActualitesPage />} />
+            <Route path="/annonces" element={<AnnoncesPage />} />
+            <Route path="/annonces/*" element={<AnnoncesPage />} />
             <Route path="/projets" element={<SitesPage />} />
             <Route path="/rh" element={<SuiviDossiersPage />} />
 

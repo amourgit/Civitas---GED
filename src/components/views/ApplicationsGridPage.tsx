@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  FolderOpen, Calendar, ShieldCheck, Newspaper, CheckCircle2, AlertCircle, Info, X, Grid, Layers, ArrowRight
+  FolderOpen, Calendar, ShieldCheck, Newspaper, Megaphone, CheckCircle2, AlertCircle, Info, X, Grid, Layers, ArrowRight
 } from 'lucide-react';
 import { GradientWave } from '../ui/GradientWave';
 import { PageBackground } from '../shell/PageBackground';
@@ -28,6 +28,8 @@ function renderAppIcon(iconName: string) {
       return <ShieldCheck className="w-7 h-7 text-teal-100" />;
     case 'Newspaper':
       return <Newspaper className="w-7 h-7 text-teal-100" />;
+    case 'Megaphone':
+      return <Megaphone className="w-7 h-7 text-teal-100" />;
     default:
       return <Grid className="w-7 h-7 text-teal-100" />;
   }

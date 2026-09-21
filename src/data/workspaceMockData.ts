@@ -2,7 +2,7 @@ import {
   Globe, Radio, Users, User, ShieldCheck, Lock, FileText, Settings, Zap, 
   Search, FolderOpen, CirclePlus, Star, Bookmark, Compass, SlidersHorizontal, 
   Sparkles, Layers, Briefcase, CalendarCheck, HelpCircle, FileCheck, HardDrive, 
-  ShieldAlert, BookOpen
+  ShieldAlert, BookOpen, Megaphone, Bell, Calendar, Newspaper
 } from 'lucide-react';
 import { Workspace } from '../types/workspace';
 import { INTRANET_APPS_MOCK } from './intranetAppsMock';
@@ -16,6 +16,129 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
     iconName: 'Users',
     apps: INTRANET_APPS_MOCK, // 4 apps: GED, Calendrier, IAM, Publication & News
     navItems: [
+      {
+        id: 10,
+        label: "News & Actualités",
+        link: "/actualites",
+        subMenus: [
+          {
+            title: "Actualités & Dossiers",
+            items: [
+              {
+                label: "À la Une",
+                description: "Les grands titres et reportages récents",
+                icon: Star,
+                link: "/actualites"
+              },
+              {
+                label: "Articles & Analyses",
+                description: "Analyses, tendances et retours d'expérience",
+                icon: BookOpen,
+                link: "/actualites"
+              }
+            ]
+          },
+          {
+            title: "Publications",
+            items: [
+              {
+                label: "Toutes les publications",
+                description: "Flux complet des parutions internes",
+                icon: Newspaper,
+                link: "/actualites"
+              },
+              {
+                label: "Revue de presse",
+                description: "Écosystème numérique et actualités secteur",
+                icon: Globe,
+                link: "/actualites"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 11,
+        label: "Annonces",
+        link: "/annonces",
+        subMenus: [
+          {
+            title: "Notes & Circulaires",
+            items: [
+              {
+                label: "Communiqués Officiels",
+                description: "Notes de service et communications de la Direction",
+                icon: Megaphone,
+                link: "/annonces"
+              },
+              {
+                label: "Flash Info Entreprise",
+                description: "Alertes et informations prioritaires du personnel",
+                icon: Radio,
+                link: "/annonces"
+              }
+            ]
+          },
+          {
+            title: "Affichages & Vie Interne",
+            items: [
+              {
+                label: "Notes administratives",
+                description: "Directives, règlements et notes internes",
+                icon: FileText,
+                link: "/annonces"
+              },
+              {
+                label: "Directives & Procédures",
+                description: "Protocoles, changements et consignes d'équipe",
+                icon: Sparkles,
+                link: "/annonces"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 12,
+        label: "Agenda",
+        link: "/calendrier",
+        subMenus: [
+          {
+            title: "Planning & Rendez-vous",
+            items: [
+              {
+                label: "Calendrier d'équipe",
+                description: "Vue d'ensemble et réunions planifiées",
+                icon: CalendarCheck,
+                link: "/calendrier"
+              },
+              {
+                label: "Événements à venir",
+                description: "Séminaires, formations et ateliers",
+                icon: Calendar,
+                link: "/calendrier"
+              }
+            ]
+          },
+          {
+            title: "Ressources & Disponibilités",
+            items: [
+              {
+                label: "Réservation de salles",
+                description: "Salles de réunion et équipements partagés",
+                icon: Compass,
+                link: "/calendrier"
+              },
+              {
+                label: "Jalons & Échéances",
+                description: "Calendrier des livrables et comités",
+                icon: Zap,
+                link: "/calendrier"
+              }
+            ]
+          }
+        ]
+      },
       {
         id: 2,
         label: "Administration",

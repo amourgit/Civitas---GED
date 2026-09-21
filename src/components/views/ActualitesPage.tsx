@@ -10,7 +10,10 @@ import {
   Share2, 
   ExternalLink,
   Sparkles,
-  Bookmark
+  Bookmark,
+  Megaphone,
+  Calendar,
+  ChevronRight
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { playXboxSound } from '../../utils/xboxAudio';
@@ -81,15 +84,77 @@ export function ActualitesPage() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono text-amber-400">
+            <div className="inline-flex items-center gap-2 text-xs font-mono text-sky-400">
               <Newspaper className="w-4 h-4" />
-              <span>APPLICATION INTRANET : ACTUALITÉS & COMMUNICATION</span>
+              <span>ACTUALITÉS & PUBLICATIONS • INFORMER & EXPLIQUER</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Journal & Notes de Service
+              Actualités & Publications
             </h1>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Information durable et éditorialisée : articles, dossiers de fond, bilans, interviews et reportages.
+            </p>
           </div>
         </div>
+
+        <button
+          onClick={() => {
+            playXboxSound('select');
+            navigate('/annonces');
+          }}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-teal-600/20 hover:bg-teal-600/30 text-teal-300 border border-teal-400/30 text-xs sm:text-sm font-semibold transition-all cursor-pointer"
+        >
+          <Megaphone className="w-4 h-4" />
+          <span>Voir les Annonces ciblées</span>
+        </button>
+      </div>
+
+      {/* ── SECTION PÉDAGOGIQUE DES 3 APPLICATIONS DE DIFFUSION ── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3.5 rounded-2xl bg-white/5 border border-white/10 text-xs">
+        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.02]">
+          <div className="p-2 rounded-lg bg-sky-500/20 text-sky-300">
+            <Newspaper className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="font-bold text-white flex items-center gap-1.5">
+              <span>📰 Actualités & Publications</span>
+              <span className="text-[10px] text-sky-400 bg-sky-500/10 px-1.5 py-0.2 rounded font-normal">Page active</span>
+            </div>
+            <p className="text-slate-400 text-[11px]">Informer & expliquer • Information durable</p>
+          </div>
+        </div>
+
+        <button 
+          onClick={() => { playXboxSound('select'); navigate('/annonces'); }}
+          className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/10 transition-colors text-left group cursor-pointer"
+        >
+          <div className="p-2 rounded-lg bg-teal-500/20 text-teal-300 group-hover:bg-teal-500/30">
+            <Megaphone className="w-4 h-4" />
+          </div>
+          <div className="flex-1">
+            <div className="font-bold text-slate-200 group-hover:text-white flex items-center justify-between">
+              <span>📢 Annonces</span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
+            </div>
+            <p className="text-slate-400 text-[11px]">Avertir & cibler • Information immédiate et ciblée</p>
+          </div>
+        </button>
+
+        <button 
+          onClick={() => { playXboxSound('select'); navigate('/calendrier'); }}
+          className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/10 transition-colors text-left group cursor-pointer"
+        >
+          <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300 group-hover:bg-amber-500/30">
+            <Calendar className="w-4 h-4" />
+          </div>
+          <div className="flex-1">
+            <div className="font-bold text-slate-200 group-hover:text-white flex items-center justify-between">
+              <span>📅 Agenda</span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
+            </div>
+            <p className="text-slate-400 text-[11px]">Planifier & synchroniser • Dimension temporelle</p>
+          </div>
+        </button>
       </div>
 
       {/* Featured Article */}

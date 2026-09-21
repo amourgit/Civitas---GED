@@ -26,15 +26,17 @@ import modernLockersImg from '../../assets/images/modern_closed_lockers_17894856
 import energyBgImg from '../../assets/images/gofast_energy_bg_1789114133846.jpg';
 import roomDoorImg from '../../assets/images/room_door_ajar_1789485559176.jpg';
 
-// Modular Sections
-import { MainMenuSection } from '../dashboard/MainMenuSection';
-import { MySitesSection } from '../dashboard/MySitesSection';
-import { ActionRequiredDocumentsSection } from '../dashboard/ActionRequiredDocumentsSection';
-import { MyActionsSection } from '../dashboard/MyActionsSection';
-import { FavoriteFoldersSection } from '../dashboard/FavoriteFoldersSection';
-import { DocumentTasksDeadlinesSection } from '../dashboard/DocumentTasksDeadlinesSection';
-import { IngestionSessionsSection } from '../dashboard/IngestionSessionsSection';
-import { RecentActivityAuditSection } from '../dashboard/RecentActivityAuditSection';
+// Modular Slide Pages (Chaque slide est une page entière montée sur la page physique unique /ged)
+import {
+  SlideModulesPage,
+  SlideSitesPage,
+  SlideActionsRequisesPage,
+  SlideMesActionsPage,
+  SlideFavorisPage,
+  SlideTachesPage,
+  SlideIngestionPage,
+  SlideAuditPage,
+} from '../ged/slides';
 
 interface AccueilPageProps {
   onNavigateToDocuments: () => void;
@@ -145,7 +147,7 @@ export function AccueilPage({
   ];
 
   return (
-    <div className="w-full h-full flex-1 flex flex-col relative overflow-hidden bg-black select-none">
+    <div className="w-full h-full flex-1 flex flex-col relative overflow-hidden bg-transparent select-none">
       <HeroCarousel
         items={carouselItems}
         index={activeSlideIndex}
@@ -172,7 +174,7 @@ export function AccueilPage({
           >
             {/* Slide 0: Menu Principal SGAI (Modules & Conservation Physique) */}
             {activeSlideIndex === 0 && (
-              <MainMenuSection
+              <SlideModulesPage
                 activeCardId={activeCardId}
                 setActiveCardId={setActiveCardId}
                 onNavigateToDocuments={handleGoToDocuments}
@@ -183,7 +185,7 @@ export function AccueilPage({
 
             {/* Slide 1: Mes Sites (Espaces Collaboratifs Alfresco) */}
             {activeSlideIndex === 1 && (
-              <MySitesSection
+              <SlideSitesPage
                 activeCardId={activeCardId}
                 setActiveCardId={setActiveCardId}
                 onNavigateToSites={() => {
@@ -195,7 +197,7 @@ export function AccueilPage({
 
             {/* Slide 2: Documents nécessitant une action (Signatures, Visas, Approbations) */}
             {activeSlideIndex === 2 && (
-              <ActionRequiredDocumentsSection
+              <SlideActionsRequisesPage
                 activeCardId={activeCardId}
                 setActiveCardId={setActiveCardId}
                 onNavigateToDocuments={handleGoToDocuments}
@@ -205,7 +207,7 @@ export function AccueilPage({
 
             {/* Slide 3: Mes actions (Workflow & Interventions personnelles) */}
             {activeSlideIndex === 3 && (
-              <MyActionsSection
+              <SlideMesActionsPage
                 activeCardId={activeCardId}
                 setActiveCardId={setActiveCardId}
                 onNavigateToDocuments={handleGoToDocuments}
@@ -215,7 +217,7 @@ export function AccueilPage({
 
             {/* Slide 4: Mes dossiers favoris & Arborescence */}
             {activeSlideIndex === 4 && (
-              <FavoriteFoldersSection
+              <SlideFavorisPage
                 activeCardId={activeCardId}
                 setActiveCardId={setActiveCardId}
                 onNavigateToDocuments={handleGoToDocuments}
@@ -224,7 +226,7 @@ export function AccueilPage({
 
             {/* Slide 5: Tâches documentaires & Échéances */}
             {activeSlideIndex === 5 && (
-              <DocumentTasksDeadlinesSection
+              <SlideTachesPage
                 activeCardId={activeCardId}
                 setActiveCardId={setActiveCardId}
                 onNavigateToDocuments={handleGoToDocuments}
@@ -234,7 +236,7 @@ export function AccueilPage({
 
             {/* Slide 6: Sessions d’ingestion en cours & Numérisation IA */}
             {activeSlideIndex === 6 && (
-              <IngestionSessionsSection
+              <SlideIngestionPage
                 activeCardId={activeCardId}
                 setActiveCardId={setActiveCardId}
                 onNavigateToIngestion={handleGoToIngestion}
@@ -243,7 +245,7 @@ export function AccueilPage({
 
             {/* Slide 7: Activité récente & Journal d'audit */}
             {activeSlideIndex === 7 && (
-              <RecentActivityAuditSection
+              <SlideAuditPage
                 activeCardId={activeCardId}
                 setActiveCardId={setActiveCardId}
                 onNavigateToDocuments={handleGoToDocuments}

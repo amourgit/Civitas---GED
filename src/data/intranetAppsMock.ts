@@ -2,7 +2,7 @@ export interface IntranetApp {
   id: string;
   name: string;
   description: string;
-  icon: 'FolderOpen' | 'Calendar' | 'ShieldCheck' | 'Newspaper';
+  icon: 'FolderOpen' | 'Calendar' | 'ShieldCheck' | 'Newspaper' | 'Megaphone';
   category: 'collaboration' | 'ged' | 'securite';
   status: string;
   url: string;
@@ -20,9 +20,27 @@ export const INTRANET_APPS_MOCK: IntranetApp[] = [
     url: '/ged'
   },
   {
+    id: 'actualites',
+    name: 'Actualités & Publications',
+    description: 'Informer et expliquer : journal interne, dossiers et articles durables',
+    icon: 'Newspaper',
+    category: 'collaboration',
+    status: 'En direct',
+    url: '/actualites'
+  },
+  {
+    id: 'annonces',
+    name: 'Annonces & Directives',
+    description: 'Avertir et cibler : notes de service, alertes et diffusion ciblée',
+    icon: 'Megaphone',
+    category: 'collaboration',
+    status: 'Direct',
+    url: '/annonces'
+  },
+  {
     id: 'calendrier',
-    name: 'Calendrier & Planning',
-    description: 'Planning des événements d\'équipe, réservations et échéances',
+    name: 'Agenda & Planning',
+    description: 'Planifier et synchroniser : réunions, événements et échéances',
     icon: 'Calendar',
     category: 'collaboration',
     status: 'En ligne',
@@ -36,14 +54,5 @@ export const INTRANET_APPS_MOCK: IntranetApp[] = [
     category: 'securite',
     status: 'Sécurisé',
     url: '/iam'
-  },
-  {
-    id: 'actualites',
-    name: 'Publication & News',
-    description: 'Journal interne d\'entreprise, communiqués et publications',
-    icon: 'Newspaper',
-    category: 'collaboration',
-    status: 'En direct',
-    url: '/actualites'
   }
 ];

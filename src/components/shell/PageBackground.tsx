@@ -1,10 +1,44 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { GradientWave } from '../ui/GradientWave';
 
 /**
  * Utilitaire pour concaténer les classes CSS de façon propre
  */
 export function cn(...classes: Array<string | undefined | null | false>) {
   return classes.filter(Boolean).join(' ');
+}
+
+/**
+ * Arrière-plan animé par défaut de l'intranet (WebGL GradientWave)
+ * Reproduit fidèlement le fond dynamique de la page racine (Home).
+ */
+export function AnimatedHomeBackground({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        'fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden select-none bg-[#030708]',
+        className
+      )}
+    >
+      <GradientWave
+        colors={["#008080", "#0b192c", "#0ea5e9", "#042f2e", "#0284c7", "#064e3b"]}
+        isPlaying={true}
+        shadowPower={8}
+        darkenTop={false}
+        noiseSpeed={0.00001}
+        noiseFrequency={[0.0001, 0.0009]}
+        deform={{ incline: 0.5, noiseAmp: 250, noiseFlow: 5 }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60 pointer-events-none" />
+      <div
+        className="absolute bottom-[-10%] left-[10%] w-[80%] h-[350px] rounded-full opacity-30 blur-[120px] pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse at center, rgba(16,185,129,0.3) 0%, rgba(6,78,59,0.12) 50%, transparent 80%)',
+        }}
+      />
+    </div>
+  );
 }
 
 /**
@@ -54,6 +88,17 @@ export interface DefaultBackgroundProps {
   showGlow?: boolean;
 
   /**
+   * Active ou désactive le voile sombre d'ambiance et de lisibilité
+   * @default true
+   */
+  showDarkWash?: boolean;
+
+  /**
+   * Couleur d'accentuation optionnelle pour teinter l'arrière-plan et le halo
+   */
+  accent?: string;
+
+  /**
    * Éléments enfants optionnels à injecter dans l'arrière-plan par défaut
    */
   children?: React.ReactNode;
@@ -62,19 +107,26 @@ export interface DefaultBackgroundProps {
 /**
  * Composant d'arrière-plan par défaut de l'application
  * Fournit l'habillage visuel immersif avec image bien visible, gradients d'ambiance et lueur Xbox.
- * Toutes ses couches acceptent des injections CSS directes via les props.
+ * Si aucune imageSrc n'est fournie, il affiche l'arrière-plan animé WebGL de la page d'accueil (Home).
  */
 export function DefaultPageBackground({
-  imageSrc = '/assets/cod_archive_vault.jpg',
-  imageAlt = "Arrière-plan Salle d'archivage moderne 3D",
+  imageSrc,
+  imageAlt = "Arrière-plan immersif",
   className,
   imageClassName,
   overlayClassName,
   glowClassName,
   showAtmosphere = false,
   showGlow = true,
+  showDarkWash = true,
+  accent,
   children,
 }: DefaultBackgroundProps) {
+  // Par défaut, si aucune image n'est spécifiée, afficher le background animé de la page racine de l'intranet (Home)
+  if (!imageSrc) {
+    return <AnimatedHomeBackground className={className} />;
+  }
+
   return (
     <div
       className={cn(
@@ -82,19 +134,51 @@ export function DefaultPageBackground({
         className
       )}
     >
-      {/* Image de fond principale - Pleine luminosité, clarté et netteté (aucun assombrissement imposé) */}
-      {imageSrc && (
-        <img
-          key={imageSrc}
-          src={imageSrc}
-          alt={imageAlt}
+      {/* Image de fond principale */}
+      <img
+        key={imageSrc}
+        src={imageSrc}
+        alt={imageAlt}
+        className={cn(
+          'absolute inset-0 w-full h-full object-cover object-center select-none opacity-95 transition-all duration-700 ease-out',
+          imageClassName
+        )}
+        referrerPolicy="no-referrer"
+      />
+
+      {/* Teinte d'accentuation dynamique si accent est spécifié */}
+      {accent && (
+        <>
+          <div
+            className="absolute inset-0 pointer-events-none transition-colors duration-700"
+            style={{ backgroundColor: accent, mixBlendMode: 'color', opacity: 0.35 }}
+          />
+          <div
+            className="absolute inset-0 pointer-events-none transition-colors duration-700"
+            style={{ backgroundColor: accent, mixBlendMode: 'multiply', opacity: 0.2 }}
+          />
+        </>
+      )}
+
+      {/* Voile sombre d'ambiance et de lisibilité directement intégré dans le système d'arrière-plan */}
+      {showDarkWash && (
+        <div
           className={cn(
-            'absolute inset-0 w-full h-full object-cover object-center select-none opacity-100 transition-all duration-700 ease-out',
-            imageClassName
+            'absolute inset-0 pointer-events-none bg-gradient-to-b from-black/45 via-black/20 to-black/70 transition-opacity duration-700',
+            overlayClassName
           )}
-          referrerPolicy="no-referrer"
         />
       )}
+
+      {/* Grain subtil de texture cinématographique au niveau de l'arrière-plan */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.12] mix-blend-overlay"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E")`,
+          backgroundSize: '180px 180px',
+        }}
+      />
 
       {/* Surcouche personnalisable sans dégradé sombre imposé */}
       {showAtmosphere && overlayClassName && (
@@ -106,16 +190,17 @@ export function DefaultPageBackground({
         />
       )}
 
-      {/* Halo lumineux émeraude Xbox subtil */}
+      {/* Halo lumineux Xbox subtil ou teinté avec la couleur d'accent */}
       {showGlow && (
         <div
           className={cn(
-            'absolute bottom-[-10%] left-[10%] w-[80%] h-[350px] rounded-full opacity-30 blur-[120px] pointer-events-none',
+            'absolute bottom-[-10%] left-[10%] w-[80%] h-[350px] rounded-full opacity-35 blur-[120px] pointer-events-none transition-all duration-700',
             glowClassName
           )}
           style={{
-            background:
-              'radial-gradient(ellipse at center, rgba(16,185,129,0.3) 0%, rgba(6,78,59,0.12) 50%, transparent 80%)',
+            background: accent
+              ? `radial-gradient(ellipse at center, ${accent}66 0%, ${accent}22 50%, transparent 80%)`
+              : 'radial-gradient(ellipse at center, rgba(16,185,129,0.3) 0%, rgba(6,78,59,0.12) 50%, transparent 80%)',
           }}
         />
       )}
@@ -181,7 +266,7 @@ export function usePageBackground() {
 /**
  * Rendu de l'arrière-plan global unique de l'application
  * Affiche soit la surcharge customComponent, soit DefaultPageBackground avec les props injectées,
- * soit le fond par défaut Xbox /background.jpg si aucune page n'a défini d'arrière-plan.
+ * soit le background animé par défaut de la page racine (Home) si aucune page n'a défini d'image.
  */
 export function GlobalPageBackground() {
   const { config } = usePageBackground();
@@ -200,29 +285,36 @@ export function GlobalPageBackground() {
     );
   }
 
-  // 2. Composant par défaut avec injection CSS et image spécifique de la page
-  return (
-    <DefaultPageBackground
-      imageSrc={config?.imageSrc || '/assets/cod_archive_vault.jpg'}
-      imageAlt={config?.imageAlt || "Arrière-plan Salle d'archivage moderne 3D"}
-      className={config?.className}
-      imageClassName={config?.imageClassName}
-      overlayClassName={config?.overlayClassName}
-      glowClassName={config?.glowClassName}
-      showAtmosphere={config?.showAtmosphere ?? false}
-      showGlow={config?.showGlow ?? true}
-    >
-      {config?.children}
-    </DefaultPageBackground>
-  );
+  // 2. Composant avec image spécifique de la page
+  if (config?.imageSrc) {
+    return (
+      <DefaultPageBackground
+        imageSrc={config.imageSrc}
+        imageAlt={config.imageAlt}
+        className={config.className}
+        imageClassName={config.imageClassName}
+        overlayClassName={config.overlayClassName}
+        glowClassName={config.glowClassName}
+        showAtmosphere={config.showAtmosphere ?? false}
+        showGlow={config.showGlow ?? true}
+        showDarkWash={config.showDarkWash ?? true}
+        accent={config.accent}
+      >
+        {config.children}
+      </DefaultPageBackground>
+    );
+  }
+
+  // 3. Par défaut : background animé de la page racine de l'intranet (Home)
+  return <AnimatedHomeBackground className={config?.className} />;
 }
 
 /**
  * Composant déclaratif d'arrière-plan pour une page :
  * - S'enregistre automatiquement auprès du PageBackgroundProvider global pendant sa durée de vie.
- * - Restaure l'état par défaut lors du démontage de la page.
+ * - Restaure l'état par défaut (fond animé) lors du démontage de la page.
  * - Supporte la surcharge totale via `customComponent` (composant React).
- * - Supporte l'injection CSS sur le composant par défaut (`className`, `imageClassName`, `overlayClassName`, `glowClassName`).
+ * - Supporte l'injection CSS et l'accent sur le composant par défaut (`imageSrc`, `accent`, `className`, etc.).
  */
 export function PageBackground({
   customComponent,
@@ -234,6 +326,8 @@ export function PageBackground({
   glowClassName,
   showAtmosphere,
   showGlow,
+  showDarkWash,
+  accent,
   children,
 }: PageBackgroundProps) {
   const { setPageBackground } = usePageBackground();
@@ -250,10 +344,12 @@ export function PageBackground({
       glowClassName,
       showAtmosphere,
       showGlow,
+      showDarkWash,
+      accent,
       children,
     });
 
-    // Nettoyage au démontage pour revenir au fond par défaut
+    // Nettoyage au démontage pour revenir au fond animé par défaut
     return () => {
       setPageBackground(null);
     };
@@ -268,6 +364,8 @@ export function PageBackground({
     glowClassName,
     showAtmosphere,
     showGlow,
+    showDarkWash,
+    accent,
     children,
   ]);
 
