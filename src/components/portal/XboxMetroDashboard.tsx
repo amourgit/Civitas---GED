@@ -13,6 +13,7 @@ import { usePortalCarousel } from '../../context/PortalCarouselContext';
 import { playXboxSound, xboxAudio } from '../../utils/xboxAudio';
 import { HeroMosaicGrid } from './HeroMosaicGrid';
 import { PortalBlogSection } from './PortalBlogSection';
+import { ClipPathLinks } from './ClipPathLinks';
 import { SophieProfileCard } from './SophieProfileCard';
 import { PortalQuickLinks } from './PortalQuickLinks';
 import { PortalTeamCalendar } from './PortalTeamCalendar';
@@ -69,6 +70,11 @@ export function XboxMetroDashboard({ onShowToast }: XboxMetroDashboardProps) {
                   {/* Section 2 : L'Actualité (Grille Blog Section) */}
                   <section className="w-full block">
                     <PortalBlogSection onShowToast={onShowToast} />
+                  </section>
+
+                  {/* Section 3 : Liens & Réseaux Sociaux (ClipPathLinks) */}
+                  <section className="w-full block">
+                    <ClipPathLinks />
                   </section>
                 </div>
 

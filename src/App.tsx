@@ -75,6 +75,7 @@ import { IngestionPage } from './components/views/IngestionPage';
 import { RepositoryPage } from './components/views/RepositoryPage';
 import { ScannerPage } from './components/views/ScannerPage';
 import { IngestionSidebar } from './components/ingestion/IngestionSidebar';
+import { NotFoundPage } from './components/views/NotFoundPage';
 import { InteractiveFolderModal } from './components/folder/InteractiveFolderModal';
 import { FolderPropertiesModal } from './components/folder/FolderPropertiesModal';
 import { GlobalSearchModal } from './components/search/GlobalSearchModal';
@@ -98,9 +99,101 @@ interface ToastData {
   type: ToastType;
 }
 
+const KNOWN_EXACT_ROUTES = new Set([
+  '/',
+  '/accueil',
+  '/home',
+  '/work',
+  '/about',
+  '/blog',
+  '/contact',
+  '/applications',
+  '/clouds',
+  '/calendrier',
+  '/annuaire',
+  '/actualites',
+  '/annonces',
+  '/projets',
+  '/rh',
+  '/ged',
+  '/ged/accueil',
+  '/ged/sites',
+  '/ged/dossiers',
+  '/ged/depots',
+  '/ged/repository',
+  '/ged/ingestion',
+  '/ged/scanner',
+  '/ged/recherche',
+  '/ged/suivi',
+  '/ged/circulation',
+  '/ged/rapports',
+  '/ged/pilotage',
+  '/ged/administration',
+  '/ged/documentation',
+  '/ged/documentation/salles',
+  '/ged/salles',
+  '/ged/documents',
+  '/sites',
+  '/dossiers',
+  '/services',
+  '/depots',
+  '/repository',
+  '/ingestion',
+  '/scanner',
+  '/recherche',
+  '/suivi',
+  '/circulation',
+  '/rapports',
+  '/pilotage',
+  '/administration',
+  '/documentation',
+  '/documentation/salles',
+  '/salles',
+  '/documents',
+]);
+
+const KNOWN_PREFIX_ROUTES = [
+  '/calendrier/',
+  '/annuaire/',
+  '/actualites/',
+  '/annonces/',
+  '/projets/',
+  '/rh/',
+  '/ged/sites/',
+  '/ged/dossiers/',
+  '/ged/documentation/',
+  '/ged/salle/',
+  '/ged/rayon/',
+  '/ged/casier/',
+  '/ged/dossier/',
+  '/sites/',
+  '/dossiers/',
+  '/services/',
+  '/documentation/',
+  '/salle/',
+  '/rayon/',
+  '/casier/',
+  '/dossier/',
+];
+
+function isKnownRoute(pathname: string): boolean {
+  if (pathname === '/404') return false;
+  if (KNOWN_EXACT_ROUTES.has(pathname)) return true;
+  for (const prefix of KNOWN_PREFIX_ROUTES) {
+    if (pathname.startsWith(prefix)) return true;
+  }
+  return false;
+}
+
 function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Route 404 dédiée: Affichage plein écran pur sans topbar ni shell
+  if (!isKnownRoute(location.pathname)) {
+    return <NotFoundPage />;
+  }
+
   const { rightContent } = useRightContent();
   const isHomePage = location.pathname === '/' || location.pathname === '/accueil';
   const isNavPage = 
@@ -897,7 +990,7 @@ function AppContent() {
             <Route path="/dossier/:slug" element={<Navigate to="/ged/documentation/salles" replace />} />
 
             {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
 
