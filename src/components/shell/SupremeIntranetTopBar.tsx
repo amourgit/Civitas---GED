@@ -170,6 +170,7 @@ export function SupremeIntranetTopBar({
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setActiveMenu(null);
         setIsSearchOpen(false);
+        setIsWorkspaceDropdownOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -239,101 +240,119 @@ export function SupremeIntranetTopBar({
       {/* 1. SUPREME TOPBAR: EXACT POWELL SOFTWARE LIGHT INTRANET TOPBAR */}
       <header className="w-full bg-white border-b border-slate-200/80 shadow-xs transition-colors overflow-visible flex flex-col">
         {/* ROW 1: BRAND & ACTIONS TOP ROW */}
-        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-7 h-12 flex items-center justify-between">
+        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-7 h-11 sm:h-12 flex items-center justify-between gap-1.5 sm:gap-2">
           
-          {/* LEFT SECTION: Hamburger (Mobile/Tablet) + Sidebar Button (à gauche du Logo) + Logo & Brand + Workspace Selector Pill */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-4 lg:gap-6 h-full min-w-0 overflow-visible">
-          
-          {/* Mobile Menu Button (Visible on screens < sm / mobile where sub-nav is collapsed) */}
-          <button
-            type="button"
-            onClick={() => {
-              playXboxSound('toggle');
-              setIsMobileMenuOpen(prev => !prev);
-            }}
-            className="sm:hidden p-1.5 -ml-1 text-slate-600 hover:text-[#008080] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center"
-            title="Menu Intranet"
-            aria-label="Menu Intranet"
-          >
-            {isMobileMenuOpen ? (
-              <X className="w-5 h-5 text-slate-700" />
-            ) : (
-              <Menu className="w-5 h-5 text-slate-700" />
-            )}
-          </button>
+          {/* LEFT SECTION: Hamburger (Mobile/Tablet) + Logo & Brand + Workspace Selector Pill */}
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-4 lg:gap-6 h-full min-w-0 flex-1 sm:flex-initial overflow-visible">
+            
+            {/* Mobile Menu Button (Visible on screens < sm / mobile where sub-nav is collapsed) */}
+            <button
+              type="button"
+              onClick={() => {
+                playXboxSound('toggle');
+                setIsMobileMenuOpen(prev => !prev);
+              }}
+              className="sm:hidden p-1 -ml-0.5 text-slate-600 hover:text-[#008080] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center shrink-0"
+              title="Menu Intranet"
+              aria-label="Menu Intranet"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-4.5 h-4.5 text-slate-700" />
+              ) : (
+                <Menu className="w-4.5 h-4.5 text-slate-700" />
+              )}
+            </button>
 
-          {/* EGEN Official Logo & Brand */}
-          <div 
-            onClick={() => {
-              playXboxSound('select');
-              navigate('/');
-            }}
-            className="flex items-center gap-2 sm:gap-2.5 cursor-pointer shrink-0 py-1 group overflow-visible hover:opacity-95 transition-opacity"
-            title="EGEN — Écosystème Gouvernemental de l’Économie Numérique"
-          >
-            <EgenLogo size="md" variant="full" />
-          </div>
+            {/* EGEN Official Logo & Brand */}
+            <div 
+              onClick={() => {
+                playXboxSound('select');
+                navigate('/');
+              }}
+              className="flex items-center cursor-pointer shrink-0 py-0.5 group overflow-visible hover:opacity-95 transition-opacity"
+              title="EGEN — Écosystème Gouvernemental de l’Économie Numérique"
+            >
+              <div className="block sm:hidden">
+                <EgenLogo size="sm" variant="full" />
+              </div>
+              <div className="hidden sm:block">
+                <EgenLogo size="md" variant="full" />
+              </div>
+            </div>
 
-          {/* Workspace Selector Dropdown Pill */}
-          <div className="relative ml-1 sm:ml-2">
+            {/* Workspace Selector Dropdown Pill (Minifié, attrayant et non débordant sur mobile) */}
+            <div className="relative min-w-0 shrink">
               <button
                 type="button"
                 onClick={() => {
                   playXboxSound('toggle');
                   setIsWorkspaceDropdownOpen(prev => !prev);
                 }}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200/90 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all cursor-pointer shadow-xs"
-                title="Changer d'espace de travail"
+                className="group flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-teal-50/90 sm:bg-slate-100/90 hover:bg-teal-100/80 sm:hover:bg-slate-200/90 border border-teal-200/80 sm:border-slate-200 text-slate-700 hover:text-slate-900 transition-all cursor-pointer shadow-2xs text-[11px] sm:text-xs font-semibold max-w-[110px] xs:max-w-[145px] sm:max-w-none"
+                title={`Espace actuel : ${currentWorkspace.name} (Changer d'espace)`}
               >
-                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-                <span className="hidden sm:inline text-slate-400 font-normal">Espace :</span>
-                <span className="text-teal-700 font-bold max-w-[120px] truncate">{currentWorkspace.name}</span>
-                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isWorkspaceDropdownOpen ? 'rotate-180' : ''}`} />
+                <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-60"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-teal-600"></span>
+                </span>
+                <span className="hidden md:inline text-slate-400 font-normal">Espace :</span>
+                <span className="text-teal-800 font-bold truncate max-w-[65px] xs:max-w-[95px] sm:max-w-[130px]">
+                  {currentWorkspace.name}
+                </span>
+                <ChevronDown className={`w-3 h-3 text-teal-600 sm:text-slate-400 shrink-0 transition-transform duration-200 ${isWorkspaceDropdownOpen ? 'rotate-180 text-teal-700' : ''}`} />
               </button>
 
+              {/* Workspace Dropdown Panel */}
               {isWorkspaceDropdownOpen && (
-                <div className="absolute left-0 top-full mt-2 w-64 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1">
-                    Sélectionner un Espace
+                <div className="fixed sm:absolute left-2 right-2 sm:left-0 sm:right-auto top-12 sm:top-full mt-1.5 w-auto sm:w-68 max-w-sm bg-white/95 backdrop-blur-2xl border border-slate-200/90 rounded-2xl shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1 flex items-center justify-between">
+                    <span>Espaces de Travail</span>
+                    <span className="text-[9px] font-medium text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">
+                      {availableWorkspaces.length} disponibles
+                    </span>
                   </div>
-                  {availableWorkspaces.map(ws => {
-                    const isActive = ws.id === currentWorkspace.id;
-                    return (
-                      <button
-                        key={ws.id}
-                        onClick={() => {
-                          playXboxSound('select');
-                          setWorkspaceId(ws.id);
-                          setIsWorkspaceDropdownOpen(false);
-                          if (onShowNotification) {
-                            onShowNotification(`Espace activé : ${ws.name}`, 'success');
-                          }
-                        }}
-                        className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all cursor-pointer ${
-                          isActive 
-                            ? 'bg-teal-50 text-teal-800 font-bold border border-teal-200/60' 
-                            : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium'
-                        }`}
-                      >
-                        <div className="flex flex-col">
-                          <span className="text-xs">{ws.name}</span>
-                          <span className="text-[10px] text-slate-400 font-normal">{ws.subtitle}</span>
-                        </div>
-                        {isActive && (
-                          <span className="text-[10px] bg-teal-600 text-white font-semibold px-2 py-0.5 rounded-full">
-                            Actif
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
+                  <div className="flex flex-col gap-1 max-h-60 overflow-y-auto pr-0.5 scrollbar-thin">
+                    {availableWorkspaces.map(ws => {
+                      const isActive = ws.id === currentWorkspace.id;
+                      return (
+                        <button
+                          key={ws.id}
+                          onClick={() => {
+                            playXboxSound('select');
+                            setWorkspaceId(ws.id);
+                            setIsWorkspaceDropdownOpen(false);
+                            if (onShowNotification) {
+                              onShowNotification(`Espace activé : ${ws.name}`, 'success');
+                            }
+                          }}
+                          className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                            isActive 
+                              ? 'bg-teal-50 text-teal-800 font-bold border border-teal-200/80 shadow-2xs' 
+                              : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium border border-transparent'
+                          }`}
+                        >
+                          <div className="flex flex-col min-w-0 pr-2">
+                            <span className="text-xs truncate font-semibold">{ws.name}</span>
+                            <span className="text-[10px] text-slate-400 truncate">{ws.subtitle}</span>
+                          </div>
+                          {isActive ? (
+                            <span className="text-[10px] bg-teal-600 text-white font-semibold px-2 py-0.5 rounded-full shrink-0">
+                              Actif
+                            </span>
+                          ) : (
+                            <ChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
         {/* RIGHT SECTION: Minimal Dimension Buttons without background (Free text/icons) */}
-        <div className="flex items-center gap-1 sm:gap-2 md:gap-3 lg:gap-3.5 shrink-0 overflow-visible">
+        <div className="flex items-center gap-0.5 xs:gap-1 sm:gap-2 md:gap-3 lg:gap-3.5 shrink-0 overflow-visible">
           
           {/* 1. Search Icon Button (Free, minimal) */}
           <div className="relative overflow-visible">
@@ -417,7 +436,7 @@ export function SupremeIntranetTopBar({
           </div>
 
           {/* 3. Subtle Vertical Separator Line */}
-          <div className="h-4 sm:h-4.5 w-px bg-slate-300/80 mx-0.5" />
+          <div className="hidden sm:block h-4 sm:h-4.5 w-px bg-slate-300/80 mx-0.5" />
 
           {/* 4. App Launcher Grid Icon with Red Facebook-style Floating Notification Badge "2" */}
           <div className="relative overflow-visible flex items-center">
@@ -533,7 +552,7 @@ export function SupremeIntranetTopBar({
           </div>
 
           {/* 5. Plus / Create Icon */}
-          <div className="relative overflow-visible">
+          <div className="relative overflow-visible hidden xs:flex">
             <button
               type="button"
               onClick={() => handleMenuClick('create')}
@@ -576,7 +595,7 @@ export function SupremeIntranetTopBar({
           </div>
 
           {/* 6. Settings Gear Icon */}
-          <div className="relative overflow-visible">
+          <div className="relative overflow-visible hidden sm:flex">
             <button
               type="button"
               onClick={() => handleMenuClick('settings')}
@@ -616,11 +635,11 @@ export function SupremeIntranetTopBar({
           </div>
 
           {/* 7. Profil Utilisateur (Taille harmonisée avec les autres icônes, cliquable avec popup animée) */}
-          <div className="relative overflow-visible flex items-center">
+          <div className="relative overflow-visible flex items-center shrink-0">
             <button
               type="button"
               onClick={() => handleMenuClick('profile')}
-              className="w-6 h-6 rounded-full overflow-hidden border border-slate-300 hover:border-[#008080] shadow-2xs shrink-0 bg-slate-100 ml-0.5 sm:ml-1 cursor-pointer transition-all duration-150 hover:ring-2 hover:ring-[#008080]/25 flex items-center justify-center p-0 focus:outline-none aspect-square"
+              className="w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-full overflow-hidden border border-slate-300 hover:border-[#008080] shadow-2xs shrink-0 bg-slate-100 ml-0.5 sm:ml-1 cursor-pointer transition-all duration-150 hover:ring-2 hover:ring-[#008080]/25 flex items-center justify-center p-0 focus:outline-none aspect-square"
               title="Profil Utilisateur"
               aria-label="Menu Profil"
             >
@@ -699,22 +718,6 @@ export function SupremeIntranetTopBar({
           </div>
 
         </div>
-        </div>
-
-        {/* SUB-SECTION DE NAVIGATION PRINCIPALE POUR L'ESPACE ACTIF (NIVEAU 1) */}
-        <div className="hidden sm:flex items-center w-full px-2 sm:px-4 md:px-6 lg:px-7 h-9 bg-slate-50/80 border-t border-slate-100/90 overflow-visible">
-          <AnimatePresence mode="wait">
-            <motion.nav 
-              key={currentWorkspace.id}
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 4 }}
-              transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="flex items-center h-full w-full gap-1 overflow-visible"
-            >
-              <DropdownNavigation navItems={desktopNavItems} />
-            </motion.nav>
-          </AnimatePresence>
         </div>
 
       </header>

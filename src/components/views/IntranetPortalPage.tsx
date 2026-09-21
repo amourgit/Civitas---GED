@@ -5,13 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 import { GradientWave } from '../ui/GradientWave';
 import { PageBackground } from '../shell/PageBackground';
-import { PageRightContent } from '../../context/RightContentContext';
-import { HeroMosaicGrid } from '../portal/HeroMosaicGrid';
-import { SophieProfileCard } from '../portal/SophieProfileCard';
-import { PortalQuickLinks } from '../portal/PortalQuickLinks';
-import { PortalTeamCalendar } from '../portal/PortalTeamCalendar';
-import { PortalDocuments } from '../portal/PortalDocuments';
-import { PortalBlogSection } from '../portal/PortalBlogSection';
+import { XboxMetroDashboard } from '../portal/XboxMetroDashboard';
 
 interface ToastState {
   id: string;
@@ -55,44 +49,9 @@ export function IntranetPortalPage() {
       {/* ── 1. WebGL Dynamic Gradient Wave Background (Intact) ── */}
       <PageBackground customComponent={backgroundComponent} />
 
-      {/* ── 2. Main Body Container : Flux vertical linéaire strict sans bandeau d'en-tête ── */}
+      {/* ── 2. Carrousel Xbox 360 Metro Dashboard avec contrôles d'onglets en haut du main ── */}
       <div className="w-full relative z-10 flex flex-col flex-1">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col gap-10">
-          
-          {/* Section 1 : News (Hero Mosaic) */}
-          <section className="w-full block">
-            <HeroMosaicGrid onShowToast={showToast} />
-          </section>
-
-          {/* Section 2 : L'Actualité (Grille Blog Section identique au visuel) */}
-          <section className="w-full block">
-            <PortalBlogSection onShowToast={showToast} />
-          </section>
-
-      {/* ── Page RightContent : Profil Sophie Bennett, Quick links, Team calendar et Documents ── */}
-      <PageRightContent>
-        {/* Profil utilisateur (Modèle Sophie Bennett avec bouton Éditer) */}
-        <div className="w-full">
-          <SophieProfileCard onShowToast={showToast} />
-        </div>
-
-        {/* Quick links */}
-        <div className="w-full p-4 sm:p-5 rounded-none bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg flex flex-col justify-between">
-          <PortalQuickLinks onShowToast={showToast} />
-        </div>
-
-        {/* Team calendar */}
-        <div className="w-full p-4 sm:p-5 rounded-none bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg flex flex-col justify-between">
-          <PortalTeamCalendar onShowToast={showToast} />
-        </div>
-
-        {/* Documents */}
-        <div className="w-full p-4 sm:p-5 rounded-none bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg flex flex-col justify-between">
-          <PortalDocuments onShowToast={showToast} />
-        </div>
-      </PageRightContent>
-
-        </div>
+        <XboxMetroDashboard onShowToast={showToast} />
       </div>
 
       {/* ── 4. Notifications Toast Floating ── */}

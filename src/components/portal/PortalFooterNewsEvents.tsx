@@ -128,7 +128,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
   };
 
   return (
-    <div className="w-full relative select-none mt-0 z-20">
+    <footer id="portal-footer" className="w-full shrink-0 relative select-none mt-0 z-20">
       {/* ── Top Parabolic Curved Arch (Pleine largeur d'écran) ── */}
       <div className="w-full overflow-hidden leading-none pointer-events-none -mb-1">
         <svg 
@@ -141,7 +141,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
         </svg>
       </div>
 
-      <footer className="w-full bg-[#0B1E34] text-white shadow-2xl rounded-none pt-2 pb-6 sm:pb-8 px-4 sm:px-6 lg:px-8 xl:px-10">
+      <div className="w-full bg-[#0B1E34] text-white shadow-2xl rounded-none pt-2 pb-6 sm:pb-8 px-4 sm:px-6 lg:px-8 xl:px-10">
         {/* ── Inner Centered Container: Les deux sections en ligne (News & Events) ── */}
         <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-start gap-8 lg:gap-12 xl:gap-14 rounded-none">
         
@@ -386,7 +386,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
         </div>
 
       </div>
-    </footer>
     </div>
+    </footer>
   );
 }

@@ -812,3 +812,11 @@ export const xboxAudio = new XboxAudioEngine();
 export function playXboxSound(type: XboxSoundType) {
   xboxAudio.play(type);
 }
+
+export function isXboxAudioMuted(): boolean {
+  return xboxAudio.getIsMuted();
+}
+
+export function toggleXboxAudio(): boolean {
+  return xboxAudio.toggleMute();
+}

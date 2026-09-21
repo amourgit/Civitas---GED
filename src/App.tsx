@@ -43,10 +43,16 @@ import { PageBackgroundProvider } from './components/shell/PageBackground';
 import { PageLoadingProvider } from './context/PageLoadingContext';
 import { RightContentProvider, useRightContent } from './context/RightContentContext';
 import { WorkspaceProvider } from './context/WorkspaceContext';
+import { PortalCarouselProvider } from './context/PortalCarouselContext';
+import { PortalCarouselNav } from './components/portal/PortalCarouselNav';
+import { PortalFooterNewsEvents } from './components/portal/PortalFooterNewsEvents';
+import RandomLetterSwapNav from './components/navigation/RandomLetterSwapNav';
 import { SupremeIntranetTopBar } from './components/shell/SupremeIntranetTopBar';
 import { XboxSidebar, XboxSidebarItem, XboxSidebarSection } from './components/shell/XboxSidebar';
 import { AccueilPage } from './components/views/AccueilPage';
 import { IntranetPortalPage } from './components/views/IntranetPortalPage';
+import { WorkPage } from './components/views/WorkPage';
+import { AboutPage } from './components/views/AboutPage';
 import { ApplicationsGridPage } from './components/views/ApplicationsGridPage';
 import { CalendrierPage } from './components/views/CalendrierPage';
 import { AnnuairePage } from './components/views/AnnuairePage';
@@ -74,7 +80,6 @@ import { GlobalSearchModal } from './components/search/GlobalSearchModal';
 import { NotificationModal } from './components/shared/NotificationModal';
 import { slugify, getFolderSlug } from './utils/slug';
 import { useXboxGlobalSounds } from './utils/useXboxGlobalSounds';
-import { PortalFooterNewsEvents } from './components/portal/PortalFooterNewsEvents';
 import { playXboxSound } from './utils/xboxAudio';
 import { 
   buildDocumentationUrl, 
@@ -97,48 +102,32 @@ function AppContent() {
   const location = useLocation();
   const { rightContent } = useRightContent();
   const isHomePage = location.pathname === '/' || location.pathname === '/accueil';
+  const isNavPage = 
+    isHomePage || 
+    location.pathname === '/work' || 
+    location.pathname === '/about' || 
+    location.pathname === '/blog' || 
+    location.pathname === '/contact' ||
+    location.pathname === '/home';
 
-  // Refs pour le conteneur parent et ses deux sous-composants à scroll distinct
-  const pageScrollRef = useRef<HTMLDivElement>(null);
-  const mainScrollRef = useRef<HTMLElement>(null);
-  const rightContentScrollRef = useRef<HTMLElement>(null);
+  const outerScrollRef = useRef<HTMLDivElement>(null);
 
-  // Transition vers le footer : passage au footer uniquement si le scroll de main ou rightcontent est à son terme
-  useEffect(() => {
-    if (!isHomePage) return;
-    const pageScrollEl = pageScrollRef.current;
-    const mainEl = mainScrollRef.current;
-    const rightEl = rightContentScrollRef.current;
-    if (!pageScrollEl) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      // Défilement vers le bas
-      if (e.deltaY > 0) {
-        if (mainEl && mainEl.contains(e.target as Node)) {
-          const isMainAtBottom = Math.ceil(mainEl.scrollTop + mainEl.clientHeight) >= mainEl.scrollHeight - 4;
-          if (isMainAtBottom) {
-            // Le main est à son terme : défilement du conteneur parent pour amener le footer
-            pageScrollEl.scrollTop += e.deltaY;
-          }
-        } else if (rightEl && rightEl.contains(e.target as Node)) {
-          const isRightAtBottom = Math.ceil(rightEl.scrollTop + rightEl.clientHeight) >= rightEl.scrollHeight - 4;
-          if (isRightAtBottom) {
-            // Le rightcontent est à son terme : défilement du conteneur parent pour amener le footer
-            pageScrollEl.scrollTop += e.deltaY;
-          }
-        }
-      } else if (e.deltaY < 0) {
-        // Défilement vers le haut : si la page est descendue vers le footer, remonter d'abord
-        if (pageScrollEl.scrollTop > 0) {
-          e.preventDefault();
-          pageScrollEl.scrollTop = Math.max(0, pageScrollEl.scrollTop + e.deltaY);
-        }
+  const handleInnerScrollWheel = (e: React.WheelEvent<HTMLElement>) => {
+    if (!outerScrollRef.current || !isHomePage) return;
+    const target = e.currentTarget;
+    if (e.deltaY > 0) {
+      // Si le composant (main ou rightcontent) a atteint la fin de son scroll, on fait défiler vers le footer
+      const isAtBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 4;
+      if (isAtBottom) {
+        outerScrollRef.current.scrollTop += e.deltaY;
       }
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    return () => window.removeEventListener('wheel', handleWheel);
-  }, [isHomePage]);
+    } else if (e.deltaY < 0) {
+      // Si le conteneur externe est défilé vers le bas (au niveau du footer), on remonte d'abord
+      if (outerScrollRef.current.scrollTop > 0) {
+        outerScrollRef.current.scrollTop += e.deltaY;
+      }
+    }
+  };
 
   // Initialize global Xbox audio listeners (click, hover, scroll, keyboard)
   useXboxGlobalSounds();
@@ -684,27 +673,29 @@ function AppContent() {
         onCreateFolder={handleCreateFolder}
       />
 
-      {/* Scrollable Page Wrapper: Contient le composant parent (100vh) et le footer qui vient après */}
+      {/* ── Navigation RandomLetterSwapNav (remplace la navigation du haut) ── */}
+      {isNavPage && <RandomLetterSwapNav />}
+
+      {/* ── Conteneur global défilable permettant d'atteindre le footer une fois le scroll du composant parent terminé ── */}
       <div 
-        ref={pageScrollRef}
-        className={`flex-1 flex flex-col ${isHomePage ? 'overflow-y-auto overflow-x-hidden' : 'overflow-hidden'} no-scrollbar relative min-h-0`}
+        ref={outerScrollRef}
+        id="portal-outer-scroll"
+        className={`w-full flex-1 min-h-0 flex flex-col relative ${
+          isHomePage ? 'overflow-y-auto overflow-x-hidden no-scrollbar' : 'h-full overflow-hidden'
+        }`}
       >
-        {/* Composant Parent: Prend toute la page en hauteur, ajusté exactement selon la page */}
+        {/* ── Composant parent de main et rightcontent (prend toute la page en hauteur, ne bouge pas) ── */}
         <div 
           id="main-rightcontent-parent"
-          className={`w-full flex flex-col lg:flex-row relative min-w-0 ${
-            isHomePage 
-              ? 'min-h-[calc(100vh-48px)] h-[calc(100vh-48px)] shrink-0' 
-              : 'h-full flex-1 min-h-0'
-          }`}
+          className="w-full h-full min-h-full shrink-0 flex flex-col lg:flex-row relative min-w-0 overflow-hidden"
         >
           {/* Main: composant distinct avec son propre scroll */}
           <main 
-            ref={mainScrollRef}
             id="portal-main-scroll"
+            onWheel={handleInnerScrollWheel}
             className="flex-1 h-full min-h-0 min-w-0 overflow-y-auto overflow-x-hidden no-scrollbar relative flex flex-col"
           >
-          <Routes>
+            <Routes>
             {/* 1. PORTAIL PRINCIPAL INTRANET (Épuré, WebGL Waves 3D & Applications) */}
             <Route 
               path="/" 
@@ -714,6 +705,16 @@ function AppContent() {
               path="/accueil" 
               element={<Navigate to="/" replace />} 
             />
+            <Route 
+              path="/home" 
+              element={<Navigate to="/" replace />} 
+            />
+
+            {/* ── Pages dédiées pour les options de navigation ── */}
+            <Route path="/work" element={<WorkPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/blog" element={<ActualitesPage />} />
+            <Route path="/contact" element={<AnnuairePage />} />
 
             {/* 2. APPLICATIONS INTRANET (Routes racine pour chaque application) */}
             <Route path="/applications" element={<ApplicationsGridPage />} />
@@ -903,21 +904,19 @@ function AppContent() {
         {/* RightContent: composant distinct avec son propre scroll (masqué sur mobile et tablette) */}
         {rightContent && (
           <aside
-            ref={rightContentScrollRef}
             id="rightcontent"
-            className="hidden lg:flex w-full lg:w-[360px] xl:w-[400px] 2xl:w-[440px] shrink-0 h-full min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar relative z-20 flex-col gap-6 p-4 sm:p-6 lg:py-8 lg:pr-8 lg:pl-0"
+            onWheel={handleInnerScrollWheel}
+            className="hidden lg:flex w-full lg:w-[360px] xl:w-[400px] 2xl:w-[440px] shrink-0 h-full min-h-0 overflow-y-auto overflow-x-hidden no-scrollbar relative z-20 flex-col gap-6 p-4 sm:p-6 lg:pt-2 lg:pb-8 lg:pr-8 lg:pl-0"
           >
             {rightContent}
           </aside>
         )}
-        </div>
+      </div>
 
-        {/* Après le composant parent, on a le footer */}
-        {isHomePage && (
-          <div className="w-full shrink-0 relative z-30">
-            <PortalFooterNewsEvents onShowToast={(msg, type) => showToast(msg, type)} />
-          </div>
-        )}
+      {/* ── Footer à la suite du composant parent de main, libre dans sa position ── */}
+      {isHomePage && (
+        <PortalFooterNewsEvents onShowToast={showToast} />
+      )}
       </div>
 
       {/* Floating Action Feedback Toast with dedicated Xbox Alert Colors & Icons */}
@@ -986,9 +985,11 @@ export default function App() {
       <PageLoadingProvider>
         <PageBackgroundProvider>
           <WorkspaceProvider>
-            <RightContentProvider>
-              <AppContent />
-            </RightContentProvider>
+            <PortalCarouselProvider>
+              <RightContentProvider>
+                <AppContent />
+              </RightContentProvider>
+            </PortalCarouselProvider>
           </WorkspaceProvider>
         </PageBackgroundProvider>
       </PageLoadingProvider>
