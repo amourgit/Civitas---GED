@@ -1,0 +1,263 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ServicesApplicationsTab } from './services/ServicesApplicationsTab';
+import { ServicesMembresTab } from './services/ServicesMembresTab';
+import { ServicesRessourcesTab } from './services/ServicesRessourcesTab';
+import { ServicesInfosTab } from './services/ServicesInfosTab';
+import { SERVICES_LIST, getServiceByUuid, ServiceItem } from '../../data/servicesData';
+import { playXboxSound } from '../../utils/xboxAudio';
+import { Copy, Check, Users, AppWindow, ArrowLeft, Shield, Server } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/AnimatedTabs';
+
+export function ServicesPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams<{ serviceUuid?: string; tab?: string }>();
+
+  const [isVertical, setIsVertical] = useState(false);
+
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsVertical(window.innerWidth >= 768);
+    };
+    checkScreen();
+    window.addEventListener('resize', checkScreen);
+    return () => window.removeEventListener('resize', checkScreen);
+  }, []);
+
+  // Extract service UUID from path (e.g. /services/srv-8f92a10b/applications or params.serviceUuid)
+  const pathParts = location.pathname.split('/').filter(Boolean);
+  // pathParts: ['services'] OR ['services', 'srv-8f92a10b'] OR ['services', 'srv-8f92a10b', 'applications']
+  let rawServiceUuid = params.serviceUuid || (pathParts.length >= 2 ? pathParts[1] : undefined);
+  let activeTabFromPath = params.tab || (pathParts.length >= 3 ? pathParts[2] : 'applications');
+
+  // If path is /services/membres or /services/applications without UUID, redirect or fallback
+  if (rawServiceUuid === 'applications' || rawServiceUuid === 'membres' || rawServiceUuid === 'ressources' || rawServiceUuid === 'informations') {
+    activeTabFromPath = rawServiceUuid;
+    rawServiceUuid = undefined;
+  }
+
+  const selectedService = getServiceByUuid(rawServiceUuid);
+  const [copiedUuid, setCopiedUuid] = useState(false);
+
+  // Sync active tab
+  const getTab = (): 'applications' | 'membres' | 'ressources' | 'infos' => {
+    const t = activeTabFromPath.toLowerCase();
+    if (t === 'membres') return 'membres';
+    if (t === 'ressources') return 'ressources';
+    if (t === 'informations' || t === 'infos') return 'infos';
+    return 'applications';
+  };
+
+  const [activeTab, setActiveTab] = useState<'applications' | 'membres' | 'ressources' | 'infos'>(getTab());
+
+  useEffect(() => {
+    setActiveTab(getTab());
+  }, [location.pathname, activeTabFromPath]);
+
+  const handleCopyUuid = (uuid: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    playXboxSound('select');
+    navigator.clipboard.writeText(uuid);
+    setCopiedUuid(true);
+    setTimeout(() => setCopiedUuid(false), 2000);
+  };
+
+  const handleTabChange = (tab: 'applications' | 'membres' | 'ressources' | 'infos') => {
+    if (!selectedService) return;
+    playXboxSound('select');
+    setActiveTab(tab);
+    navigate(`/services/${selectedService.uuid}/${tab}`);
+  };
+
+  const subOptions = [
+    {
+      id: 'applications' as const,
+      label: 'Applications & Outils',
+      shortLabel: 'Applications',
+      tabKey: 'applications'
+    },
+    {
+      id: 'membres' as const,
+      label: 'Membres & Équipes',
+      shortLabel: 'Membres',
+      tabKey: 'membres'
+    },
+    {
+      id: 'ressources' as const,
+      label: 'Ressources (GED)',
+      shortLabel: 'Ressources',
+      tabKey: 'ressources'
+    },
+    {
+      id: 'infos' as const,
+      label: 'Support & Informations',
+      shortLabel: 'Support',
+      tabKey: 'informations'
+    }
+  ];
+
+  // VIEW 1: Service Selection Grid (When no service UUID is specified)
+  if (!selectedService) {
+    return (
+      <div className="w-full h-[calc(100vh-120px)] my-2 sm:my-3 text-slate-100 overflow-y-auto px-4 sm:px-6 lg:px-8 py-4 scrollbar-thin scrollbar-thumb-teal-500/20">
+        <div className="max-w-6xl mx-auto space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                Sélection du Service
+              </h1>
+              <p className="text-xs text-slate-300 mt-1">
+                Choisissez un service ci-dessous pour accéder à ses applications, membres et ressources.
+              </p>
+            </div>
+            <div className="text-xs text-teal-300 font-semibold px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 self-start sm:self-auto">
+              {SERVICES_LIST.length} Services disponibles
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {SERVICES_LIST.map((srv) => (
+              <motion.div
+                key={srv.uuid}
+                whileHover={{ scale: 1.01 }}
+                onClick={() => {
+                  playXboxSound('select');
+                  navigate(`/services/${srv.uuid}/applications`);
+                }}
+                className="group p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 hover:border-teal-400/50 hover:bg-slate-800/80 transition-all cursor-pointer flex flex-col justify-between space-y-4 shadow-xl"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-teal-500/20 text-teal-300 border border-teal-400/30">
+                      {srv.shortName}
+                    </span>
+
+                    {/* Copiable UUID Badge */}
+                    <button
+                      type="button"
+                      onClick={(e) => handleCopyUuid(srv.uuid, e)}
+                      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 hover:bg-white/15 border border-white/10 text-[11px] font-mono text-slate-300 hover:text-white transition-colors cursor-pointer"
+                      title="Cliquer pour copier l'UUID du service"
+                    >
+                      <span>UUID: {srv.uuid}</span>
+                      {copiedUuid ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-slate-400" />}
+                    </button>
+                  </div>
+
+                  <div>
+                    <h2 className="text-base font-bold text-white group-hover:text-teal-300 transition-colors">
+                      {srv.name}
+                    </h2>
+                    <p className="text-xs text-teal-400/80 font-medium mt-0.5">{srv.category}</p>
+                  </div>
+
+                  <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
+                    {srv.description}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400 group-hover:text-slate-200">
+                  <div className="flex items-center gap-3 text-[11px]">
+                    <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5 text-slate-500" /> {srv.memberCount} membres</span>
+                    <span className="flex items-center gap-1"><AppWindow className="w-3.5 h-3.5 text-slate-500" /> {srv.appCount} apps</span>
+                  </div>
+                  <span className="text-teal-300 font-semibold group-hover:translate-x-1 transition-transform">
+                    Accéder au service →
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // VIEW 2: Contextualized Service View with Fixed Sidebar & Main Content Area
+  return (
+    <div className="w-full h-[calc(100vh-120px)] my-2 sm:my-3 text-slate-100 overflow-hidden px-3 sm:px-6 lg:px-8 flex flex-col">
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) => handleTabChange(val as 'applications' | 'membres' | 'ressources' | 'infos')}
+        orientation={isVertical ? "vertical" : "horizontal"}
+        className="max-w-7xl w-full mx-auto h-full flex-1 min-h-0 flex flex-col md:flex-row items-stretch gap-4 md:gap-8 overflow-hidden"
+      >
+        {/* LEFT SIDEBAR: Fixed / Non-scrolling Tabs Navigation */}
+        <aside className="w-full md:w-[20%] shrink-0 flex flex-col justify-start md:justify-center space-y-2 md:space-y-4 sticky top-0 z-10 bg-transparent">
+          
+          {/* Back button to switch service */}
+          <button
+            onClick={() => {
+              playXboxSound('select');
+              navigate('/services');
+            }}
+            className="self-start text-xs text-slate-400 hover:text-teal-300 transition-colors cursor-pointer flex items-center gap-1.5 pb-2 border-b border-white/10 w-full"
+            title="Revenir au choix du service"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Changer de service</span>
+          </button>
+
+          {/* Transparent, free text tabs list with smooth horizontal drag/scroll */}
+          <TabsList className="w-full bg-transparent border-0 p-0 shadow-none flex md:flex-col items-center md:items-stretch gap-2 overflow-x-auto touch-pan-x scroll-smooth no-scrollbar select-none py-1">
+            {subOptions.map((opt) => (
+              <TabsTrigger
+                key={opt.id}
+                value={opt.id}
+                className="shrink-0 flex-none text-left justify-start px-3.5 py-2 text-xs sm:text-sm md:text-base font-medium bg-transparent border-0 shadow-none hover:bg-transparent cursor-pointer transition-all whitespace-nowrap"
+              >
+                <span>{opt.label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </aside>
+
+        {/* RIGHT MAIN AREA: Takes 100% height of parent div */}
+        <main className="w-full md:w-[80%] h-full flex-1 min-h-0 flex flex-col overflow-y-auto bg-slate-900/40 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-white/10 shadow-xl scrollbar-thin scrollbar-thumb-teal-500/20">
+          
+          {/* Service Banner Context inside Main Area */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 mb-4 sm:mb-6 border-b border-white/10 shrink-0">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] sm:text-xs font-bold text-teal-300 uppercase tracking-wider">{selectedService.shortName}</span>
+                <span className="text-slate-500">•</span>
+                <span className="text-[10px] sm:text-xs text-slate-400">{selectedService.category}</span>
+              </div>
+              <h1 className="text-base sm:text-xl font-bold text-white mt-0.5">{selectedService.name}</h1>
+            </div>
+
+            {/* Copiable UUID Tag */}
+            <button
+              onClick={(e) => handleCopyUuid(selectedService.uuid, e)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-teal-500/30 text-teal-300 text-[11px] sm:text-xs font-mono transition-colors cursor-pointer shrink-0"
+              title="Cliquer pour copier l'UUID du service"
+            >
+              <span>{selectedService.uuid}</span>
+              {copiedUuid ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-teal-400" />}
+            </button>
+          </div>
+
+          <div className="flex-1 min-h-0 flex flex-col">
+            <TabsContent value="applications" className="flex-1 min-h-0 flex flex-col">
+              <ServicesApplicationsTab />
+            </TabsContent>
+            <TabsContent value="membres" className="flex-1 min-h-0 flex flex-col">
+              <ServicesMembresTab />
+            </TabsContent>
+            <TabsContent value="ressources" className="flex-1 min-h-0 flex flex-col">
+              <ServicesRessourcesTab />
+            </TabsContent>
+            <TabsContent value="infos" className="flex-1 min-h-0 flex flex-col">
+              <ServicesInfosTab />
+            </TabsContent>
+          </div>
+        </main>
+      </Tabs>
+    </div>
+  );
+}
+

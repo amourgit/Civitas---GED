@@ -29,6 +29,7 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       {
         id: 2,
         label: "Informations",
+        link: "/informations",
         subMenus: [
           {
             title: "News et Publications",
@@ -122,6 +123,7 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       {
         id: 3,
         label: "Services",
+        link: "/services",
         subMenus: [
           {
             title: "Membres",
@@ -130,19 +132,19 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
                 label: "Annuaire des Collaborateurs",
                 description: "Recherche de contacts, emails, postes et numéros",
                 icon: Users,
-                link: "/annonces"
+                link: "/annuaire"
               },
               {
                 label: "Organigramme & Équipes",
                 description: "Structure hiérarchique, directions et pôles",
                 icon: Layers,
-                link: "/annonces"
+                link: "/annuaire"
               },
               {
                 label: "Nouveaux Arrivants",
                 description: "Intégration, trombinoscope et parrainages",
                 icon: UserPlus,
-                link: "/annonces"
+                link: "/annuaire"
               }
             ]
           },
@@ -205,19 +207,19 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
                 label: "Procédures de Service",
                 description: "Circuits de validation et démarches administratives",
                 icon: Info,
-                link: "/annonces"
+                link: "/services"
               },
               {
                 label: "FAQ & Assistance Interne",
                 description: "Questions fréquentes et tickets de support informatique",
                 icon: HelpIcon,
-                link: "/annonces"
+                link: "/services"
               },
               {
                 label: "Santé, Sécurité & RH",
                 description: "Consignes de sécurité au travail et numéros d'urgence",
                 icon: ShieldAlert,
-                link: "/annonces"
+                link: "/services"
               }
             ]
           }
@@ -226,7 +228,7 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       {
         id: 4,
         label: "Recherche",
-        link: "/ged/recherche",
+        link: "/recherche",
         subMenus: [
           {
             title: "Moteurs de Recherche",
@@ -235,7 +237,7 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
                 label: "Recherche Globale Intranet",
                 description: "Index complet actualités, annonces, personnes et documents",
                 icon: Search,
-                link: "/ged/recherche"
+                link: "/recherche"
               },
               {
                 label: "Recherche GED & Archives",
@@ -247,7 +249,7 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
                 label: "Recherche de Contacts",
                 description: "Trouver un collègue par nom, service ou compétence",
                 icon: Contact,
-                link: "/ged/recherche"
+                link: "/annuaire"
               }
             ]
           },
@@ -278,51 +280,58 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       },
       {
         id: 5,
-        label: "Mon espace",
+        label: "Annuaire",
+        link: "/annuaire",
         subMenus: [
           {
-            title: "Droits et Permissions",
+            title: "Collaborateurs",
             items: [
               {
-                label: "Mes Habilitations & Rôles",
-                description: "Consulter mes droits d'accès GED et applicatifs",
-                icon: Key,
-                link: "/iam"
+                label: "Tous les Contacts",
+                description: "Recherche par nom, poste, email et téléphone",
+                icon: Contact,
+                link: "/annuaire"
               },
               {
-                label: "Certificats & Clés 2FA",
-                description: "Gestion des doubles facteurs et signatures électroniques",
-                icon: ShieldCheck,
-                link: "/iam"
+                label: "Organigramme",
+                description: "Structure hiérarchique et directions",
+                icon: Layers,
+                link: "/annuaire"
               },
               {
-                label: "Journal de mes Accès",
-                description: "Historique de mes connexions et actions sécurisées",
-                icon: Activity,
-                link: "/iam"
+                label: "Trombinoscope",
+                description: "Photos et profils des équipes",
+                icon: Users,
+                link: "/annuaire"
+              },
+              {
+                label: "Nouveaux Arrivants",
+                description: "Dernières intégrations dans l'organisation",
+                icon: UserPlus,
+                link: "/annuaire"
               }
             ]
           },
           {
-            title: "Mon Espace de Travail",
+            title: "Structures & Sites",
             items: [
               {
-                label: "Dossiers Épinglés",
-                description: "Accès immédiat à mes dossiers prioritaires",
-                icon: Star,
-                link: "/ged"
+                label: "Pôles & Directions",
+                description: "Départements administratifs et opérationnels",
+                icon: Building2,
+                link: "/annuaire"
               },
               {
-                label: "Mes Validations en Attente",
-                description: "Workflows et bordereaux nécessitant mon approbation",
-                icon: CheckSquare,
-                link: "/suivi"
+                label: "Sites & Immeubles",
+                description: "Adresses des bureaux et salles de réunion",
+                icon: Globe,
+                link: "/annuaire"
               },
               {
-                label: "Préférences Personnelles",
-                description: "Thème d'affichage, langues et notifications",
-                icon: SlidersHorizontal,
-                link: "/annonces"
+                label: "Permanences & Astreintes",
+                description: "Contacts de garde et numéros d'urgence",
+                icon: ShieldAlert,
+                link: "/annuaire"
               }
             ]
           }
@@ -331,6 +340,7 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       {
         id: 6,
         label: "Administration",
+        link: "/administration",
         subMenus: [
           {
             title: "Accès & Identités (IAM)",
@@ -362,19 +372,19 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
                 label: "Journaux d'Audit",
                 description: "Traçabilité complète des versements et consultations",
                 icon: FileText,
-                link: "/ged/administration"
+                link: "/administration"
               },
               {
                 label: "Configuration Globale",
                 description: "Paramètres serveurs, connecteurs et stockage",
                 icon: Settings,
-                link: "/ged/administration"
+                link: "/administration"
               },
               {
                 label: "Circuits de Validation",
                 description: "Workflows de validation de versements et éliminations",
                 icon: Layers,
-                link: "/ged/administration"
+                link: "/administration"
               }
             ]
           }

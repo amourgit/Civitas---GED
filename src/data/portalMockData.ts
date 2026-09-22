@@ -94,12 +94,13 @@ export const PORTAL_MOCK_DATA = {
     },
     { id: 'recherche', label: 'Recherche', route: '/ged/recherche' },
     { 
-      id: 'mon-espace', 
-      label: 'Mon espace', 
+      id: 'annuaire', 
+      label: 'Annuaire', 
       hasChildren: true, 
       isExpanded: false,
       children: [
-        { id: 'droits-permissions', label: 'Droits et Permissions', route: '/iam' }
+        { id: 'contacts', label: 'Collaborateurs & Contacts', route: '/annonces' },
+        { id: 'organigramme', label: 'Organigramme & Structures', route: '/annonces' }
       ]
     },
     { id: 'administration', label: 'Administration', route: '/iam' }

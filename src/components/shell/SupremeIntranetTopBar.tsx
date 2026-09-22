@@ -50,6 +50,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DropdownNavigation, NavItem } from './DropdownNavigation';
+import { BreadcrumbLevel2Nav } from '../navigation/BreadcrumbLevel2Nav';
 import { XboxAudioController } from '../shared/XboxAudioController';
 import { playXboxSound } from '../../utils/xboxAudio';
 import { useWorkspace } from '../../context/WorkspaceContext';
@@ -105,6 +106,7 @@ export function SupremeIntranetTopBar({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isWorkspaceDropdownOpen, setIsWorkspaceDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFullNav, setShowFullNav] = useState(false);
   const [timeStr, setTimeStr] = useState("10:50");
   const [dateLongStr, setDateLongStr] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
@@ -335,19 +337,19 @@ export function SupremeIntranetTopBar({
 
               {/* Workspace Dropdown Panel */}
               {isWorkspaceDropdownOpen && (
-                <div className="fixed sm:absolute left-2 right-2 sm:left-0 sm:right-auto top-12 sm:top-full mt-1.5 w-auto sm:w-76 max-w-sm bg-white/95 backdrop-blur-2xl border border-slate-200/90 rounded-2xl shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1.5 flex items-center justify-between">
+                <div className="fixed sm:absolute left-2 right-2 sm:left-0 sm:right-auto top-12 sm:top-full mt-1.5 w-auto sm:w-72 max-w-sm bg-slate-900/85 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl p-2 z-50 text-white animate-in fade-in zoom-in-95 duration-150 ring-1 ring-black/20">
+                  <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-300 border-b border-white/10 mb-1 flex items-center justify-between">
                     <span>Espaces & Environnements</span>
-                    <span className="text-[9px] font-medium text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">
+                    <span className="text-[9px] font-medium text-teal-200 bg-teal-500/20 border border-teal-400/30 px-1.5 py-0.2 rounded">
                       {availableWorkspaces.length} disponibles
                     </span>
                   </div>
-                  <div className="flex flex-col gap-2 max-h-72 overflow-y-auto pr-0.5 scrollbar-thin">
+                  <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-0.5 scrollbar-thin">
                     {workspaceGroups.map(group => (
-                      <div key={group.key} className="space-y-1">
-                        <div className="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <div key={group.key} className="space-y-0.5">
+                        <div className="px-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                           <span>{group.label}</span>
-                          <div className="flex-1 h-px bg-slate-100" />
+                          <div className="flex-1 h-px bg-white/10" />
                         </div>
                         <div className="space-y-0.5">
                           {group.items.map(ws => {
@@ -363,17 +365,17 @@ export function SupremeIntranetTopBar({
                                     onShowNotification(`Espace activé : ${ws.name}`, 'success');
                                   }
                                 }}
-                                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer ${
+                                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-left transition-all cursor-pointer ${
                                   isActive 
-                                    ? 'bg-teal-50 text-teal-800 font-bold border border-teal-200/80 shadow-2xs' 
-                                    : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900 font-medium border border-transparent'
+                                    ? 'bg-teal-500/25 text-white font-bold border border-teal-400/40 shadow-2xs' 
+                                    : 'hover:bg-white/10 text-slate-200 hover:text-white font-medium border border-transparent'
                                 }`}
                               >
-                                <div className="flex flex-col min-w-0 pr-2">
+                                <div className="flex flex-col min-w-0 pr-1.5">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-xs truncate font-semibold">{ws.name}</span>
+                                    <span className="text-xs truncate font-medium text-white">{ws.name}</span>
                                     {ws.category === 'organisationnel' && (
-                                      <span className="text-[8px] px-1.5 py-0.2 bg-teal-100/70 text-teal-700 font-bold rounded">
+                                      <span className="text-[8px] px-1 py-0.2 bg-teal-500/30 text-teal-200 font-semibold rounded">
                                         Org
                                       </span>
                                     )}
@@ -381,11 +383,11 @@ export function SupremeIntranetTopBar({
                                   <span className="text-[10px] text-slate-400 truncate">{ws.subtitle}</span>
                                 </div>
                                 {isActive ? (
-                                  <span className="text-[10px] bg-teal-600 text-white font-semibold px-2 py-0.5 rounded-full shrink-0">
+                                  <span className="text-[9px] bg-teal-500 text-white font-semibold px-1.5 py-0.2 rounded-full shrink-0">
                                     Actif
                                   </span>
                                 ) : (
-                                  <ChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+                                  <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
                                 )}
                               </button>
                             );
@@ -464,7 +466,7 @@ export function SupremeIntranetTopBar({
 
             {/* Language Dropdown */}
             {activeMenu === 'lang' && (
-              <div className="absolute right-0 top-9 w-36 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs animate-in fade-in duration-150">
+              <div className="absolute right-0 top-9 w-32 bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 py-1 z-50 text-xs animate-in fade-in duration-150 text-white">
                 {(['English', 'Français', 'Español', 'Deutsch'] as const).map((lang) => (
                   <button
                     key={lang}
@@ -473,10 +475,10 @@ export function SupremeIntranetTopBar({
                       setActiveMenu(null);
                       notify(`Langue changée : ${lang}`);
                     }}
-                    className="w-full text-left px-3 py-1.5 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center justify-between cursor-pointer bg-transparent border-none"
+                    className="w-full text-left px-2.5 py-1 text-slate-200 hover:bg-white/15 hover:text-white flex items-center justify-between cursor-pointer bg-transparent border-none text-[11px]"
                   >
                     <span>{lang}</span>
-                    {currentLang === lang && <Check className="w-3.5 h-3.5 text-[#008080]" />}
+                    {currentLang === lang && <Check className="w-3 h-3 text-teal-400" />}
                   </button>
                 ))}
               </div>
@@ -615,29 +617,29 @@ export function SupremeIntranetTopBar({
 
             {/* Create Dropdown */}
             {activeMenu === 'create' && (
-              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-56 max-w-xs bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 text-xs animate-in fade-in duration-150">
-                <div className="px-3 py-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-56 max-w-xs bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 py-1.5 z-50 text-xs animate-in fade-in duration-150 text-white">
+                <div className="px-3 py-1 text-[10px] font-bold text-teal-300 uppercase tracking-wider border-b border-white/10 mb-1">
                   Nouveau contenu
                 </div>
                 <button 
                   onClick={() => { setActiveMenu(null); notify("Création de nouveau dossier GED"); }}
-                  className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center gap-2 cursor-pointer bg-transparent border-none"
+                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white flex items-center gap-2 cursor-pointer bg-transparent border-none text-[11px]"
                 >
-                  <FolderOpen className="w-4 h-4 text-emerald-500" />
+                  <FolderOpen className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Nouveau Dossier GED</span>
                 </button>
                 <button 
                   onClick={() => { setActiveMenu(null); notify("Téléversement de fichier"); }}
-                  className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center gap-2 cursor-pointer bg-transparent border-none"
+                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white flex items-center gap-2 cursor-pointer bg-transparent border-none text-[11px]"
                 >
-                  <FileText className="w-4 h-4 text-cyan-500" />
+                  <FileText className="w-3.5 h-3.5 text-cyan-400" />
                   <span>Importer un Document</span>
                 </button>
                 <button 
                   onClick={() => { setActiveMenu(null); notify("Nouvelle publication sur My Board"); }}
-                  className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] flex items-center gap-2 cursor-pointer bg-transparent border-none"
+                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white flex items-center gap-2 cursor-pointer bg-transparent border-none text-[11px]"
                 >
-                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                   <span>Nouvelle Publication</span>
                 </button>
               </div>
@@ -658,25 +660,25 @@ export function SupremeIntranetTopBar({
 
             {/* Settings Dropdown */}
             {activeMenu === 'settings' && (
-              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-52 max-w-xs bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs animate-in fade-in duration-150">
-                <div className="px-3 py-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-52 max-w-xs bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 py-1.5 z-50 text-xs animate-in fade-in duration-150 text-white">
+                <div className="px-3 py-1 text-[10px] font-bold text-teal-300 uppercase tracking-wider border-b border-white/10 mb-1">
                   Configuration
                 </div>
                 <button 
                   onClick={() => { setActiveMenu(null); notify("Préférences d'affichage"); }}
-                  className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] cursor-pointer bg-transparent border-none"
+                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white cursor-pointer bg-transparent border-none text-[11px]"
                 >
                   Préférences d'affichage
                 </button>
                 <button 
                   onClick={() => { setActiveMenu(null); notify("Paramètres de sécurité & accès"); }}
-                  className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] cursor-pointer bg-transparent border-none"
+                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white cursor-pointer bg-transparent border-none text-[11px]"
                 >
                   Permissions & Sécurité
                 </button>
                 <button 
                   onClick={() => { setActiveMenu(null); notify("À propos d'EGEN v4.2 — Écosystème Gouvernemental"); }}
-                  className="w-full text-left px-3.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] cursor-pointer bg-transparent border-none"
+                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white cursor-pointer bg-transparent border-none text-[11px]"
                 >
                   À propos d'EGEN
                 </button>
@@ -708,22 +710,22 @@ export function SupremeIntranetTopBar({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.94, y: -6 }}
                   transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-                  className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-64 max-w-xs bg-white rounded-2xl shadow-2xl border border-slate-200/90 p-3.5 z-50 text-xs origin-top-right"
+                  className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-60 max-w-xs bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 p-2.5 z-50 text-xs origin-top-right text-white"
                 >
-                  <div className="flex items-center gap-3 pb-3 mb-2.5 border-b border-slate-100">
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden border border-slate-200 shrink-0 shadow-xs aspect-square">
+                  <div className="flex items-center gap-2.5 pb-2 mb-2 border-b border-white/10">
+                    <div className="relative w-8 h-8 rounded-full overflow-hidden border border-white/20 shrink-0 shadow-xs aspect-square">
                       <img 
                         src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" 
                         alt="Avatar" 
                         className="w-full h-full object-cover rounded-full aspect-square"
                       />
-                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                      <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-slate-900" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-slate-800 text-xs truncate">Laura Denvida</p>
-                      <p className="text-[11px] text-slate-400 truncate">HR Manager • Paris</p>
-                      <span className="inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.2 rounded-md bg-emerald-50 text-emerald-700 text-[9px] font-medium border border-emerald-100">
-                        <ShieldCheck className="w-2.5 h-2.5 text-emerald-600" />
+                      <p className="font-semibold text-white text-xs truncate">Laura Denvida</p>
+                      <p className="text-[10px] text-slate-300 truncate">HR Manager • Paris</p>
+                      <span className="inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[8px] font-semibold border border-emerald-400/30">
+                        <ShieldCheck className="w-2.5 h-2.5 text-emerald-400" />
                         Connecté
                       </span>
                     </div>
@@ -732,33 +734,33 @@ export function SupremeIntranetTopBar({
                   <div className="space-y-0.5">
                     <button 
                       onClick={() => { setActiveMenu(null); notify("Accès au profil complet"); }}
-                      className="w-full text-left px-2.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2.5 transition-colors font-medium"
+                      className="w-full text-left px-2 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2 transition-colors font-medium text-[11px]"
                     >
-                      <User className="w-3.5 h-3.5 text-slate-400" />
+                      <User className="w-3.5 h-3.5 text-teal-300" />
                       <span>Mon profil complet</span>
                     </button>
                     <button 
                       onClick={() => { setActiveMenu(null); notify("Préférences du compte"); }}
-                      className="w-full text-left px-2.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2.5 transition-colors"
+                      className="w-full text-left px-2 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2 transition-colors text-[11px]"
                     >
-                      <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400" />
+                      <SlidersHorizontal className="w-3.5 h-3.5 text-teal-300" />
                       <span>Préférences & Compte</span>
                     </button>
                     <button 
                       onClick={() => { setActiveMenu(null); notify("Favoris & signets"); }}
-                      className="w-full text-left px-2.5 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#008080] rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2.5 transition-colors"
+                      className="w-full text-left px-2 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2 transition-colors text-[11px]"
                     >
-                      <Bookmark className="w-3.5 h-3.5 text-slate-400" />
+                      <Bookmark className="w-3.5 h-3.5 text-teal-300" />
                       <span>Mes favoris GED</span>
                     </button>
                   </div>
 
-                  <div className="mt-2 pt-2 border-t border-slate-100">
+                  <div className="mt-1.5 pt-1.5 border-t border-white/10">
                     <button 
                       onClick={() => { setActiveMenu(null); notify("Déconnexion du portail intranet"); }}
-                      className="w-full text-left px-2.5 py-1.5 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2.5 transition-colors font-medium text-xs"
+                      className="w-full text-left px-2 py-1 text-red-300 hover:bg-red-500/20 hover:text-red-200 rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2 transition-colors font-medium text-[11px]"
                     >
-                      <LogOut className="w-3.5 h-3.5 text-red-500" />
+                      <LogOut className="w-3.5 h-3.5 text-red-400" />
                       <span>Se déconnecter</span>
                     </button>
                   </div>
@@ -784,7 +786,21 @@ export function SupremeIntranetTopBar({
         {!isGedRoute && (
           <div className="w-full bg-transparent px-2 sm:px-4 md:px-6 lg:px-7 h-10 sm:h-11 flex items-center justify-start overflow-visible z-30">
             <div className="w-full max-w-7xl mx-auto flex items-center overflow-visible">
-              <DropdownNavigation navItems={desktopNavItems} />
+              {(location.pathname === '/' || location.pathname === '/accueil' || showFullNav) ? (
+                <div className="w-full flex items-center justify-between">
+                  <DropdownNavigation navItems={desktopNavItems} />
+                  {showFullNav && (
+                    <button
+                      onClick={() => setShowFullNav(false)}
+                      className="text-xs text-slate-300 hover:text-white bg-white/10 px-2 py-1 rounded-md border border-white/15 ml-2 cursor-pointer"
+                    >
+                      Mode Fil d'ariane
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <BreadcrumbLevel2Nav onToggleFullMenu={() => setShowFullNav(true)} />
+              )}
             </div>
           </div>
         )}

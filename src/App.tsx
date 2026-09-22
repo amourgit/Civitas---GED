@@ -50,6 +50,8 @@ import RandomLetterSwapNav from './components/navigation/RandomLetterSwapNav';
 import { SupremeIntranetTopBar } from './components/shell/SupremeIntranetTopBar';
 import { XboxSidebar, XboxSidebarItem, XboxSidebarSection } from './components/shell/XboxSidebar';
 import { AccueilPage } from './components/views/AccueilPage';
+import { InformationsPage } from './components/views/InformationsPage';
+import { ServicesPage } from './components/views/ServicesPage';
 import { IntranetPortalPage } from './components/views/IntranetPortalPage';
 import { WorkPage } from './components/views/WorkPage';
 import { AboutPage } from './components/views/AboutPage';
@@ -801,7 +803,25 @@ function AppContent() {
               element={<Navigate to="/" replace />} 
             />
 
-            {/* ── Pages dédiées pour les options de navigation ── */}
+            {/* ── Pages dédiées pour les options de navigation Espace Organisationnel / Intranet ── */}
+            <Route path="/informations" element={<InformationsPage initialTab="news" />} />
+            <Route path="/informations/news" element={<InformationsPage initialTab="news" />} />
+            <Route path="/informations/annonces" element={<InformationsPage initialTab="annonces" />} />
+            <Route path="/informations/agenda" element={<InformationsPage initialTab="agenda" />} />
+            <Route path="/informations/*" element={<InformationsPage />} />
+
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/services/:serviceUuid" element={<ServicesPage />} />
+            <Route path="/services/:serviceUuid/:tab" element={<ServicesPage />} />
+            <Route path="/services/*" element={<ServicesPage />} />
+
+            <Route path="/recherche" element={<RecherchePage />} />
+            <Route path="/recherche/*" element={<RecherchePage />} />
+
+            <Route path="/administration" element={<AdministrationPage />} />
+            <Route path="/administration/*" element={<AdministrationPage />} />
+            <Route path="/iam" element={<AdministrationPage />} />
+
             <Route path="/work" element={<WorkPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/blog" element={<ActualitesPage />} />

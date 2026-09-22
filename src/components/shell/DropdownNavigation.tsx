@@ -8,7 +8,7 @@ import { RandomLetterSwap } from "../ui/random-letter-swap";
 
 export type NavSubMenuItem = {
   label: string;
-  description: string;
+  description?: string;
   icon: React.ElementType;
   onClick?: () => void;
   link?: string;
@@ -52,11 +52,12 @@ export function DropdownNavigation({ navItems }: Props) {
   const [hasDraggedFar, setHasDraggedFar] = useState(false);
 
   // Update dropdown portal position based on trigger button bounding rect
-  const updateMenuPosition = useCallback((menuLabel: string) => {
+  const updateMenuPosition = useCallback((menuLabel: string, subMenusCount: number = 2) => {
     const btn = buttonRefs.current[menuLabel];
     if (!btn) return;
     const rect = btn.getBoundingClientRect();
-    const estimatedMenuWidth = 420;
+    const columnWidth = 150;
+    const estimatedMenuWidth = Math.min(window.innerWidth - 32, subMenusCount * columnWidth + 32);
     let targetLeft = rect.left;
 
     // Boundary check so dropdown doesn't spill off the right edge of viewport
@@ -65,7 +66,7 @@ export function DropdownNavigation({ navItems }: Props) {
     }
 
     setMenuCoords({
-      top: rect.bottom + 6,
+      top: rect.bottom + 4,
       left: Math.max(12, targetLeft),
     });
   }, []);
@@ -79,14 +80,13 @@ export function DropdownNavigation({ navItems }: Props) {
       const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
       if (delta !== 0) {
         el.scrollLeft += delta;
-        if (openMenu) updateMenuPosition(openMenu);
+        if (openMenu) updateMenuPosition(openMenu, activeNavItem?.subMenus?.length || 2);
       }
     }
   };
 
   // Free Drag-to-scroll handlers (souris & main)
   const handleMouseDown = (e: React.MouseEvent) => {
-    // Uniquement le clic principal gauche
     if (e.button !== 0) return;
     const el = scrollContainerRef.current;
     if (!el) return;
@@ -99,7 +99,6 @@ export function DropdownNavigation({ navItems }: Props) {
     };
   };
 
-  // Suivi continu du drag sur l'ensemble de la fenêtre pour un glissement naturel et sans à-coups
   useEffect(() => {
     if (!isDragging) return;
 
@@ -135,14 +134,13 @@ export function DropdownNavigation({ navItems }: Props) {
     };
   }, [isDragging, openMenu]);
 
-  // Synchronisation de la position du sous-menu en cas de scroll natif
   useEffect(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
 
     const handleScroll = () => {
       if (openMenu) {
-        updateMenuPosition(openMenu);
+        updateMenuPosition(openMenu, activeNavItem?.subMenus?.length || 2);
       }
     };
 
@@ -150,7 +148,7 @@ export function DropdownNavigation({ navItems }: Props) {
     return () => {
       el.removeEventListener("scroll", handleScroll);
     };
-  }, [openMenu, updateMenuPosition]);
+  }, [openMenu, activeNavItem, updateMenuPosition]);
 
   // Hover & Open handlers with graceful debounce
   const handleItemMouseEnter = (navItem: NavItem) => {
@@ -162,7 +160,7 @@ export function DropdownNavigation({ navItems }: Props) {
     if (navItem.subMenus && navItem.subMenus.length > 0) {
       setOpenMenu(navItem.label);
       setActiveNavItem(navItem);
-      updateMenuPosition(navItem.label);
+      updateMenuPosition(navItem.label, navItem.subMenus.length);
     } else {
       setOpenMenu(null);
       setActiveNavItem(null);
@@ -213,12 +211,12 @@ export function DropdownNavigation({ navItems }: Props) {
 
   return (
     <div className="relative w-full max-w-full flex items-center justify-start overflow-hidden select-none">
-      {/* Conteneur défilable et glissable librement à la main (drag & swipe) */}
+      {/* Conteneur défilable et glissable */}
       <div
         ref={scrollContainerRef}
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
-        className={`w-full flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto no-scrollbar py-1 px-0.5 touch-pan-x ${
+        className={`w-full flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto no-scrollbar py-0.5 px-0.5 touch-pan-x ${
           isDragging ? "cursor-grabbing" : "cursor-grab"
         }`}
         style={{
@@ -263,7 +261,7 @@ export function DropdownNavigation({ navItems }: Props) {
                         } else {
                           setOpenMenu(navItem.label);
                           setActiveNavItem(navItem);
-                          updateMenuPosition(navItem.label);
+                          updateMenuPosition(navItem.label, navItem.subMenus?.length || 2);
                         }
                       }
                       if (navItem.onClick) navItem.onClick();
@@ -299,7 +297,7 @@ export function DropdownNavigation({ navItems }: Props) {
         </motion.ul>
       </div>
 
-      {/* Floating SubMenu rendered via Portal to prevent any scroll clipping */}
+      {/* Floating SubMenu rendered via Portal in pure Glassmorphism, ultra-compact */}
       {typeof document !== "undefined" &&
         activeNavItem &&
         activeNavItem.subMenus &&
@@ -318,14 +316,18 @@ export function DropdownNavigation({ navItems }: Props) {
             onMouseLeave={handleMenuMouseLeave}
             className="w-auto animate-in fade-in zoom-in-95 duration-150"
           >
-            <div className="bg-[#0b1623]/95 backdrop-blur-2xl border border-white/15 p-4 sm:p-5 w-max shadow-2xl rounded-2xl text-white">
-              <div className="w-fit shrink-0 flex space-x-8 overflow-hidden">
-                {activeNavItem.subMenus.map((sub) => (
-                  <div className="w-full min-w-[210px]" key={sub.title}>
-                    <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-teal-300/90 border-b border-white/10 pb-1.5 flex items-center justify-between">
-                      <span>{sub.title}</span>
-                    </h3>
-                    <ul className="space-y-1.5">
+            {/* Pure Clean Transparent Glassmorphism Container with White/Teal Text */}
+            <div className="bg-slate-900/80 backdrop-blur-xl border border-white/20 p-2 sm:p-2.5 w-auto max-w-[95vw] shadow-2xl rounded-xl text-white ring-1 ring-black/20">
+              <div className="flex items-start gap-2.5 sm:gap-3.5 divide-x divide-white/10">
+                {activeNavItem.subMenus.map((sub, idx) => (
+                  <div 
+                    className={`w-auto min-w-[130px] max-w-[185px] ${idx > 0 ? 'pl-2.5 sm:pl-3.5' : ''}`} 
+                    key={sub.title}
+                  >
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-teal-300 pb-1 mb-1 border-b border-white/10 flex items-center justify-between">
+                      <span className="truncate">{sub.title}</span>
+                    </div>
+                    <ul className="space-y-0.5">
                       {sub.items.map((item) => {
                         const Icon = item.icon;
                         return (
@@ -338,19 +340,15 @@ export function DropdownNavigation({ navItems }: Props) {
                                 setOpenMenu(null);
                                 setActiveNavItem(null);
                               }}
-                              className="flex items-start space-x-3 group/subitem cursor-pointer p-2 rounded-xl hover:bg-white/10 transition-colors"
+                              className="flex items-center gap-1.5 py-1 px-1.5 rounded-lg hover:bg-white/15 text-white hover:text-teal-200 transition-colors group/subitem cursor-pointer"
+                              title={item.description || item.label}
                             >
-                              <div className="border border-teal-500/30 bg-teal-500/10 text-teal-300 rounded-lg flex items-center justify-center size-8 shrink-0 group-hover/subitem:bg-teal-500/25 group-hover/subitem:border-teal-400/50 transition-colors duration-200">
-                                <Icon className="h-4 w-4 flex-none" />
+                              <div className="size-5 rounded flex items-center justify-center bg-teal-400/15 border border-teal-300/30 text-teal-200 shrink-0 group-hover/subitem:bg-teal-400/25 group-hover/subitem:text-teal-100 transition-colors">
+                                <Icon className="h-3 w-3 flex-none" />
                               </div>
-                              <div className="leading-tight w-max pr-2">
-                                <p className="text-xs font-semibold text-slate-100 shrink-0 group-hover/subitem:text-teal-300 transition-colors">
-                                  {item.label}
-                                </p>
-                                <p className="text-[11px] text-slate-400 shrink-0 group-hover/subitem:text-slate-300 transition-colors duration-200">
-                                  {item.description}
-                                </p>
-                              </div>
+                              <span className="text-[11px] font-medium text-white group-hover/subitem:text-teal-100 transition-colors truncate">
+                                {item.label}
+                              </span>
                             </a>
                           </li>
                         );
