@@ -248,7 +248,7 @@ export interface TabsListProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
-  ({ children, className, onMouseLeave, ...props }, ref) => {
+  ({ children, className, onMouseDown, onMouseMove, onMouseUp, onMouseLeave, ...props }, ref) => {
     const { listRef, setHoveredValue, triggerRefs, value, orientation } =
       useTabsContext("TabsList");
     const [activeRect, setActiveRect] = React.useState({ left: 0, top: 0, width: 0, height: 0 });
@@ -335,17 +335,50 @@ export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
 
     const isVertical = orientation === "vertical";
 
+    const isDraggingRef = React.useRef(false);
+    const startXRef = React.useRef(0);
+    const scrollLeftRef = React.useRef(0);
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+      onMouseDown?.(e);
+      if (e.defaultPrevented) return;
+      const container = listRef.current;
+      if (!container) return;
+      isDraggingRef.current = true;
+      startXRef.current = e.pageX - container.offsetLeft;
+      scrollLeftRef.current = container.scrollLeft;
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+      onMouseMove?.(e);
+      if (!isDraggingRef.current) return;
+      const container = listRef.current;
+      if (!container) return;
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startXRef.current) * 1.5;
+      container.scrollLeft = scrollLeftRef.current - walk;
+    };
+
+    const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+      onMouseUp?.(e);
+      isDraggingRef.current = false;
+    };
+
     return (
       <TabsPrimitive.List
         {...props}
         className={cn(
-          "no-scrollbar relative isolate inline-flex max-w-full items-center overflow-x-auto overscroll-x-contain whitespace-nowrap bg-transparent p-0 border-0 shadow-none",
-          isVertical ? "flex-col items-stretch" : "",
+          "no-scrollbar relative isolate inline-flex max-w-full items-center overflow-x-auto overscroll-x-contain whitespace-nowrap bg-transparent p-0 border-0 shadow-none touch-pan-x cursor-grab active:cursor-grabbing",
+          isVertical ? "flex-col items-stretch cursor-default active:cursor-default" : "",
           className,
         )}
         loop
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         onMouseLeave={(event) => {
           onMouseLeave?.(event);
+          isDraggingRef.current = false;
 
           if (!event.defaultPrevented) {
             setHoveredValue(null);
@@ -358,15 +391,16 @@ export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
       >
         {children}
         <motion.div
+          key={isVertical ? "vertical-indicator" : "horizontal-indicator"}
           animate={
             isVertical
-              ? { top: activeRect.top, height: activeRect.height }
-              : { left: activeRect.left, width: activeRect.width }
+              ? { top: activeRect.top, height: activeRect.height, left: 0, width: 4 }
+              : { left: activeRect.left, width: activeRect.width, bottom: 0, height: 3 }
           }
           aria-hidden
           className={cn(
-            "pointer-events-none absolute z-10",
-            isVertical ? "left-0 w-1 rounded-r h-full" : "bottom-0 h-1 rounded-t-full"
+            "pointer-events-none absolute z-10 bg-teal-400",
+            isVertical ? "rounded-r" : "rounded-full"
           )}
           style={{
             backgroundColor: "var(--color-teal-400, #2dd4bf)",
@@ -415,12 +449,22 @@ export const TabsTrigger = React.forwardRef<HTMLElement, TabsTriggerProps>(
     const isActive = activeValue === value;
     const isHover = hoveredValue === value;
 
+    React.useEffect(() => {
+      if (isActive && triggerRefs.current[value]) {
+        triggerRefs.current[value]?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }, [isActive, value, triggerRefs]);
+
     return (
       <TabsPrimitive.Trigger
         {...props}
         aria-controls={getContentId(baseId, value)}
         className={cn(
-          "relative inline-flex min-h-10 min-w-10 touch-manipulation items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-inset transition-colors cursor-pointer",
+          "relative inline-flex min-h-10 min-w-10 touch-manipulation items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-inset transition-colors cursor-pointer select-none",
           className,
         )}
         data-state={isActive ? "active" : "inactive"}
@@ -453,9 +497,6 @@ export const TabsTrigger = React.forwardRef<HTMLElement, TabsTriggerProps>(
         ref={(node) => {
           triggerRefs.current[value] = node;
           setRefValue(ref, node);
-          if (node && isActive) {
-            node.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-          }
         }}
         style={{
           ...style,

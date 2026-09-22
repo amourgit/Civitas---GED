@@ -5,7 +5,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playXboxSound } from '../../utils/xboxAudio';
 
-import AnimatedTabs, { TabsList, TabsTrigger, TabsContent } from '../ui/AnimatedTabs';
+import { Newspaper, BellRing, CalendarDays } from 'lucide-react';
+import { TabsContent } from '../ui/AnimatedTabs';
+import { TabbedViewLayout } from '../layout/TabbedViewLayout';
 
 interface Props {
   initialTab?: 'news' | 'annonces' | 'agenda';
@@ -23,20 +25,10 @@ export function InformationsPage({ initialTab = 'news' }: Props) {
   };
 
   const [activeTab, setActiveTab] = useState<'news' | 'annonces' | 'agenda'>(getTabFromPath());
-  const [isVertical, setIsVertical] = useState<boolean>(true);
 
   useEffect(() => {
     setActiveTab(getTabFromPath());
   }, [location.pathname]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsVertical(window.innerWidth >= 768);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const handleTabChange = (tab: 'news' | 'annonces' | 'agenda', path: string) => {
     playXboxSound('select');
@@ -45,9 +37,9 @@ export function InformationsPage({ initialTab = 'news' }: Props) {
   };
 
   const subOptions = [
-    { id: 'news' as const, label: 'News & Publications', shortLabel: 'News', path: '/informations/news' },
-    { id: 'annonces' as const, label: 'Annonces & Flash Info', shortLabel: 'Annonces', path: '/informations/annonces' },
-    { id: 'agenda' as const, label: 'Agenda & Calendrier', shortLabel: 'Agenda', path: '/informations/agenda' },
+    { id: 'news' as const, label: 'News & Publications', path: '/informations/news' },
+    { id: 'annonces' as const, label: 'Annonces & Flash Info', path: '/informations/annonces' },
+    { id: 'agenda' as const, label: 'Agenda & Calendrier', path: '/informations/agenda' },
   ];
 
   const articles = [
@@ -129,34 +121,15 @@ export function InformationsPage({ initialTab = 'news' }: Props) {
   ];
 
   return (
-    <div className="w-full h-[calc(100vh-120px)] my-2 sm:my-3 text-slate-100 overflow-hidden px-3 sm:px-6 lg:px-8 flex flex-col">
-      <AnimatedTabs
-        value={activeTab}
-        onValueChange={(val) => {
-          const opt = subOptions.find(o => o.id === val);
-          if (opt) handleTabChange(opt.id, opt.path);
-        }}
-        orientation={isVertical ? "vertical" : "horizontal"}
-        className="max-w-7xl w-full mx-auto flex-1 min-h-0 h-full flex flex-col md:flex-row items-stretch gap-4 md:gap-8 overflow-hidden"
-      >
-        {/* LEFT SIDEBAR: Navigation des Sous-Options */}
-        <aside className="w-full md:w-[20%] shrink-0 flex flex-col justify-start md:justify-center space-y-2 md:space-y-4 sticky top-0 z-10 bg-transparent">
-          <TabsList className="w-full bg-transparent border-0 p-0 shadow-none flex md:flex-col items-center md:items-stretch gap-2 overflow-x-auto touch-pan-x scroll-smooth no-scrollbar select-none py-1">
-            {subOptions.map((opt) => (
-              <TabsTrigger
-                key={opt.id}
-                value={opt.id}
-                className="shrink-0 flex-none text-left justify-start px-3.5 py-2 text-xs sm:text-sm md:text-base font-medium bg-transparent border-0 shadow-none hover:bg-transparent cursor-pointer transition-all whitespace-nowrap"
-              >
-                <span>{opt.label}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </aside>
-
-        {/* RIGHT MAIN AREA: Always fills maximum height */}
-        <main className="w-full md:w-[80%] flex-1 min-h-0 h-full flex flex-col overflow-y-auto bg-slate-900/40 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-white/10 shadow-xl scrollbar-thin scrollbar-thumb-teal-500/20">
-          <TabsContent value="news" className="flex-1 min-h-0 flex flex-col">
+    <TabbedViewLayout
+      activeTab={activeTab}
+      onTabChange={(val, option) => {
+        if (option?.path) handleTabChange(option.id, option.path);
+        else handleTabChange(val, `/informations/${val}`);
+      }}
+      tabs={subOptions}
+    >
+      <TabsContent value="news" className="flex-1 min-h-0 flex flex-col">
             <div className="space-y-6">
               <div className="pb-4 border-b border-white/10">
                 <h2 className="text-xl font-bold text-white">News & Publications</h2>
@@ -246,8 +219,6 @@ export function InformationsPage({ initialTab = 'news' }: Props) {
               </div>
             </div>
           </TabsContent>
-        </main>
-      </AnimatedTabs>
-    </div>
+    </TabbedViewLayout>
   );
-  }
+}

@@ -10,23 +10,13 @@ import { ServicesInfosTab } from './services/ServicesInfosTab';
 import { SERVICES_LIST, getServiceByUuid, ServiceItem } from '../../data/servicesData';
 import { playXboxSound } from '../../utils/xboxAudio';
 import { Copy, Check, Users, AppWindow, ArrowLeft, Shield, Server } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/AnimatedTabs';
+import { TabsContent } from '../ui/AnimatedTabs';
+import { TabbedViewLayout } from '../layout/TabbedViewLayout';
 
 export function ServicesPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams<{ serviceUuid?: string; tab?: string }>();
-
-  const [isVertical, setIsVertical] = useState(false);
-
-  useEffect(() => {
-    const checkScreen = () => {
-      setIsVertical(window.innerWidth >= 768);
-    };
-    checkScreen();
-    window.addEventListener('resize', checkScreen);
-    return () => window.removeEventListener('resize', checkScreen);
-  }, []);
 
   // Extract service UUID from path (e.g. /services/srv-8f92a10b/applications or params.serviceUuid)
   const pathParts = location.pathname.split('/').filter(Boolean);
@@ -77,26 +67,18 @@ export function ServicesPage() {
     {
       id: 'applications' as const,
       label: 'Applications & Outils',
-      shortLabel: 'Applications',
-      tabKey: 'applications'
     },
     {
       id: 'membres' as const,
       label: 'Membres & Équipes',
-      shortLabel: 'Membres',
-      tabKey: 'membres'
     },
     {
       id: 'ressources' as const,
       label: 'Ressources (GED)',
-      shortLabel: 'Ressources',
-      tabKey: 'ressources'
     },
     {
       id: 'infos' as const,
       label: 'Support & Informations',
-      shortLabel: 'Support',
-      tabKey: 'informations'
     }
   ];
 
@@ -177,87 +159,60 @@ export function ServicesPage() {
     );
   }
 
-  // VIEW 2: Contextualized Service View with Fixed Sidebar & Main Content Area
+  // VIEW 2: Contextualized Service View using generic TabbedViewLayout
   return (
-    <div className="w-full h-[calc(100vh-120px)] my-2 sm:my-3 text-slate-100 overflow-hidden px-3 sm:px-6 lg:px-8 flex flex-col">
-      <Tabs
-        value={activeTab}
-        onValueChange={(val) => handleTabChange(val as 'applications' | 'membres' | 'ressources' | 'infos')}
-        orientation={isVertical ? "vertical" : "horizontal"}
-        className="max-w-7xl w-full mx-auto h-full flex-1 min-h-0 flex flex-col md:flex-row items-stretch gap-4 md:gap-8 overflow-hidden"
-      >
-        {/* LEFT SIDEBAR: Fixed / Non-scrolling Tabs Navigation */}
-        <aside className="w-full md:w-[20%] shrink-0 flex flex-col justify-start md:justify-center space-y-2 md:space-y-4 sticky top-0 z-10 bg-transparent">
-          
-          {/* Back button to switch service */}
-          <button
-            onClick={() => {
-              playXboxSound('select');
-              navigate('/services');
-            }}
-            className="self-start text-xs text-slate-400 hover:text-teal-300 transition-colors cursor-pointer flex items-center gap-1.5 pb-2 border-b border-white/10 w-full"
-            title="Revenir au choix du service"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Changer de service</span>
-          </button>
-
-          {/* Transparent, free text tabs list with smooth horizontal drag/scroll */}
-          <TabsList className="w-full bg-transparent border-0 p-0 shadow-none flex md:flex-col items-center md:items-stretch gap-2 overflow-x-auto touch-pan-x scroll-smooth no-scrollbar select-none py-1">
-            {subOptions.map((opt) => (
-              <TabsTrigger
-                key={opt.id}
-                value={opt.id}
-                className="shrink-0 flex-none text-left justify-start px-3.5 py-2 text-xs sm:text-sm md:text-base font-medium bg-transparent border-0 shadow-none hover:bg-transparent cursor-pointer transition-all whitespace-nowrap"
-              >
-                <span>{opt.label}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </aside>
-
-        {/* RIGHT MAIN AREA: Takes 100% height of parent div */}
-        <main className="w-full md:w-[80%] h-full flex-1 min-h-0 flex flex-col overflow-y-auto bg-slate-900/40 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-white/10 shadow-xl scrollbar-thin scrollbar-thumb-teal-500/20">
-          
-          {/* Service Banner Context inside Main Area */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 mb-4 sm:mb-6 border-b border-white/10 shrink-0">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] sm:text-xs font-bold text-teal-300 uppercase tracking-wider">{selectedService.shortName}</span>
-                <span className="text-slate-500">•</span>
-                <span className="text-[10px] sm:text-xs text-slate-400">{selectedService.category}</span>
-              </div>
-              <h1 className="text-base sm:text-xl font-bold text-white mt-0.5">{selectedService.name}</h1>
+    <TabbedViewLayout
+      activeTab={activeTab}
+      onTabChange={(val) => handleTabChange(val as 'applications' | 'membres' | 'ressources' | 'infos')}
+      tabs={subOptions}
+      sidebarHeader={
+        <button
+          onClick={() => {
+            playXboxSound('select');
+            navigate('/services');
+          }}
+          className="self-start text-xs text-slate-400 hover:text-teal-300 transition-colors cursor-pointer flex items-center gap-1.5 pb-2 border-b border-white/10 w-full"
+          title="Revenir au choix du service"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Changer de service</span>
+        </button>
+      }
+      mainHeader={
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 mb-4 sm:mb-6 border-b border-white/10 shrink-0">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] sm:text-xs font-bold text-teal-300 uppercase tracking-wider">{selectedService.shortName}</span>
+              <span className="text-slate-500">•</span>
+              <span className="text-[10px] sm:text-xs text-slate-400">{selectedService.category}</span>
             </div>
-
-            {/* Copiable UUID Tag */}
-            <button
-              onClick={(e) => handleCopyUuid(selectedService.uuid, e)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-teal-500/30 text-teal-300 text-[11px] sm:text-xs font-mono transition-colors cursor-pointer shrink-0"
-              title="Cliquer pour copier l'UUID du service"
-            >
-              <span>{selectedService.uuid}</span>
-              {copiedUuid ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-teal-400" />}
-            </button>
+            <h1 className="text-base sm:text-xl font-bold text-white mt-0.5">{selectedService.name}</h1>
           </div>
 
-          <div className="flex-1 min-h-0 flex flex-col">
-            <TabsContent value="applications" className="flex-1 min-h-0 flex flex-col">
-              <ServicesApplicationsTab />
-            </TabsContent>
-            <TabsContent value="membres" className="flex-1 min-h-0 flex flex-col">
-              <ServicesMembresTab />
-            </TabsContent>
-            <TabsContent value="ressources" className="flex-1 min-h-0 flex flex-col">
-              <ServicesRessourcesTab />
-            </TabsContent>
-            <TabsContent value="infos" className="flex-1 min-h-0 flex flex-col">
-              <ServicesInfosTab />
-            </TabsContent>
-          </div>
-        </main>
-      </Tabs>
-    </div>
+          <button
+            onClick={(e) => handleCopyUuid(selectedService.uuid, e)}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-teal-500/30 text-teal-300 text-[11px] sm:text-xs font-mono transition-colors cursor-pointer shrink-0"
+            title="Cliquer pour copier l'UUID du service"
+          >
+            <span>{selectedService.uuid}</span>
+            {copiedUuid ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-teal-400" />}
+          </button>
+        </div>
+      }
+    >
+      <TabsContent value="applications" className="flex-1 min-h-0 flex flex-col">
+        <ServicesApplicationsTab />
+      </TabsContent>
+      <TabsContent value="membres" className="flex-1 min-h-0 flex flex-col">
+        <ServicesMembresTab />
+      </TabsContent>
+      <TabsContent value="ressources" className="flex-1 min-h-0 flex flex-col">
+        <ServicesRessourcesTab />
+      </TabsContent>
+      <TabsContent value="infos" className="flex-1 min-h-0 flex flex-col">
+        <ServicesInfosTab />
+      </TabsContent>
+    </TabbedViewLayout>
   );
 }
 
