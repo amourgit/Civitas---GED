@@ -8,6 +8,7 @@ import { playXboxSound } from '../../utils/xboxAudio';
 import { Newspaper, BellRing, CalendarDays } from 'lucide-react';
 import { TabsContent } from '../ui/AnimatedTabs';
 import { TabbedViewLayout } from '../layout/TabbedViewLayout';
+import { CalendarAgendaView } from './agenda/CalendarAgendaView';
 
 interface Props {
   initialTab?: 'news' | 'annonces' | 'agenda';
@@ -192,32 +193,7 @@ export function InformationsPage({ initialTab = 'news' }: Props) {
           </TabsContent>
 
           <TabsContent value="agenda" className="flex-1 min-h-0 flex flex-col">
-            <div className="space-y-6">
-              <div className="pb-4 border-b border-white/10">
-                <h2 className="text-xl font-bold text-white">Agenda & Événements</h2>
-                <p className="text-xs text-slate-300 mt-1">Planning des réunions, conférences et comités.</p>
-              </div>
-
-              <div className="space-y-4">
-                {events.map((ev) => (
-                  <div
-                    key={ev.id}
-                    onClick={() => {
-                      playXboxSound('select');
-                      navigate('/calendrier');
-                    }}
-                    className="p-4 rounded-xl bg-slate-900/60 border border-white/10 hover:border-teal-400/40 transition-colors cursor-pointer space-y-2"
-                  >
-                    <div className="flex items-center justify-between text-xs text-cyan-300 font-medium">
-                      <span>{ev.date}</span>
-                      <span className="text-slate-400 text-[11px]">{ev.participants} participants</span>
-                    </div>
-                    <h3 className="text-base font-bold text-white">{ev.title}</h3>
-                    <p className="text-xs text-slate-300">{ev.location}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <CalendarAgendaView />
           </TabsContent>
     </TabbedViewLayout>
   );

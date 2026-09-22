@@ -43,6 +43,7 @@ import { PageBackgroundProvider } from './components/shell/PageBackground';
 import { PageLoadingProvider } from './context/PageLoadingContext';
 import { RightContentProvider, useRightContent } from './context/RightContentContext';
 import { WorkspaceProvider } from './context/WorkspaceContext';
+import { ServiceProvider } from './context/ServiceContext';
 import { PortalCarouselProvider } from './context/PortalCarouselContext';
 import { PortalCarouselNav } from './components/portal/PortalCarouselNav';
 import { PortalFooterNewsEvents } from './components/portal/PortalFooterNewsEvents';
@@ -117,6 +118,12 @@ const KNOWN_EXACT_ROUTES = new Set([
   '/annonces',
   '/projets',
   '/rh',
+  '/informations',
+  '/informations/news',
+  '/informations/annonces',
+  '/informations/agenda',
+  '/services',
+  '/iam',
   '/ged',
   '/ged/accueil',
   '/ged/sites',
@@ -137,7 +144,6 @@ const KNOWN_EXACT_ROUTES = new Set([
   '/ged/documents',
   '/sites',
   '/dossiers',
-  '/services',
   '/depots',
   '/repository',
   '/ingestion',
@@ -155,6 +161,9 @@ const KNOWN_EXACT_ROUTES = new Set([
 ]);
 
 const KNOWN_PREFIX_ROUTES = [
+  '/informations/',
+  '/services/',
+  '/iam/',
   '/calendrier/',
   '/annuaire/',
   '/actualites/',
@@ -170,7 +179,6 @@ const KNOWN_PREFIX_ROUTES = [
   '/ged/dossier/',
   '/sites/',
   '/dossiers/',
-  '/services/',
   '/documentation/',
   '/salle/',
   '/rayon/',
@@ -370,6 +378,8 @@ function AppContent() {
   const currentAppName = useMemo(() => {
     const path = location.pathname;
     if (path === '/') return 'Portail Intranet Global';
+    if (path.startsWith('/informations')) return 'Informations & Actualités';
+    if (path.startsWith('/services')) return 'Services & Pôles Organisationnels';
     if (path.startsWith('/applications') || path.startsWith('/clouds')) return 'Applications & Services Connectés';
     if (path.startsWith('/ged')) return 'EGEN GED Documents';
     if (path.startsWith('/calendrier')) return 'Calendrier & Planning';
@@ -987,8 +997,6 @@ function AppContent() {
             <Route path="/sites/:siteId/:siteTab" element={<Navigate to="/ged/sites" replace />} />
             <Route path="/dossiers" element={<Navigate to="/ged/dossiers" replace />} />
             <Route path="/dossiers/*" element={<Navigate to="/ged/dossiers" replace />} />
-            <Route path="/services" element={<Navigate to="/ged/sites" replace />} />
-            <Route path="/services/*" element={<Navigate to="/ged/sites" replace />} />
             <Route path="/depots" element={<Navigate to="/ged/depots" replace />} />
             <Route path="/repository" element={<Navigate to="/ged/repository" replace />} />
             <Route path="/ingestion" element={<Navigate to="/ged/ingestion" replace />} />
@@ -1098,11 +1106,13 @@ export default function App() {
       <PageLoadingProvider>
         <PageBackgroundProvider>
           <WorkspaceProvider>
-            <PortalCarouselProvider>
-              <RightContentProvider>
-                <AppContent />
-              </RightContentProvider>
-            </PortalCarouselProvider>
+            <ServiceProvider>
+              <PortalCarouselProvider>
+                <RightContentProvider>
+                  <AppContent />
+                </RightContentProvider>
+              </PortalCarouselProvider>
+            </ServiceProvider>
           </WorkspaceProvider>
         </PageBackgroundProvider>
       </PageLoadingProvider>
