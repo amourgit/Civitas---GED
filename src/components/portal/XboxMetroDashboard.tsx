@@ -12,6 +12,7 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 import { usePortalCarousel } from '../../context/PortalCarouselContext';
 import { playXboxSound, xboxAudio } from '../../utils/xboxAudio';
 import { HeroMosaicGrid } from './HeroMosaicGrid';
+import { EventsSection } from '../events/EventsSection';
 import { PortalBlogSection } from './PortalBlogSection';
 import { ClipPathLinks } from './ClipPathLinks';
 import { SophieProfileCard } from './SophieProfileCard';
@@ -65,6 +66,11 @@ export function XboxMetroDashboard({ onShowToast }: XboxMetroDashboardProps) {
                   {/* Section 1 : News (Hero Mosaic Grid) - SAUF 'A la Une' qui reste sans padding x */}
                   <section className="w-full block">
                     <HeroMosaicGrid onShowToast={onShowToast} />
+                  </section>
+
+                  {/* Section Événements & Agenda d'Entreprise (Juste avant News & Actualités) */}
+                  <section className="w-full block px-2 sm:px-4 md:px-6">
+                    <EventsSection onShowNotification={onShowToast} />
                   </section>
 
                   {/* Section 2 : L'Actualité (Grille Blog Section) */}

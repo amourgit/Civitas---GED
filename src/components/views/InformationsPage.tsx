@@ -8,7 +8,7 @@ import { playXboxSound } from '../../utils/xboxAudio';
 import { Newspaper, BellRing, CalendarDays } from 'lucide-react';
 import { TabsContent } from '../ui/AnimatedTabs';
 import { TabbedViewLayout } from '../layout/TabbedViewLayout';
-import { CalendarAgendaView } from './agenda/CalendarAgendaView';
+import { EventsSection } from '../events/EventsSection';
 import { NewsFeedView } from './news/NewsFeedView';
 
 interface Props {
@@ -166,7 +166,7 @@ export function InformationsPage({ initialTab = 'news', onShowNotification }: Pr
           </TabsContent>
 
           <TabsContent value="agenda" className="flex-1 min-h-0 flex flex-col">
-            <CalendarAgendaView />
+            <EventsSection onShowNotification={onShowNotification} />
           </TabsContent>
     </TabbedViewLayout>
   );

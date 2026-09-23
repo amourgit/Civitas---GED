@@ -61,6 +61,7 @@ import { useService } from '../../context/ServiceContext';
 import { WorkspaceId } from '../../types/workspace';
 import { EgenLogo } from '../ui/EgenLogo';
 import { WorkspaceAndServiceSelectorsColumn } from './WorkspaceAndServiceSelectorsColumn';
+import { GooeyInput } from '../ui/GooeyInput';
 
 export interface SupremeIntranetTopBarProps {
   // Global Intranet Props (Level 1)
@@ -329,7 +330,7 @@ export function SupremeIntranetTopBar({
         <div className="w-full px-2 sm:px-4 md:px-6 lg:px-7 h-11 sm:h-12 flex items-center justify-between gap-1.5 sm:gap-2">
           
           {/* LEFT SECTION: Hamburger (Mobile/Tablet) + Logo & Brand + Workspace & Service Selectors Parent Column */}
-          <div className="flex items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 h-full min-w-0 flex-1 sm:flex-initial overflow-visible">
+          <div className={`items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 h-full min-w-0 flex-1 sm:flex-initial overflow-visible ${isSearchOpen ? 'hidden lg:flex' : 'flex'}`}>
             
             {/* Mobile Menu Button */}
             <button
@@ -371,57 +372,52 @@ export function SupremeIntranetTopBar({
           </div>
 
         {/* RIGHT SECTION: Minimal Dimension Buttons without background (Free text/icons) */}
-        <div className="flex items-center gap-0.5 xs:gap-1 sm:gap-2 md:gap-3 lg:gap-3.5 shrink-0 overflow-visible">
+        <div className={`items-center gap-1 sm:gap-2 lg:gap-3.5 overflow-visible ${isSearchOpen ? 'w-full flex justify-between items-center lg:w-auto lg:shrink-0 lg:justify-end' : 'flex shrink-0'}`}>
           
-          {/* 1. Search Icon Button */}
-          <div className="relative overflow-visible">
+          {/* 1. Search Gooey Input with fluid liquid spring physics */}
+          <div className={`relative overflow-visible flex items-center justify-start ${isSearchOpen ? 'flex-1 lg:flex-initial' : ''}`}>
+            <GooeyInput
+              placeholder="Rechercher..."
+              collapsedWidth={115}
+              expandedWidth={220}
+              expandedOffset={40}
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+              expanded={isSearchOpen}
+              onOpenChange={setIsSearchOpen}
+              onClick={() => {
+                playXboxSound('toggle');
+                setActiveMenu(null);
+                setIsMobileMenuOpen(false);
+              }}
+              onSubmit={(val) => {
+                if (onOpenGlobalSearch) {
+                  onOpenGlobalSearch();
+                } else if (val.trim()) {
+                  notify(`Recherche : ${val.trim()}`);
+                }
+              }}
+            />
+          </div>
+
+          {/* Mobile/Tablet Cancel Button when Search is expanded */}
+          {isSearchOpen && (
             <button
               type="button"
               onClick={() => {
-                if (onOpenGlobalSearch) {
-                  onOpenGlobalSearch();
-                } else {
-                  setIsSearchOpen(prev => !prev);
-                  playXboxSound('toggle');
-                }
+                playXboxSound('toggle');
+                setSearchQuery('');
+                setIsSearchOpen(false);
               }}
-              className="p-1 sm:p-1.5 text-slate-300 hover:text-teal-400 transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center overflow-visible"
-              title="Rechercher dans tout l'intranet"
-              aria-label="Recherche Intranet"
+              className="lg:hidden text-xs text-teal-300 hover:text-white font-semibold px-3.5 py-1.5 rounded-full backdrop-blur-md bg-white/[0.08] hover:bg-white/[0.16] border border-white/20 hover:border-teal-400/40 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_2px_8px_rgba(0,0,0,0.08)] transition-all cursor-pointer shrink-0 whitespace-nowrap active:scale-95"
+              title="Annuler la recherche"
             >
-              <Search className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[1.8]" />
+              Annuler
             </button>
-
-            {/* Quick search input popup */}
-            {isSearchOpen && (
-              <div className="fixed sm:absolute inset-x-2 top-12 sm:top-9 sm:inset-auto sm:right-0 w-[calc(100vw-16px)] sm:w-72 bg-white rounded-xl shadow-2xl border border-slate-200 p-2.5 z-50 flex items-center gap-2">
-                <Search className="w-4 h-4 text-slate-400 shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Rechercher sur l'intranet..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && searchQuery.trim()) {
-                      notify(`Recherche : ${searchQuery}`);
-                      setIsSearchOpen(false);
-                    }
-                  }}
-                  autoFocus
-                  className="w-full text-xs text-slate-800 focus:outline-none bg-transparent"
-                />
-                <button 
-                  onClick={() => setIsSearchOpen(false)}
-                  className="text-slate-400 hover:text-slate-600 p-1 cursor-pointer bg-transparent border-none"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </div>
+          )}
 
           {/* 2. Language Selector */}
-          <div className="relative overflow-visible">
+          <div className={`relative overflow-visible ${isSearchOpen ? 'hidden lg:block' : ''}`}>
             <button
               type="button"
               onClick={() => handleMenuClick('lang')}
@@ -455,10 +451,10 @@ export function SupremeIntranetTopBar({
           </div>
 
           {/* 3. Separator Line */}
-          <div className="hidden sm:block h-4 sm:h-4.5 w-px bg-white/20 mx-0.5" />
+          <div className={`${isSearchOpen ? 'hidden lg:block' : 'hidden sm:block'} h-4 sm:h-4.5 w-px bg-white/20 mx-0.5`} />
 
           {/* 4. App Launcher Grid Icon */}
-          <div className="relative overflow-visible flex items-center">
+          <div className={`relative overflow-visible flex items-center ${isSearchOpen ? 'hidden lg:flex' : ''}`}>
             <button
               type="button"
               onClick={() => handleMenuClick('appLauncher')}
@@ -570,7 +566,7 @@ export function SupremeIntranetTopBar({
           </div>
 
           {/* 5. Plus / Create Icon */}
-          <div className="relative overflow-visible hidden xs:flex">
+          <div className={`relative overflow-visible ${isSearchOpen ? 'hidden lg:flex' : 'hidden xs:flex'}`}>
             <button
               type="button"
               onClick={() => handleMenuClick('create')}
@@ -613,7 +609,7 @@ export function SupremeIntranetTopBar({
           </div>
 
           {/* 6. Settings Gear Icon */}
-          <div className="relative overflow-visible hidden sm:flex">
+          <div className={`relative overflow-visible ${isSearchOpen ? 'hidden lg:flex' : 'hidden sm:flex'}`}>
             <button
               type="button"
               onClick={() => handleMenuClick('settings')}
@@ -653,7 +649,7 @@ export function SupremeIntranetTopBar({
           </div>
 
           {/* 7. Profil Utilisateur */}
-          <div className="relative overflow-visible flex items-center shrink-0">
+          <div className={`relative overflow-visible items-center shrink-0 ${isSearchOpen ? 'hidden lg:flex' : 'flex'}`}>
             <button
               type="button"
               onClick={() => handleMenuClick('profile')}
@@ -735,8 +731,8 @@ export function SupremeIntranetTopBar({
             </AnimatePresence>
           </div>
 
-          {/* 8. Date & Heure */}
-          <div className="hidden sm:flex flex-col items-end justify-center text-right select-none pl-2 sm:pl-3 ml-0.5 sm:ml-1 border-l border-white/15 shrink-0">
+          {/* 8. Date & Heure - Retiré depuis la version tablette (uniquement visible sur desktop lg+) */}
+          <div className="hidden lg:flex flex-col items-end justify-center text-right select-none pl-2 sm:pl-3 ml-0.5 sm:ml-1 border-l border-white/15 shrink-0">
             <span className="text-white font-bold text-xs sm:text-[13px] tracking-tight leading-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
               {timeStr}
             </span>

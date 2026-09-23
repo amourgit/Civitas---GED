@@ -285,6 +285,7 @@ interface ListItem {
 }
 
 interface SearchListProps {
+  key?: React.Key;
   items: ListItem[];
   multi: boolean;
   loading?: boolean;
@@ -469,6 +470,7 @@ function SearchList({
 }
 
 interface InputValueEditorProps {
+  key?: React.Key;
   inputType: "text" | "number" | "date";
   arity: 1 | 2;
   values: string[];
