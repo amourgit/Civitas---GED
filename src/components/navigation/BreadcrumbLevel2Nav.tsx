@@ -123,8 +123,6 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
     subOptionTitle = "Applications & Outils";
   } else if (path.includes("/ressources") || path.startsWith("/ged")) {
     subOptionTitle = "Ressources (GED)";
-  } else if (path.includes("/informations") && path.startsWith("/services")) {
-    subOptionTitle = "Support & Informations";
   } else if (path === "/annuaire/contacts") {
     subOptionTitle = "Collaborateurs";
   } else if (path === "/annuaire/organigramme") {

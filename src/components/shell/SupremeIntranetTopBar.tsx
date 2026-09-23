@@ -140,6 +140,13 @@ export function SupremeIntranetTopBar({
     return () => clearInterval(interval);
   }, []);
 
+  // Auto switch to Breadcrumb navigation mode when navigating away from Home
+  useEffect(() => {
+    if (location.pathname !== '/' && location.pathname !== '/accueil') {
+      setShowFullNav(false);
+    }
+  }, [location.pathname]);
+
   // Determine if current route is within GED
   const isGedRoute = React.useMemo(() => {
     const path = location.pathname;
@@ -218,6 +225,7 @@ export function SupremeIntranetTopBar({
       ...navItem,
       onClick: () => {
         playXboxSound('select');
+        setShowFullNav(false);
         if (navItem.link) {
           navigate(navItem.link);
         } else if (onShowNotification) {
@@ -230,6 +238,7 @@ export function SupremeIntranetTopBar({
           ...item,
           onClick: () => {
             playXboxSound('select');
+            setShowFullNav(false);
             if (item.link) {
               if (['intranet', 'extranet', 'public', 'personnel', 'rh'].includes(item.link)) {
                 setWorkspaceId(item.link as WorkspaceId);
@@ -261,6 +270,7 @@ export function SupremeIntranetTopBar({
         link: `/services/${selectedService.uuid}/applications`,
         onClick: () => {
           playXboxSound('select');
+          setShowFullNav(false);
           navigate(`/services/${selectedService.uuid}/applications`);
         }
       },
@@ -270,6 +280,7 @@ export function SupremeIntranetTopBar({
         link: `/services/${selectedService.uuid}/membres`,
         onClick: () => {
           playXboxSound('select');
+          setShowFullNav(false);
           navigate(`/services/${selectedService.uuid}/membres`);
         }
       },
@@ -279,22 +290,14 @@ export function SupremeIntranetTopBar({
         link: `/services/${selectedService.uuid}/ressources`,
         onClick: () => {
           playXboxSound('select');
+          setShowFullNav(false);
           navigate(`/services/${selectedService.uuid}/ressources`);
-        }
-      },
-      {
-        id: 8805,
-        label: 'Informations',
-        link: `/services/${selectedService.uuid}/informations`,
-        onClick: () => {
-          playXboxSound('select');
-          navigate(`/services/${selectedService.uuid}/informations`);
         }
       }
     ];
 
     return [...baseNavItems, ...serviceSubNavItems];
-  }, [currentWorkspace, selectedService, setWorkspaceId, navigate, onShowNotification]);
+  }, [currentWorkspace, selectedService, setWorkspaceId, navigate, onShowNotification, setShowFullNav]);
 
   // Group workspaces by category
   const workspaceGroups = React.useMemo(() => {
@@ -749,7 +752,7 @@ export function SupremeIntranetTopBar({
         {!isGedRoute && (
           <div className="w-full bg-transparent px-2 sm:px-4 md:px-6 lg:px-7 h-10 sm:h-11 flex items-center justify-start overflow-visible z-30 border-t border-white/5">
             <div className="w-full max-w-7xl mx-auto flex items-center justify-between overflow-visible">
-              {(location.pathname === '/' || location.pathname === '/accueil' || showFullNav || Boolean(selectedService)) ? (
+              {(location.pathname === '/' || location.pathname === '/accueil' || showFullNav) ? (
                 <div className="w-full flex items-center justify-between">
                   <DropdownNavigation navItems={desktopNavItems} />
                   {showFullNav && (

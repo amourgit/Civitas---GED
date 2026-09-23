@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import { ServicesApplicationsTab } from './services/ServicesApplicationsTab';
 import { ServicesMembresTab } from './services/ServicesMembresTab';
 import { ServicesRessourcesTab } from './services/ServicesRessourcesTab';
-import { ServicesInfosTab } from './services/ServicesInfosTab';
 import { SERVICES_LIST, getServiceByUuid, ServiceItem } from '../../data/servicesData';
 import { playXboxSound } from '../../utils/xboxAudio';
 import { Copy, Check, Users, AppWindow, ArrowLeft, Shield, Server } from 'lucide-react';
@@ -25,7 +24,7 @@ export function ServicesPage() {
   let activeTabFromPath = params.tab || (pathParts.length >= 3 ? pathParts[2] : 'applications');
 
   // If path is /services/membres or /services/applications without UUID, redirect or fallback
-  if (rawServiceUuid === 'applications' || rawServiceUuid === 'membres' || rawServiceUuid === 'ressources' || rawServiceUuid === 'informations') {
+  if (rawServiceUuid === 'applications' || rawServiceUuid === 'membres' || rawServiceUuid === 'ressources') {
     activeTabFromPath = rawServiceUuid;
     rawServiceUuid = undefined;
   }
@@ -34,15 +33,14 @@ export function ServicesPage() {
   const [copiedUuid, setCopiedUuid] = useState(false);
 
   // Sync active tab
-  const getTab = (): 'applications' | 'membres' | 'ressources' | 'infos' => {
+  const getTab = (): 'applications' | 'membres' | 'ressources' => {
     const t = activeTabFromPath.toLowerCase();
     if (t === 'membres') return 'membres';
     if (t === 'ressources') return 'ressources';
-    if (t === 'informations' || t === 'infos') return 'infos';
     return 'applications';
   };
 
-  const [activeTab, setActiveTab] = useState<'applications' | 'membres' | 'ressources' | 'infos'>(getTab());
+  const [activeTab, setActiveTab] = useState<'applications' | 'membres' | 'ressources'>(getTab());
 
   useEffect(() => {
     setActiveTab(getTab());
@@ -56,7 +54,7 @@ export function ServicesPage() {
     setTimeout(() => setCopiedUuid(false), 2000);
   };
 
-  const handleTabChange = (tab: 'applications' | 'membres' | 'ressources' | 'infos') => {
+  const handleTabChange = (tab: 'applications' | 'membres' | 'ressources') => {
     if (!selectedService) return;
     playXboxSound('select');
     setActiveTab(tab);
@@ -75,10 +73,6 @@ export function ServicesPage() {
     {
       id: 'ressources' as const,
       label: 'Ressources (GED)',
-    },
-    {
-      id: 'infos' as const,
-      label: 'Support & Informations',
     }
   ];
 
@@ -163,7 +157,7 @@ export function ServicesPage() {
   return (
     <TabbedViewLayout
       activeTab={activeTab}
-      onTabChange={(val) => handleTabChange(val as 'applications' | 'membres' | 'ressources' | 'infos')}
+      onTabChange={(val) => handleTabChange(val as 'applications' | 'membres' | 'ressources')}
       tabs={subOptions}
       sidebarHeader={
         <button
@@ -208,9 +202,6 @@ export function ServicesPage() {
       </TabsContent>
       <TabsContent value="ressources" className="flex-1 min-h-0 flex flex-col">
         <ServicesRessourcesTab />
-      </TabsContent>
-      <TabsContent value="infos" className="flex-1 min-h-0 flex flex-col">
-        <ServicesInfosTab />
       </TabsContent>
     </TabbedViewLayout>
   );

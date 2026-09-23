@@ -9,12 +9,14 @@ import { Newspaper, BellRing, CalendarDays } from 'lucide-react';
 import { TabsContent } from '../ui/AnimatedTabs';
 import { TabbedViewLayout } from '../layout/TabbedViewLayout';
 import { CalendarAgendaView } from './agenda/CalendarAgendaView';
+import { NewsFeedView } from './news/NewsFeedView';
 
 interface Props {
   initialTab?: 'news' | 'annonces' | 'agenda';
+  onShowNotification?: (msg: string, type?: 'success' | 'info' | 'warning' | 'error') => void;
 }
 
-export function InformationsPage({ initialTab = 'news' }: Props) {
+export function InformationsPage({ initialTab = 'news', onShowNotification }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -131,37 +133,8 @@ export function InformationsPage({ initialTab = 'news' }: Props) {
       tabs={subOptions}
     >
       <TabsContent value="news" className="flex-1 min-h-0 flex flex-col">
-            <div className="space-y-6">
-              <div className="pb-4 border-b border-white/10">
-                <h2 className="text-xl font-bold text-white">News & Publications</h2>
-                <p className="text-xs text-slate-300 mt-1">Articles récents et actualités de l'organisation.</p>
-              </div>
-
-              <div className="space-y-4">
-                {articles.map((art) => (
-                  <div
-                    key={art.id}
-                    onClick={() => {
-                      playXboxSound('select');
-                      navigate('/actualites');
-                    }}
-                    className="p-4 rounded-xl bg-slate-900/60 border border-white/10 hover:border-teal-400/40 transition-colors cursor-pointer space-y-2"
-                  >
-                    <div className="flex items-center justify-between text-xs text-teal-400 font-medium">
-                      <span>{art.category}</span>
-                      <span className="text-slate-400 text-[11px]">{art.date} • {art.readTime}</span>
-                    </div>
-                    <h3 className="text-base font-bold text-white hover:text-teal-300 transition-colors">
-                      {art.title}
-                    </h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      {art.summary}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
+        <NewsFeedView onShowNotification={onShowNotification} />
+      </TabsContent>
 
           <TabsContent value="annonces" className="flex-1 min-h-0 flex flex-col">
             <div className="space-y-6">

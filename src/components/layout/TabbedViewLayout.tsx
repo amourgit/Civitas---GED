@@ -121,7 +121,7 @@ export function TabbedViewLayout<T extends string = string>({
         {/* RIGHT MAIN CONTENT AREA */}
         <main
           className={cn(
-            "w-full md:w-[80%] h-full flex-1 min-h-0 flex flex-col overflow-y-auto bg-slate-900/40 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-white/10 shadow-xl scrollbar-thin scrollbar-thumb-teal-500/20",
+            "w-full md:w-[80%] h-full flex-1 min-h-0 flex flex-col overflow-y-auto bg-transparent p-0 scrollbar-thin scrollbar-thumb-teal-500/20",
             mainClassName
           )}
         >
