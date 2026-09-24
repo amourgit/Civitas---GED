@@ -17,9 +17,9 @@ export const ALL_EVENTS: EventItem[] = [
     description: 'Journée annuelle d’intégration et de cohésion regroupant l’ensemble des collaborateurs de nos directions régionales et centrales avec ateliers collaboratifs, bilan stratégique et activités de team building.',
     summary: 'Journée annuelle d’intégration et de cohésion pour l’ensemble des collaborateurs.',
     organizer: {
-      name: 'Comité Événementiel & RH',
-      role: 'Direction des Ressources Humaines',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80'
+      name: 'Amour Samuel NZILA NGALA',
+      role: 'Directeur Général de CIVITAS Gabon',
+      avatar: '/assets/moi-assis.jpg'
     },
     attendeesCount: 180,
     maxAttendees: 200,

@@ -34,7 +34,7 @@ const AUDIT_ACTIVITIES = [
   },
   {
     id: 'act-feed-3',
-    user: 'Laura Denvida (RH)',
+    user: 'Amour Samuel NZILA NGALA (CIVITAS Gabon)',
     action: 'a créé un lien de partage sécurisé temporaire',
     target: 'Dossier_Candidature_Cadre_Dirigeant',
     time: 'Il y a 42 min',

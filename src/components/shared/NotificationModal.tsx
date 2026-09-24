@@ -25,7 +25,7 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
     {
       id: 1,
       title: 'Nouveaux clichés importés',
-      desc: '5 photos ajoutées à Photography.gallery par Sophie Martin',
+      desc: '5 photos ajoutées à Photography.gallery par Amour Samuel NZILA NGALA',
       time: 'Il y a 12 min',
       icon: <FileUp className="w-4 h-4 text-emerald-400" />
     },

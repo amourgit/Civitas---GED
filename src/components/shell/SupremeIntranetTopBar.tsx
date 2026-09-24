@@ -329,27 +329,9 @@ export function SupremeIntranetTopBar({
         {/* ROW 1: BRAND & ACTIONS TOP ROW */}
         <div className="w-full px-2 sm:px-4 md:px-6 lg:px-7 h-11 sm:h-12 flex items-center justify-between gap-1.5 sm:gap-2">
           
-          {/* LEFT SECTION: Hamburger (Mobile/Tablet) + Logo & Brand + Workspace & Service Selectors Parent Column */}
+          {/* LEFT SECTION: Logo & Brand + Workspace & Service Selectors Parent Column */}
           <div className={`items-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 h-full min-w-0 flex-1 sm:flex-initial overflow-visible ${isSearchOpen ? 'hidden lg:flex' : 'flex'}`}>
             
-            {/* Mobile Menu Button */}
-            <button
-              type="button"
-              onClick={() => {
-                playXboxSound('toggle');
-                setIsMobileMenuOpen(prev => !prev);
-              }}
-              className="sm:hidden p-1 -ml-0.5 text-slate-300 hover:text-teal-400 hover:bg-white/10 rounded-lg transition-colors cursor-pointer bg-transparent border-none flex items-center justify-center shrink-0"
-              title="Menu Intranet"
-              aria-label="Menu Intranet"
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-4.5 h-4.5 text-slate-200" />
-              ) : (
-                <Menu className="w-4.5 h-4.5 text-slate-200" />
-              )}
-            </button>
-
             {/* EGEN Official Logo & Brand */}
             <div 
               onClick={() => {
@@ -658,8 +640,8 @@ export function SupremeIntranetTopBar({
               aria-label="Menu Profil"
             >
               <img 
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" 
-                alt="Avatar" 
+                src="/assets/moi-assis.jpg" 
+                alt="Amour Samuel NZILA NGALA" 
                 className="w-full h-full object-cover rounded-full aspect-square block pointer-events-none"
               />
             </button>
@@ -672,20 +654,20 @@ export function SupremeIntranetTopBar({
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.94, y: -6 }}
                   transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-                  className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-60 max-w-xs bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 p-2.5 z-50 text-xs origin-top-right text-white"
+                  className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-64 max-w-xs bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 p-2.5 z-50 text-xs origin-top-right text-white"
                 >
                   <div className="flex items-center gap-2.5 pb-2 mb-2 border-b border-white/10">
-                    <div className="relative w-8 h-8 rounded-full overflow-hidden border border-white/20 shrink-0 shadow-xs aspect-square">
+                    <div className="relative w-9 h-9 rounded-full overflow-hidden border border-white/20 shrink-0 shadow-xs aspect-square">
                       <img 
-                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" 
-                        alt="Avatar" 
-                        className="w-full h-full object-cover rounded-full aspect-square"
+                        src="/assets/moi-assis.jpg" 
+                        alt="Amour Samuel NZILA NGALA" 
+                        className="w-full h-full object-cover object-top rounded-full aspect-square"
                       />
-                      <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 ring-1 ring-slate-900" />
+                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-1 ring-slate-900" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-white text-xs truncate">Laura Denvida</p>
-                      <p className="text-[10px] text-slate-300 truncate">HR Manager • Paris</p>
+                      <p className="font-bold text-white text-xs truncate">Amour Samuel NZILA NGALA</p>
+                      <p className="text-[10px] text-slate-300 truncate">Directeur Général • CIVITAS Gabon</p>
                       <span className="inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[8px] font-semibold border border-emerald-400/30">
                         <ShieldCheck className="w-2.5 h-2.5 text-emerald-400" />
                         Connecté
@@ -832,181 +814,6 @@ export function SupremeIntranetTopBar({
             )}
           </div>
 
-        </div>
-      )}
-
-      {/* MOBILE DRAWER */}
-      {isMobileMenuOpen && (
-        <div className={`lg:hidden fixed inset-0 ${isGedRoute ? 'top-[96px]' : 'top-[48px]'} z-40 bg-slate-900/40 backdrop-blur-xs flex animate-in fade-in duration-150`}>
-          <div className="w-full max-w-xs sm:max-w-sm bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto border-r border-slate-200">
-            <div className="p-4 border-b border-slate-100 bg-slate-50/70">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#008080] text-white font-bold flex items-center justify-center text-xs shadow-xs">
-                  LD
-                </div>
-                <div>
-                  <h4 className="font-semibold text-slate-800 text-sm">Laura Denvida</h4>
-                  <p className="text-xs text-slate-500">EGEN — Écosystème Gouvernemental</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 space-y-1 flex-1 text-sm">
-              <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                Navigation Principale
-              </div>
-
-              <div className="rounded-xl overflow-hidden border border-slate-100 bg-white">
-                <button
-                  type="button"
-                  onClick={() => toggleMobileCategory('espaces_switcher')}
-                  className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Building2 className="w-4 h-4 text-[#008080]" />
-                    <span className="font-semibold text-xs">Changer d'Espace ({currentWorkspace.name})</span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${expandedMobileCategory === 'espaces_switcher' ? 'rotate-180 text-[#008080]' : ''}`} />
-                </button>
-                {expandedMobileCategory === 'espaces_switcher' && (
-                  <div className="bg-slate-50/80 px-3 py-2 space-y-2.5 border-t border-slate-100 text-xs">
-                    {workspaceGroups.map(group => (
-                      <div key={group.key} className="space-y-1">
-                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-1">
-                          {group.label}
-                        </div>
-                        <div className="space-y-1">
-                          {group.items.map(ws => {
-                            const isWsActive = ws.id === currentWorkspace.id;
-                            return (
-                              <button
-                                key={ws.id}
-                                onClick={() => {
-                                  playXboxSound('select');
-                                  setWorkspaceId(ws.id);
-                                  setIsMobileMenuOpen(false);
-                                  if (onShowNotification) {
-                                    onShowNotification(`Espace activé : ${ws.name}`, 'success');
-                                  }
-                                }}
-                                className={`w-full flex items-center justify-between py-1.5 px-2.5 rounded-lg text-left transition-colors ${
-                                  isWsActive 
-                                    ? 'bg-teal-50 text-teal-800 font-bold border border-teal-200' 
-                                    : 'text-slate-600 hover:bg-white hover:text-slate-900 font-medium'
-                                }`}
-                              >
-                                <span>{ws.name}</span>
-                                {isWsActive ? (
-                                  <span className="text-[9px] bg-teal-600 text-white font-bold px-1.5 py-0.2 rounded-full">
-                                    Actif
-                                  </span>
-                                ) : (
-                                  <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-2 pb-1 border-t border-slate-100">
-                <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
-                  <span>Navigation — {currentWorkspace.name}</span>
-                </p>
-                <div className="space-y-1.5">
-                  {desktopNavItems.map((item) => {
-                    const hasSubMenus = item.subMenus && item.subMenus.length > 0;
-                    const isExpanded = expandedMobileCategory === String(item.id);
-                    return (
-                      <div key={item.id} className="rounded-xl overflow-hidden border border-slate-100 bg-white">
-                        {hasSubMenus ? (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => toggleMobileCategory(String(item.id))}
-                              className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
-                            >
-                              <span className="font-semibold text-xs">{item.label}</span>
-                              <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-[#008080]' : ''}`} />
-                            </button>
-                            {isExpanded && (
-                              <div className="bg-slate-50/80 px-3 py-2 space-y-3 border-t border-slate-100 text-xs">
-                                {item.subMenus?.map((sub) => (
-                                  <div key={sub.title} className="space-y-1.5">
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                      {sub.title}
-                                    </div>
-                                    <div className="space-y-1">
-                                      {sub.items.map((subItem) => {
-                                        const IconComp = subItem.icon;
-                                        return (
-                                          <button
-                                            key={subItem.label}
-                                            onClick={() => {
-                                              setIsMobileMenuOpen(false);
-                                              if (subItem.onClick) subItem.onClick();
-                                            }}
-                                            className="w-full flex items-center gap-2.5 py-1.5 px-2 rounded-lg text-left text-slate-600 hover:bg-slate-100 hover:text-[#008080] transition-colors"
-                                          >
-                                            {IconComp && <IconComp className="w-3.5 h-3.5 text-teal-600 shrink-0" />}
-                                            <div className="flex flex-col min-w-0">
-                                              <span className="font-medium text-xs text-slate-800 truncate">{subItem.label}</span>
-                                              {subItem.description && (
-                                                <span className="text-[10px] text-slate-400 truncate">{subItem.description}</span>
-                                              )}
-                                            </div>
-                                          </button>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsMobileMenuOpen(false);
-                              if (item.onClick) item.onClick();
-                            }}
-                            className="w-full flex items-center justify-between p-3 text-left font-medium text-slate-700 hover:bg-slate-50 hover:text-[#008080] transition-colors"
-                          >
-                            <span className="font-semibold text-xs">{item.label}</span>
-                            <ChevronRight className="w-4 h-4 text-slate-300" />
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 border-t border-slate-100 bg-slate-50/50 space-y-2">
-              <button 
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  if (onOpenGED) onOpenGED();
-                  notify("Application GED EGEN Documents active");
-                }}
-                className="w-full py-2 px-3 rounded-xl bg-emerald-600 text-white font-medium text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-              >
-                <FolderOpen className="w-4 h-4" />
-                <span>Ouvrir GED Documents</span>
-              </button>
-            </div>
-          </div>
-
-          <div 
-            className="flex-1" 
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
         </div>
       )}
     </div>

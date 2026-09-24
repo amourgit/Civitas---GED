@@ -137,8 +137,8 @@ export function TopBar({
           title="Profil Amour Samuel NZILA NGALA"
         >
           <img 
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" 
-            alt="Avatar" 
+            src="/assets/moi-assis.jpg" 
+            alt="Amour Samuel NZILA NGALA" 
             className="w-full h-full object-cover"
           />
         </div>

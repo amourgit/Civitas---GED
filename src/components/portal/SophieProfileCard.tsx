@@ -11,7 +11,6 @@ import {
   Save
 } from 'lucide-react';
 import { playXboxSound } from '../../utils/xboxAudio';
-import sophiePortraitImg from '../../assets/images/sophie_bennett_portrait_1789844011539.jpg';
 
 interface SophieProfileCardProps {
   onShowToast?: (msg: string, type: 'info' | 'success' | 'warning') => void;
@@ -19,17 +18,18 @@ interface SophieProfileCardProps {
 }
 
 export function SophieProfileCard({ onShowToast, className = '' }: SophieProfileCardProps) {
-  // Profil état éditable
+  // Profil état éditable avec les informations exactes d'Amour Samuel NZILA NGALA
   const [profile, setProfile] = useState({
-    name: "Sophie Bennett",
-    title: "Product Designer who focuses on simplicity & usability.",
+    name: "Amour Samuel NZILA NGALA",
+    title: "Directeur Général de CIVITAS Gabon.",
     followers: 312,
     following: 48,
     verified: true,
-    avatarUrl: sophiePortraitImg || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
-    department: "Design & Expérience Utilisateur",
-    location: "Siège • Paris",
-    email: "sophie.bennett@egen-archives.fr"
+    avatarUrl: "/assets/moi-assis.jpg",
+    coverUrl: "/assets/moi-reunion.png",
+    department: "Direction Générale • CIVITAS Gabon",
+    location: "Gabon",
+    email: "samuel.nzila@civitas-gabon.com"
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -71,41 +71,57 @@ export function SophieProfileCard({ onShowToast, className = '' }: SophieProfile
         id="card-profil-sophie"
         className={`w-full bg-white rounded-[28px] sm:rounded-[32px] overflow-hidden shadow-xl border border-slate-100 flex flex-col relative transition-all duration-300 hover:shadow-2xl ${className}`}
       >
-        {/* Partie supérieure : Photo portrait avec fondu dégradé vers le blanc */}
-        <div className="relative w-full aspect-[4/3] sm:aspect-[1.15/1] overflow-hidden bg-slate-100 select-none">
-          <img
-            src={imageError ? "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" : profile.avatarUrl}
-            alt={profile.name}
-            onError={() => setImageError(true)}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-top transition-transform duration-700 ease-out hover:scale-105"
-          />
+        {/* Partie supérieure : Photo de Couverture & Photo Portrait Overlay */}
+        <div className="relative w-full overflow-hidden bg-slate-900 select-none">
+          {/* Bannière Photo de Couverture (moi-reunion.png) */}
+          <div className="w-full h-32 sm:h-36 relative overflow-hidden bg-slate-800">
+            <img
+              src={profile.coverUrl || "/assets/moi-reunion.png"}
+              alt="Photo de couverture - Réunion"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-black/20" />
+          </div>
 
-          {/* Dégradé doux et progressif qui fond l'image dans le fond blanc de la carte */}
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
-        </div>
-
-        {/* Partie textuelle et stats positionnée exactement comme sur la maquette */}
-        <div className="relative px-6 pb-6 pt-1 flex flex-col">
-          {/* Nom avec badge de vérification vert */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-2xl font-bold text-slate-900 tracking-tight leading-tight">
-              {profile.name}
-            </h3>
+          {/* Photo Portrait (moi-assis.jpg) chevauchant la bannière */}
+          <div className="px-6 relative -mt-10 flex items-end justify-between pb-1">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-4 border-white shadow-xl overflow-hidden bg-slate-100 shrink-0">
+              <img
+                src={imageError ? "/assets/moi-assis.jpg" : profile.avatarUrl}
+                alt={profile.name}
+                onError={() => setImageError(true)}
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover object-top"
+              />
+            </div>
 
             {profile.verified && (
               <span 
                 title="Profil vérifié"
-                className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#00c950] text-white shadow-xs shrink-0"
+                className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/30 text-[11px] font-bold gap-1 shadow-xs mb-1 bg-white/90 backdrop-blur-md"
               >
-                <Check className="w-3 h-3 stroke-[3]" />
+                <Check className="w-3 h-3 stroke-[3] text-emerald-600" />
+                <span>Vérifié</span>
               </span>
             )}
           </div>
+        </div>
 
-          {/* Sous-titre / Bio */}
-          <p className="text-slate-600 text-sm font-normal leading-relaxed mt-1.5">
+        {/* Partie textuelle et stats positionnée exactement comme sur la maquette */}
+        <div className="relative px-6 pb-6 pt-3 flex flex-col">
+          {/* Nom avec badge de vérification */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              {profile.name}
+            </h3>
+          </div>
+
+          {/* Sous-titre / Profession / Bio */}
+          <p className="text-slate-700 text-sm font-semibold leading-relaxed mt-1">
             {profile.title}
+          </p>
+          <p className="text-slate-500 text-xs font-normal mt-0.5">
+            {profile.department}
           </p>
 
           {/* Ligne des statistiques : Followers & Following */}
@@ -133,7 +149,7 @@ export function SophieProfileCard({ onShowToast, className = '' }: SophieProfile
             </button>
           </div>
 
-          {/* Bouton principal : Éditer (remplace Follow + comme demandé) */}
+          {/* Bouton principal : Éditer */}
           <button
             type="button"
             onClick={handleOpenEdit}
@@ -210,7 +226,7 @@ export function SophieProfileCard({ onShowToast, className = '' }: SophieProfile
 
                 {/* Bio / Description */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Bio & Titre</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Profession & Titre</label>
                   <textarea
                     rows={3}
                     required

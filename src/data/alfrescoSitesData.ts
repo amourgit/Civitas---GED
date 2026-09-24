@@ -83,11 +83,11 @@ export const INITIAL_ALFRESCO_MEMBERS: AlfrescoMember[] = [
   {
     id: 'm-1',
     name: 'Amour Samuel NZILA NGALA',
-    email: 's.nzila@ville-archivage.gouv.fr',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    email: 'samuel.nzila@civitas-gabon.com',
+    avatar: '/assets/moi-assis.jpg',
     role: 'SiteManager',
-    roleLabel: 'Gestionnaire de site',
-    department: 'Direction des Systèmes d\'Information & Archives',
+    roleLabel: 'Directeur Général (Gestionnaire de site)',
+    department: 'Direction Générale • CIVITAS Gabon',
     joinedDate: '01/01/2026',
     status: 'En ligne'
   },
