@@ -87,7 +87,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
 }) => {
   const isCenter = position === 0;
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     // Ne pas déclencher le clic si un glissement (drag) vient d'être effectué
     if (isDraggingRef.current) return;
     
@@ -106,7 +106,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
     <div
       onClick={handleClick}
       className={cn(
-        "absolute left-1/2 top-1/2 cursor-pointer border-2 p-8 transition-all duration-500 ease-in-out select-none",
+        "absolute left-1/2 top-1/2 cursor-pointer border-2 p-7 sm:p-8 transition-all duration-500 ease-in-out select-none",
         isCenter 
           ? "z-10 bg-primary text-primary-foreground border-primary" 
           : "z-0 bg-card text-card-foreground border-border hover:border-primary/50"
@@ -118,7 +118,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         transform: `
           translate(-50%, -50%) 
           translateX(${(cardSize / 1.5) * position}px)
-          translateY(${isCenter ? -65 : position % 2 ? 15 : -15}px)
+          translateY(${isCenter ? -30 : position % 2 ? 20 : -10}px)
           rotate(${isCenter ? 0 : position % 2 ? 2.5 : -2.5}deg)
         `,
         boxShadow: isCenter ? "0px 8px 0px 4px hsl(var(--border))" : "0px 0px 0px 0px transparent"
@@ -136,19 +136,19 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       <img
         src={testimonial.imgSrc}
         alt={`${testimonial.by.split(',')[0]}`}
-        className="mb-4 h-14 w-12 bg-muted object-cover object-top"
+        className="mb-3 sm:mb-4 h-12 w-10 sm:h-14 sm:w-12 bg-muted object-cover object-top rounded-xs shadow-sm"
         style={{
           boxShadow: "3px 3px 0px hsl(var(--background))"
         }}
       />
       <h3 className={cn(
-        "text-base sm:text-xl font-medium",
+        "text-sm sm:text-base md:text-lg font-medium leading-snug line-clamp-4",
         isCenter ? "text-primary-foreground" : "text-foreground"
       )}>
         "{testimonial.testimonial}"
       </h3>
       <p className={cn(
-        "absolute bottom-8 left-8 right-8 mt-2 text-sm italic",
+        "absolute bottom-6 sm:bottom-8 left-7 sm:left-8 right-7 sm:right-8 mt-2 text-xs sm:text-sm italic truncate",
         isCenter ? "text-primary-foreground/80" : "text-muted-foreground"
       )}>
         - {testimonial.by}
@@ -161,14 +161,18 @@ export interface StaggerTestimonialsProps {
   testimonials?: TestimonialItem[];
   onSelect?: (item: TestimonialItem) => void;
   onItemClick?: (item: TestimonialItem) => void;
+  height?: number | string;
+  className?: string;
 }
 
 export const StaggerTestimonials: React.FC<StaggerTestimonialsProps> = ({
   testimonials = defaultTestimonials,
   onSelect,
-  onItemClick
+  onItemClick,
+  height = 500,
+  className
 }) => {
-  const [cardSize, setCardSize] = useState(365);
+  const [cardSize, setCardSize] = useState(350);
   const [testimonialsList, setTestimonialsList] = useState(testimonials);
 
   // Gestion du drag / swipe avec la main (souris et tactile)
@@ -238,7 +242,7 @@ export const StaggerTestimonials: React.FC<StaggerTestimonialsProps> = ({
   useEffect(() => {
     const updateSize = () => {
       const { matches } = window.matchMedia("(min-width: 640px)");
-      setCardSize(matches ? 365 : 290);
+      setCardSize(matches ? 350 : 280);
     };
 
     updateSize();
@@ -252,8 +256,11 @@ export const StaggerTestimonials: React.FC<StaggerTestimonialsProps> = ({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className="relative w-full overflow-hidden bg-muted/30 cursor-grab active:cursor-grabbing touch-pan-y"
-      style={{ height: 600 }}
+      className={cn(
+        "relative w-full overflow-hidden bg-muted/30 cursor-grab active:cursor-grabbing touch-pan-y select-none",
+        className
+      )}
+      style={{ height }}
     >
       {testimonialsList.map((testimonial, index) => {
         const position = testimonialsList.length % 2
@@ -271,7 +278,7 @@ export const StaggerTestimonials: React.FC<StaggerTestimonialsProps> = ({
           />
         );
       })}
-      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2 z-20">
+      <div className="absolute bottom-3 sm:bottom-4 left-1/2 flex -translate-x-1/2 gap-2 z-20">
         <button
           type="button"
           onClick={() => {
@@ -279,13 +286,13 @@ export const StaggerTestimonials: React.FC<StaggerTestimonialsProps> = ({
             handleMove(-1);
           }}
           className={cn(
-            "flex h-14 w-14 items-center justify-center text-2xl transition-colors",
+            "flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center text-xl sm:text-2xl transition-colors",
             "bg-background border-2 border-border hover:bg-primary hover:text-primary-foreground",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           )}
           aria-label="Previous testimonial"
         >
-          <ChevronLeft />
+          <ChevronLeft className="w-6 h-6" />
         </button>
         <button
           type="button"
@@ -294,13 +301,13 @@ export const StaggerTestimonials: React.FC<StaggerTestimonialsProps> = ({
             handleMove(1);
           }}
           className={cn(
-            "flex h-14 w-14 items-center justify-center text-2xl transition-colors",
+            "flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center text-xl sm:text-2xl transition-colors",
             "bg-background border-2 border-border hover:bg-primary hover:text-primary-foreground",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           )}
           aria-label="Next testimonial"
         >
-          <ChevronRight />
+          <ChevronRight className="w-6 h-6" />
         </button>
       </div>
     </div>
