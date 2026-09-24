@@ -263,36 +263,36 @@ export function SupremeIntranetTopBar({
       return baseNavItems;
     }
 
-    // Add service sub-options to the right of the Level 2 nav list when a service is selected
+    // Add site sub-options to the right of the Level 2 nav list when a site is selected
     const serviceSubNavItems: NavItem[] = [
       {
         id: 8802,
         label: 'Applications',
-        link: `/services/${selectedService.uuid}/applications`,
+        link: `/sites/${selectedService.uuid}/applications`,
         onClick: () => {
           playXboxSound('select');
           setShowFullNav(false);
-          navigate(`/services/${selectedService.uuid}/applications`);
+          navigate(`/sites/${selectedService.uuid}/applications`);
         }
       },
       {
         id: 8803,
         label: 'Membres & Équipes',
-        link: `/services/${selectedService.uuid}/membres`,
+        link: `/sites/${selectedService.uuid}/membres`,
         onClick: () => {
           playXboxSound('select');
           setShowFullNav(false);
-          navigate(`/services/${selectedService.uuid}/membres`);
+          navigate(`/sites/${selectedService.uuid}/membres`);
         }
       },
       {
         id: 8804,
         label: 'Ressources',
-        link: `/services/${selectedService.uuid}/ressources`,
+        link: `/sites/${selectedService.uuid}/ressources`,
         onClick: () => {
           playXboxSound('select');
           setShowFullNav(false);
-          navigate(`/services/${selectedService.uuid}/ressources`);
+          navigate(`/sites/${selectedService.uuid}/ressources`);
         }
       }
     ];
@@ -744,26 +744,24 @@ export function SupremeIntranetTopBar({
         </div>
         </div>
 
-        {/* ROW 2: NIVEAU 2 DE LA TOPBAR PRINCIPALE */}
+        {/* ROW 2: NIVEAU 2 DE LA TOPBAR PRINCIPALE (Pleine largeur sans max-w comme le niveau 1) */}
         {!isGedRoute && (
-          <div className="w-full bg-transparent px-2 sm:px-4 md:px-6 lg:px-7 h-10 sm:h-11 flex items-center justify-start overflow-visible z-30 border-t border-white/5">
-            <div className="w-full max-w-7xl mx-auto flex items-center justify-between overflow-visible">
-              {(location.pathname === '/' || location.pathname === '/accueil' || showFullNav) ? (
-                <div className="w-full flex items-center justify-between">
-                  <DropdownNavigation navItems={desktopNavItems} />
-                  {showFullNav && (
-                    <button
-                      onClick={() => setShowFullNav(false)}
-                      className="text-xs text-slate-300 hover:text-white bg-white/10 px-2 py-1 rounded-md border border-white/15 ml-2 cursor-pointer shrink-0"
-                    >
-                      Mode Fil d'ariane
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <BreadcrumbLevel2Nav onToggleFullMenu={() => setShowFullNav(true)} />
-              )}
-            </div>
+          <div className="w-full bg-transparent px-2 sm:px-4 md:px-6 lg:px-7 h-10 sm:h-11 flex items-center justify-between overflow-visible z-30">
+            {(location.pathname === '/' || location.pathname === '/accueil' || showFullNav) ? (
+              <div className="w-full flex items-center justify-between">
+                <DropdownNavigation navItems={desktopNavItems} />
+                {showFullNav && (
+                  <button
+                    onClick={() => setShowFullNav(false)}
+                    className="text-xs text-slate-300 hover:text-white bg-white/10 px-2 py-1 rounded-md ml-2 cursor-pointer shrink-0"
+                  >
+                    Mode Fil d'ariane
+                  </button>
+                )}
+              </div>
+            ) : (
+              <BreadcrumbLevel2Nav onToggleFullMenu={() => setShowFullNav(true)} />
+            )}
           </div>
         )}
 
@@ -816,7 +814,7 @@ export function SupremeIntranetTopBar({
             </div>
 
             {appSlotLeft && (
-              <div className="flex items-center gap-1 pl-1 border-l border-white/10">
+              <div className="flex items-center gap-1 pl-1">
                 {appSlotLeft}
               </div>
             )}

@@ -23,10 +23,10 @@ export function ServiceProvider({ children }: { children: React.ReactNode }) {
   // Sync service UUID from URL path if present
   useEffect(() => {
     const pathParts = location.pathname.split('/').filter(Boolean);
-    // Path example: ['services', 'srv-8f92a10b', 'applications']
-    if (pathParts[0] === 'services') {
+    // Path example: ['sites', 'srv-8f92a10b', 'applications'] or ['services', 'srv-8f92a10b']
+    if (pathParts[0] === 'sites' || pathParts[0] === 'services') {
       const candidateUuid = pathParts[1];
-      if (candidateUuid && candidateUuid.startsWith('srv-')) {
+      if (candidateUuid && (candidateUuid.startsWith('srv-') || candidateUuid.startsWith('site-'))) {
         setSelectedServiceUuidState(candidateUuid);
       }
     }
@@ -48,7 +48,7 @@ export function ServiceProvider({ children }: { children: React.ReactNode }) {
   // Determine active sub tab from path
   const activeServiceSubTab = useMemo(() => {
     const pathParts = location.pathname.split('/').filter(Boolean);
-    if (pathParts[0] === 'services' && pathParts.length >= 3) {
+    if ((pathParts[0] === 'sites' || pathParts[0] === 'services') && pathParts.length >= 3) {
       const sub = pathParts[2].toLowerCase();
       if (sub === 'membres') return 'membres';
       if (sub === 'ressources') return 'ressources';

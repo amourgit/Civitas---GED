@@ -59,7 +59,7 @@ export interface DocumentItem {
 export const PORTAL_MOCK_DATA = {
   siteHeader: {
     title: "Espace Organisationnel — Internat",
-    subtitle: "Portail collaboratif unifié et gestion des services",
+    subtitle: "Portail collaboratif unifié et gestion des sites",
     avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
     isFollowing: true,
     memberCount: 342,
@@ -81,15 +81,15 @@ export const PORTAL_MOCK_DATA = {
       ]
     },
     { 
-      id: 'services', 
-      label: 'Services', 
+      id: 'sites', 
+      label: 'Sites', 
       hasChildren: true, 
       isExpanded: true,
       children: [
-        { id: 'membres', label: 'Membres', route: '/annonces' },
-        { id: 'applications', label: 'Applications', route: '/applications' },
-        { id: 'ressources', label: 'Ressources', route: '/ged' },
-        { id: 'info-services', label: 'Informations', route: '/annonces' }
+        { id: 'membres', label: 'Membres', route: '/sites/membres' },
+        { id: 'applications', label: 'Applications', route: '/sites/applications' },
+        { id: 'ressources', label: 'Ressources', route: '/sites/ressources' },
+        { id: 'info-sites', label: 'Informations', route: '/annonces' }
       ]
     },
     { id: 'recherche', label: 'Recherche', route: '/ged/recherche' },
@@ -135,7 +135,7 @@ export const PORTAL_MOCK_DATA = {
     },
     {
       id: 'right-top',
-      title: 'Guide des Services & Catalogue des Applications 2026',
+      title: 'Guide des Sites & Catalogue des Applications 2026',
       imageUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&auto=format&fit=crop&q=85',
       route: '/applications',
       size: 'medium',
@@ -207,7 +207,7 @@ export const PORTAL_MOCK_DATA = {
     },
     {
       id: 'doc-2',
-      name: 'Guide_Services_Membres_et_Applications.docx',
+      name: 'Guide_Sites_Membres_et_Applications.docx',
       type: 'docx',
       modifiedDate: 'Hier à 16:45',
       author: 'Secrétariat Général',

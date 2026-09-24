@@ -87,7 +87,7 @@ export const EVENTS_FILTER_SCHEMA: FilterSchema = {
         { value: 'Team Building', label: 'Team Building' },
         { value: 'Séminaire', label: 'Séminaire' },
         { value: 'Corporate', label: 'Corporate' },
-        { value: 'Office 365', label: 'Office 365' },
+        { value: 'Bureautique', label: 'Bureautique' },
         { value: 'Formation', label: 'Formation' },
         { value: 'Productivité', label: 'Productivité' },
         { value: 'Sécurité', label: 'Sécurité' },

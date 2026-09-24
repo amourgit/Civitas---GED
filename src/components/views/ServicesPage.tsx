@@ -17,13 +17,13 @@ export function ServicesPage() {
   const location = useLocation();
   const params = useParams<{ serviceUuid?: string; tab?: string }>();
 
-  // Extract service UUID from path (e.g. /services/srv-8f92a10b/applications or params.serviceUuid)
+  // Extract service/site UUID from path (e.g. /sites/srv-8f92a10b/applications, /services/srv-8f92a10b/applications or params.serviceUuid)
   const pathParts = location.pathname.split('/').filter(Boolean);
-  // pathParts: ['services'] OR ['services', 'srv-8f92a10b'] OR ['services', 'srv-8f92a10b', 'applications']
+  // pathParts: ['sites'] OR ['sites', 'srv-8f92a10b'] OR ['sites', 'srv-8f92a10b', 'applications']
   let rawServiceUuid = params.serviceUuid || (pathParts.length >= 2 ? pathParts[1] : undefined);
   let activeTabFromPath = params.tab || (pathParts.length >= 3 ? pathParts[2] : 'applications');
 
-  // If path is /services/membres or /services/applications without UUID, redirect or fallback
+  // If path is /sites/membres or /sites/applications without UUID, redirect or fallback
   if (rawServiceUuid === 'applications' || rawServiceUuid === 'membres' || rawServiceUuid === 'ressources') {
     activeTabFromPath = rawServiceUuid;
     rawServiceUuid = undefined;
@@ -58,7 +58,7 @@ export function ServicesPage() {
     if (!selectedService) return;
     playXboxSound('select');
     setActiveTab(tab);
-    navigate(`/services/${selectedService.uuid}/${tab}`);
+    navigate(`/sites/${selectedService.uuid}/${tab}`);
   };
 
   const subOptions = [
@@ -76,7 +76,7 @@ export function ServicesPage() {
     }
   ];
 
-  // VIEW 1: Service Selection Grid (When no service UUID is specified)
+  // VIEW 1: Site Selection Grid (When no site UUID is specified)
   if (!selectedService) {
     return (
       <div className="w-full h-[calc(100vh-120px)] my-2 sm:my-3 text-slate-100 overflow-y-auto px-4 sm:px-6 lg:px-8 py-4 scrollbar-thin scrollbar-thumb-teal-500/20">
@@ -84,14 +84,14 @@ export function ServicesPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
             <div>
               <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-                Sélection du Service
+                Sélection du Site
               </h1>
               <p className="text-xs text-slate-300 mt-1">
-                Choisissez un service ci-dessous pour accéder à ses applications, membres et ressources.
+                Choisissez un site ci-dessous pour accéder à ses applications, membres et ressources.
               </p>
             </div>
             <div className="text-xs text-teal-300 font-semibold px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 self-start sm:self-auto">
-              {SERVICES_LIST.length} Services disponibles
+              {SERVICES_LIST.length} Sites disponibles
             </div>
           </div>
 
@@ -102,7 +102,7 @@ export function ServicesPage() {
                 whileHover={{ scale: 1.01 }}
                 onClick={() => {
                   playXboxSound('select');
-                  navigate(`/services/${srv.uuid}/applications`);
+                  navigate(`/sites/${srv.uuid}/applications`);
                 }}
                 className="group p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 hover:border-teal-400/50 hover:bg-slate-800/80 transition-all cursor-pointer flex flex-col justify-between space-y-4 shadow-xl"
               >
@@ -117,7 +117,7 @@ export function ServicesPage() {
                       type="button"
                       onClick={(e) => handleCopyUuid(srv.uuid, e)}
                       className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 hover:bg-white/15 border border-white/10 text-[11px] font-mono text-slate-300 hover:text-white transition-colors cursor-pointer"
-                      title="Cliquer pour copier l'UUID du service"
+                      title="Cliquer pour copier l'UUID du site"
                     >
                       <span>UUID: {srv.uuid}</span>
                       {copiedUuid ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-slate-400" />}
@@ -142,7 +142,7 @@ export function ServicesPage() {
                     <span className="flex items-center gap-1"><AppWindow className="w-3.5 h-3.5 text-slate-500" /> {srv.appCount} apps</span>
                   </div>
                   <span className="text-teal-300 font-semibold group-hover:translate-x-1 transition-transform">
-                    Accéder au service →
+                    Accéder au site →
                   </span>
                 </div>
               </motion.div>
@@ -153,7 +153,7 @@ export function ServicesPage() {
     );
   }
 
-  // VIEW 2: Contextualized Service View using generic TabbedViewLayout
+  // VIEW 2: Contextualized Site View using generic TabbedViewLayout
   return (
     <TabbedViewLayout
       activeTab={activeTab}
@@ -163,13 +163,13 @@ export function ServicesPage() {
         <button
           onClick={() => {
             playXboxSound('select');
-            navigate('/services');
+            navigate('/sites');
           }}
           className="self-start text-xs text-slate-400 hover:text-teal-300 transition-colors cursor-pointer flex items-center gap-1.5 pb-2 border-b border-white/10 w-full"
-          title="Revenir au choix du service"
+          title="Revenir au choix du site"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Changer de service</span>
+          <span>Changer de site</span>
         </button>
       }
       mainHeader={
@@ -186,7 +186,7 @@ export function ServicesPage() {
           <button
             onClick={(e) => handleCopyUuid(selectedService.uuid, e)}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-teal-500/30 text-teal-300 text-[11px] sm:text-xs font-mono transition-colors cursor-pointer shrink-0"
-            title="Cliquer pour copier l'UUID du service"
+            title="Cliquer pour copier l'UUID du site"
           >
             <span>{selectedService.uuid}</span>
             {copiedUuid ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-teal-400" />}

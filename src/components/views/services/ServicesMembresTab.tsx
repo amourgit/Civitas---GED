@@ -253,7 +253,7 @@ const defaultData: GroupTeam[] = [
 const allColumns = [
   "Pôle / Groupe",
   "Code Réf.",
-  "Direction / Service",
+  "Direction / Site",
   "Domaine & Techno",
   "Créé Le",
   "Dossiers Traités",
@@ -302,7 +302,7 @@ export function ServicesMembresTab() {
         <div>
           <h2 className="text-lg sm:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
             <Users className="w-5 h-5 text-teal-400" />
-            <span>Groupes, Pôles & Équipes des Services</span>
+            <span>Groupes, Pôles & Équipes des Sites</span>
           </h2>
           <p className="text-xs text-slate-300 mt-1">
             Vue d'ensemble des structures organisationnelles, des membres affectés et de leurs expertises.
@@ -420,8 +420,8 @@ export function ServicesMembresTab() {
                 {visibleColumns.includes("Code Réf.") && (
                   <th className="py-3.5 px-4 min-w-[120px]">Code Réf.</th>
                 )}
-                {visibleColumns.includes("Direction / Service") && (
-                  <th className="py-3.5 px-4 min-w-[160px]">Direction / Service</th>
+                {visibleColumns.includes("Direction / Site") && (
+                  <th className="py-3.5 px-4 min-w-[160px]">Direction / Site</th>
                 )}
                 {visibleColumns.includes("Domaine & Techno") && (
                   <th className="py-3.5 px-4 min-w-[200px]">Domaine & Techno</th>
@@ -477,8 +477,8 @@ export function ServicesMembresTab() {
                       </td>
                     )}
 
-                    {/* Service */}
-                    {visibleColumns.includes("Direction / Service") && (
+                    {/* Service / Site */}
+                    {visibleColumns.includes("Direction / Site") && (
                       <td className="py-4 px-4 text-slate-300 whitespace-nowrap">
                         <div className="flex items-center gap-1.5">
                           <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />

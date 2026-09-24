@@ -122,8 +122,8 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
       },
       {
         id: 3,
-        label: "Services",
-        link: "/services",
+        label: "Sites",
+        link: "/sites",
         subMenus: [
           {
             title: "Membres",
@@ -204,22 +204,22 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
             title: "Informations",
             items: [
               {
-                label: "Procédures de Service",
+                label: "Procédures de Site",
                 description: "Circuits de validation et démarches administratives",
                 icon: Info,
-                link: "/services"
+                link: "/sites"
               },
               {
                 label: "FAQ & Assistance Interne",
                 description: "Questions fréquentes et tickets de support informatique",
                 icon: HelpIcon,
-                link: "/services"
+                link: "/sites"
               },
               {
                 label: "Santé, Sécurité & RH",
                 description: "Consignes de sécurité au travail et numéros d'urgence",
                 icon: ShieldAlert,
-                link: "/services"
+                link: "/sites"
               }
             ]
           }
@@ -247,7 +247,7 @@ export const WORKSPACES_MOCK_DATA: Workspace[] = [
               },
               {
                 label: "Recherche de Contacts",
-                description: "Trouver un collègue par nom, service ou compétence",
+                description: "Trouver un collègue par nom, site ou compétence",
                 icon: Contact,
                 link: "/annuaire"
               }

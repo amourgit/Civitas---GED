@@ -640,7 +640,7 @@ export const INSTITUTIONAL_SERVICES: ServiceItem[] = [
     registres: [
       { id: 'reg-as-1', title: 'Registre des Délibérations du CCAS', annee: '2026', volume: 'Vol. 1', etat: 'Ouvert', cote: 'CCAS-2026' }
     ],
-    stats: { totalDossiers: 437, nouveaux: 18, enCours: 54, clotures: 365 }
+    stats: { totalDossiers: 442, nouveaux: 18, enCours: 54, clotures: 370 }
   },
 
   {

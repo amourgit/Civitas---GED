@@ -14,6 +14,7 @@ import {
 import { useWorkspace } from "../../context/WorkspaceContext";
 import { WORKSPACES_MOCK_DATA } from "../../data/workspaceMockData";
 import { SERVICES_LIST } from "../../data/servicesData";
+import { findEmployeeByParam, getEmployeeUuid } from "../../data/directoryData";
 import { playXboxSound } from "../../utils/xboxAudio";
 import { Copy, Check } from "lucide-react";
 
@@ -63,7 +64,7 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
     if (labelLower === "informations" && (path.startsWith("/informations") || path.startsWith("/actualites") || path.startsWith("/annonces") || path.startsWith("/calendrier"))) {
       return true;
     }
-    if (labelLower === "services" && (path.startsWith("/services") || path.startsWith("/applications") || (path.startsWith("/ged") && !path.startsWith("/ged/recherche")))) {
+    if ((labelLower === "sites" || labelLower === "site" || labelLower === "services") && (path.startsWith("/sites") || path.startsWith("/services") || path.startsWith("/applications") || (path.startsWith("/ged") && !path.startsWith("/ged/recherche")))) {
       return true;
     }
     if (labelLower === "recherche" && (path.startsWith("/recherche") || path.startsWith("/ged/recherche"))) {
@@ -82,8 +83,11 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
   if (!activeOption) {
     if (path.includes("actualites") || path.includes("annonces") || path.includes("calendrier")) {
       activeOption = siblingOptions.find((o) => o.label.toLowerCase() === "informations");
-    } else if (path.includes("applications") || path.includes("ged")) {
-      activeOption = siblingOptions.find((o) => o.label.toLowerCase() === "services");
+    } else if (path.includes("applications") || path.includes("ged") || path.includes("/sites") || path.includes("/services")) {
+      activeOption = siblingOptions.find((o) => {
+        const l = o.label.toLowerCase();
+        return l === "sites" || l === "site" || l === "services";
+      });
     } else if (path.includes("recherche")) {
       activeOption = siblingOptions.find((o) => o.label.toLowerCase() === "recherche");
     } else if (path.includes("annuaire")) {
@@ -99,7 +103,7 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
   const getOptionRoute = (optionLabel: string) => {
     const l = optionLabel.toLowerCase();
     if (l === "informations") return "/informations";
-    if (l === "services") return "/services";
+    if (l === "sites" || l === "site" || l === "services") return "/sites";
     if (l === "recherche") return "/recherche";
     if (l === "annuaire") return "/annuaire";
     if (l === "administration") return "/administration";
@@ -107,7 +111,23 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
   };
 
   const [copiedUuid, setCopiedUuid] = useState(false);
+  const [copiedCollaboratorUuid, setCopiedCollaboratorUuid] = useState(false);
   const currentServiceMatch = SERVICES_LIST.find((s) => path.includes(s.uuid.toLowerCase()));
+
+  // Check if we are on a collaborator route under /annuaire (e.g. /annuaire/968579, /annuaire/968579/details)
+  const annuaireParamMatch = location.pathname.match(/^\/annuaire\/([^\/]+)(?:\/.*)?$/i);
+  const rawCollaboratorParam = annuaireParamMatch ? annuaireParamMatch[1] : null;
+  const isAnnuaireSubTab = rawCollaboratorParam 
+    ? ['contacts', 'organigramme', 'structures'].includes(rawCollaboratorParam.toLowerCase())
+    : false;
+
+  const currentCollaborator = (rawCollaboratorParam && !isAnnuaireSubTab)
+    ? findEmployeeByParam(rawCollaboratorParam)
+    : undefined;
+
+  const collaboratorUuid = currentCollaborator
+    ? (currentCollaborator.uuid || getEmployeeUuid(currentCollaborator))
+    : (rawCollaboratorParam && !isAnnuaireSubTab ? rawCollaboratorParam : null);
 
   // Determine Sub-Option Title based on current route
   let subOptionTitle: string | null = null;
@@ -134,11 +154,12 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
   }
 
   const isAtOptionRoot = 
-    path === "/informations" || 
+    (path === "/informations" || 
+    path === "/sites" || 
     path === "/services" || 
     path === "/recherche" || 
     path === "/annuaire" || 
-    path === "/administration";
+    path === "/administration") && !collaboratorUuid;
 
   const handleCopyUuidBreadcrumb = (uuid: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -148,11 +169,19 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
     setTimeout(() => setCopiedUuid(false), 2000);
   };
 
+  const handleCopyCollaboratorUuid = (uuid: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    playXboxSound('select');
+    navigator.clipboard.writeText(uuid);
+    setCopiedCollaboratorUuid(true);
+    setTimeout(() => setCopiedCollaboratorUuid(false), 2000);
+  };
+
   return (
-    <div className="w-full flex items-center justify-between py-0.5 sm:py-1 px-1 select-none overflow-hidden">
+    <div className="w-full flex items-center justify-between py-0.5 sm:py-1 select-none overflow-visible">
       {/* Breadcrumb Navigation Bar */}
       <Breadcrumb className="overflow-visible min-w-0">
-        <BreadcrumbList className="flex items-center gap-1 sm:gap-2 text-[11px] sm:text-sm font-medium text-slate-300">
+        <BreadcrumbList className="flex items-center flex-nowrap gap-1 sm:gap-2 text-[11px] sm:text-sm font-medium text-slate-300">
           {/* 1. Item Accueil */}
           <BreadcrumbItem className="shrink-0">
             <BreadcrumbLink
@@ -234,7 +263,7 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
           {/* 3. Item Option Principale (e.g. Informations, Services, Annuaire...) */}
           {activeOption && (
             <BreadcrumbItem className="relative min-w-0 max-w-[80px] sm:max-w-[130px] md:max-w-none" ref={optionMenuRef}>
-              {(subOptionTitle || currentServiceMatch) && !isAtOptionRoot ? (
+              {(subOptionTitle || currentServiceMatch || collaboratorUuid) && !isAtOptionRoot ? (
                 <BreadcrumbLink
                   href={getOptionRoute(activeOption.label)}
                   onClick={(e) => {
@@ -317,12 +346,55 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
                   </span>
                   <button
                     onClick={(e) => handleCopyUuidBreadcrumb(currentServiceMatch.uuid, e)}
-                    className="inline-flex items-center gap-0.5 sm:gap-1 px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-teal-300 text-[9px] sm:text-[11px] font-mono transition-colors cursor-pointer shrink-0"
-                    title="Cliquer pour copier l'UUID du service"
+                    className="inline-flex items-center gap-0.5 sm:gap-1 px-1 py-0.2 sm:px-1.5 sm:py-0.5 rounded bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 text-[9px] sm:text-[11px] font-mono transition-colors cursor-pointer shrink-0"
+                    title="Cliquer pour copier l'UUID du site"
                   >
                     <span className="truncate max-w-[50px] sm:max-w-none">({currentServiceMatch.uuid})</span>
                     {copiedUuid ? <Check className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-emerald-400 shrink-0" /> : <Copy className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-teal-400 shrink-0" />}
                   </button>
+                </div>
+              </BreadcrumbItem>
+            </>
+          )}
+
+          {/* 3.6 Item Collaborateur avec UUID pour Annuaire */}
+          {collaboratorUuid && (
+            <>
+              <BreadcrumbSeparator className="shrink-0 scale-75 sm:scale-100" />
+              <BreadcrumbItem className="min-w-0 max-w-[160px] sm:max-w-[320px] md:max-w-none">
+                <div className="inline-flex items-center gap-1.5 min-w-0 max-w-full">
+                  {currentCollaborator?.avatar && (
+                    <img
+                      src={currentCollaborator.avatar}
+                      alt={currentCollaborator.fullName}
+                      className="w-4 h-4 sm:w-5 sm:h-5 rounded-full object-cover border border-white/20 shrink-0"
+                    />
+                  )}
+
+                  {/* UUID Pill with Copy */}
+                  <button
+                    type="button"
+                    onClick={(e) => handleCopyCollaboratorUuid(collaboratorUuid, e)}
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-400/15 hover:bg-amber-400/25 border border-amber-400/30 text-amber-300 text-[10px] sm:text-xs font-mono font-bold transition-all cursor-pointer shrink-0 shadow-sm"
+                    title="Cliquer pour copier l'UUID du collaborateur"
+                  >
+                    <span>#{collaboratorUuid}</span>
+                    {copiedCollaboratorUuid ? (
+                      <Check className="w-2.5 h-2.5 text-emerald-400 shrink-0" />
+                    ) : (
+                      <Copy className="w-2.5 h-2.5 text-amber-300/70 hover:text-amber-200 shrink-0" />
+                    )}
+                  </button>
+
+                  {/* Collaborator Full Name */}
+                  {currentCollaborator && (
+                    <span 
+                      className="font-bold text-white text-[11px] sm:text-xs md:text-sm truncate hidden xs:inline"
+                      title={`${currentCollaborator.fullName} - ${currentCollaborator.role}`}
+                    >
+                      {currentCollaborator.fullName}
+                    </span>
+                  )}
                 </div>
               </BreadcrumbItem>
             </>

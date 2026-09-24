@@ -62,12 +62,12 @@ export function WorkspaceAndServiceSelectorsColumn({
     setIsServiceDropdownOpen(false);
     if (!srv) {
       clearService();
-      navigate('/services');
-      if (onShowNotification) onShowNotification('Filtre de service réinitialisé', 'info');
+      navigate('/sites');
+      if (onShowNotification) onShowNotification('Filtre de site réinitialisé', 'info');
     } else {
       setSelectedServiceUuid(srv.uuid);
-      navigate(`/services/${srv.uuid}/applications`);
-      if (onShowNotification) onShowNotification(`Service activé : ${srv.name}`, 'success');
+      navigate(`/sites/${srv.uuid}/applications`);
+      if (onShowNotification) onShowNotification(`Site activé : ${srv.name}`, 'success');
     }
   };
 
@@ -186,7 +186,7 @@ export function WorkspaceAndServiceSelectorsColumn({
               ? 'bg-amber-500/20 hover:bg-amber-500/30 border-amber-400/40 text-amber-200 shadow-amber-500/10'
               : 'bg-white/10 hover:bg-white/15 border-white/15 text-slate-200 hover:text-white'
           }`}
-          title={selectedService ? `Service actuel : ${selectedService.name}` : 'Choisir un service'}
+          title={selectedService ? `Site actuel : ${selectedService.name}` : 'Choisir un site'}
         >
           <div className="flex items-center gap-1 min-w-0 truncate">
             <span
@@ -195,14 +195,14 @@ export function WorkspaceAndServiceSelectorsColumn({
               }`}
             />
             <span className="hidden sm:inline text-slate-300 font-normal shrink-0 text-[9px] sm:text-[10px]">
-              Service:
+              Site:
             </span>
             <span
               className={`truncate text-[10px] sm:text-[11px] ${
                 selectedService ? 'text-amber-300 font-extrabold' : 'text-slate-300 font-medium'
               }`}
             >
-              {selectedService ? selectedService.shortName : 'Tous les services'}
+              {selectedService ? selectedService.shortName : 'Tous les sites'}
             </span>
           </div>
           <ChevronDown
@@ -218,10 +218,10 @@ export function WorkspaceAndServiceSelectorsColumn({
             <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-300 border-b border-white/10 mb-1.5 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <Server className="w-3.5 h-3.5 text-amber-400" />
-                <span>Sélection du Service</span>
+                <span>Sélection du Site</span>
               </span>
               <span className="text-[9px] font-medium text-amber-200 bg-amber-500/20 border border-amber-400/30 px-1.5 py-0.2 rounded">
-                {availableServices.length} services
+                {availableServices.length} sites
               </span>
             </div>
 
@@ -237,8 +237,8 @@ export function WorkspaceAndServiceSelectorsColumn({
                 }`}
               >
                 <div className="flex flex-col">
-                  <span className="text-xs font-semibold">Tous les services (Aperçu global)</span>
-                  <span className="text-[10px] text-slate-400">Aucun filtre de service appliqué</span>
+                  <span className="text-xs font-semibold">Tous les sites (Aperçu global)</span>
+                  <span className="text-[10px] text-slate-400">Aucun filtre de site appliqué</span>
                 </div>
                 {!selectedService && <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" />}
               </button>
