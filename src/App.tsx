@@ -825,8 +825,10 @@ function AppContent() {
             <Route path="/annuaire/contacts" element={<AnnuairePage onShowNotification={showToast} />} />
             <Route path="/annuaire/organigramme" element={<AnnuairePage onShowNotification={showToast} />} />
             <Route path="/annuaire/structures" element={<AnnuairePage onShowNotification={showToast} />} />
+            <Route path="/annuaire/:collaborateurId/details/:tab" element={<CollaborateurDetailPage onShowToast={showToast} />} />
             <Route path="/annuaire/:collaborateurId/details" element={<CollaborateurDetailPage onShowToast={showToast} />} />
             <Route path="/annuaire/:collaborateurId/details/*" element={<CollaborateurDetailPage onShowToast={showToast} />} />
+            <Route path="/annuaire/:collaborateurId/:tab" element={<CollaborateurDetailPage onShowToast={showToast} />} />
             <Route path="/annuaire/:collaborateurId" element={<CollaborateurDetailPage onShowToast={showToast} />} />
             <Route path="/annuaire/:collaborateurId/*" element={<CollaborateurDetailPage onShowToast={showToast} />} />
             <Route path="/annuaire/*" element={<AnnuairePage onShowNotification={showToast} />} />

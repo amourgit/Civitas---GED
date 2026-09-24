@@ -139,7 +139,8 @@ export function DefaultPageBackground({
   return (
     <div
       className={cn(
-        'fixed inset-0 pointer-events-none overflow-hidden z-0 bg-[#030708] select-none',
+        'fixed inset-0 pointer-events-none overflow-hidden z-0 select-none',
+        !className?.includes('bg-') && 'bg-[#030708]',
         className
       )}
     >
@@ -172,10 +173,12 @@ export function DefaultPageBackground({
       )}
 
       {/* Léger dégradé noir subtil et très transparent de haut en bas pour rehausser la lisibilité de la topbar */}
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/55 via-black/15 via-25% to-transparent transition-opacity duration-700"
-      />
+      {showDarkWash && (
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/55 via-black/15 via-25% to-transparent transition-opacity duration-700"
+        />
+      )}
 
       {/* Voile sombre d'ambiance et de lisibilité directement intégré dans le système d'arrière-plan */}
       {showDarkWash && (

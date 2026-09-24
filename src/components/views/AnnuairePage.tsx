@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Users,
   Search,
@@ -16,6 +17,7 @@ import {
   Globe,
   LayoutGrid,
   List,
+  Rows3,
   FilterX,
   Info,
   RefreshCw,
@@ -23,16 +25,23 @@ import {
   ArrowRight,
   Tag as TagIcon,
   Award,
+  Phone,
+  Mail,
+  QrCode,
+  UserCheck,
+  ExternalLink,
 } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { playXboxSound } from '../../utils/xboxAudio';
 import { PageBackground } from '../shell/PageBackground';
 import { TabbedViewLayout } from '../layout/TabbedViewLayout';
 import { TabsContent } from '../ui/AnimatedTabs';
+import { ClickExpandGallery, type ClickExpandItem, type ClickExpandTone } from '../ui/ClickExpandGallery';
 import {
   DIRECTORY_EMPLOYEES,
   DIRECTORY_SITES,
   DirectoryEmployee,
+  getEmployeeUuid,
 } from '../../data/directoryData';
 import { EmployeeCard } from '../directory/EmployeeCard';
 import { EmployeeListView } from '../directory/EmployeeListView';
@@ -91,6 +100,7 @@ interface Dict {
   resetFilters: string;
   viewGrid: string;
   viewList: string;
+  viewExpand: string;
   filtersBtn: string;
 
   filterAdd: string;
@@ -181,6 +191,7 @@ const FR: Dict = {
   resetFilters: 'Effacer tous les filtres',
   viewGrid: 'Affichage en Grille de cartes',
   viewList: 'Affichage en Liste',
+  viewExpand: 'Affichage Dépliable (Galerie)',
   filtersBtn: 'Filtres',
 
   filterAdd: 'Filtrer',
@@ -275,6 +286,7 @@ const EN: Dict = {
   resetFilters: 'Clear all filters',
   viewGrid: 'Card grid view',
   viewList: 'List view',
+  viewExpand: 'Expandable Gallery view',
   filtersBtn: 'Filters',
 
   filterAdd: 'Filter',
@@ -676,8 +688,29 @@ export function AnnuairePage({
     }
   }, []);
 
-  // Navigation par tabs (identique à la page Agenda et News)
-  const [activeTab, setActiveTab] = useState<'directory' | 'org' | 'about'>('directory');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const getTabFromPath = useCallback((): 'directory' | 'org' | 'about' => {
+    const path = location.pathname.toLowerCase();
+    if (path.includes('/organigramme') || path.includes('/org')) return 'org';
+    if (path.includes('/structures') || path.includes('/about')) return 'about';
+    return 'directory';
+  }, [location.pathname]);
+
+  // Navigation par tabs synchronisée avec l'URL (comme Agenda, News et Sites)
+  const [activeTab, setActiveTab] = useState<'directory' | 'org' | 'about'>(getTabFromPath());
+
+  useEffect(() => {
+    setActiveTab(getTabFromPath());
+  }, [getTabFromPath]);
+
+  const handleTabChange = (val: 'directory' | 'org' | 'about') => {
+    playXboxSound('select');
+    setActiveTab(val);
+    const targetRoute = val === 'org' ? '/annuaire/organigramme' : val === 'about' ? '/annuaire/structures' : '/annuaire/contacts';
+    navigate(targetRoute);
+  };
 
   const tabsOptions = [
     { id: 'directory' as const, label: t.tabDirectory, icon: <Users className="w-4 h-4" /> },
@@ -702,8 +735,8 @@ export function AnnuairePage({
   // Affichage de la FilterBar sur mobile (toujours visible à partir de md)
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
-  // Mode d'affichage : Grille de cartes ou Liste
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  // Mode d'affichage : Grille de cartes, Liste, ou Dépliable (Galerie)
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'expand'>('grid');
 
   // Collaborateur sélectionné pour la modale
   const [selectedEmployee, setSelectedEmployee] = useState<DirectoryEmployee | null>(null);
@@ -793,6 +826,88 @@ export function AnnuairePage({
       })
       .map(({ emp }) => emp);
   }, [index, selectedSitePill, selectedLetter, searchQuery, filters, filterSchema]);
+
+  // Transformation des données pour le composant ClickExpandGallery
+  const expandItems = useMemo<ClickExpandItem<DirectoryEmployee>[]>(() => {
+    return filteredEmployees.map((emp) => {
+      let tone: ClickExpandTone = 'neutral';
+      if (emp.status === 'available') tone = 'success';
+      else if (emp.status === 'busy') tone = 'danger';
+      else if (emp.status === 'meeting') tone = 'warning';
+      else if (emp.status === 'away') tone = 'info';
+
+      const empUuid = emp.uuid || getEmployeeUuid(emp);
+
+      return {
+        id: emp.id,
+        title: emp.fullName,
+        subtitle: emp.role,
+        image: emp.avatar,
+        imageAlt: `Photo de ${emp.fullName}`,
+        status: {
+          label:
+            emp.statusLabel ||
+            (emp.status === 'available'
+              ? t.stAvailable
+              : emp.status === 'busy'
+              ? t.stBusy
+              : emp.status === 'meeting'
+              ? t.stMeeting
+              : emp.status === 'away'
+              ? t.stAway
+              : 'En ligne'),
+          tone,
+        },
+        chips: [
+          ...(emp.badge ? [{ label: emp.badge, tone: 'accent' as const, icon: <Award className="w-3 h-3" /> }] : []),
+          ...(emp.department ? [{ label: emp.department, tone: 'neutral' as const, icon: <Briefcase className="w-3 h-3" /> }] : []),
+          ...(emp.extension ? [{ label: `${t.colExt} : ${emp.extension}`, tone: 'neutral' as const }] : []),
+        ],
+        details: [
+          { id: 'site', label: t.fSite, value: emp.site, icon: <MapPin className="w-3.5 h-3.5" /> },
+          { id: 'phone', label: t.colPhone, value: emp.phone, href: `tel:${emp.phone}`, icon: <Phone className="w-3.5 h-3.5" /> },
+          { id: 'email', label: t.colEmail, value: emp.email, href: `mailto:${emp.email}`, icon: <Mail className="w-3.5 h-3.5" /> },
+          { id: 'uuid', label: 'Matricule / UUID', value: `#${empUuid}`, icon: <UserCheck className="w-3.5 h-3.5" /> },
+          ...(emp.manager ? [{ id: 'manager', label: 'Responsable', value: emp.manager, icon: <Users className="w-3.5 h-3.5" /> }] : []),
+        ],
+        tags: emp.skills,
+        actions: [
+          {
+            id: 'open-profile',
+            label: 'Fiche profil',
+            variant: 'primary',
+            icon: <ArrowRight className="w-3.5 h-3.5" />,
+            onClick: (e) => {
+              e.stopPropagation();
+              playXboxSound('select');
+              navigate(`/annuaire/${empUuid}/review`);
+            },
+          },
+          {
+            id: 'open-modal',
+            label: 'Aperçu',
+            variant: 'secondary',
+            icon: <ExternalLink className="w-3.5 h-3.5" />,
+            onClick: (e) => {
+              e.stopPropagation();
+              openEmployee(emp, false);
+            },
+          },
+          {
+            id: 'open-qr',
+            label: 'QR vCard',
+            variant: 'secondary',
+            icon: <QrCode className="w-3.5 h-3.5" />,
+            onClick: (e) => {
+              e.stopPropagation();
+              openEmployee(emp, true);
+            },
+          },
+        ],
+        data: emp,
+      };
+    });
+  }, [filteredEmployees, t, navigate]);
 
   // Critères actifs (affichés en tête de la feuille d'impression)
   const printCriteria = useMemo(() => {
@@ -922,7 +1037,7 @@ export function AnnuairePage({
     setSelectedLetter('All');
     setSearchQuery('');
     setFilters([]);
-    setActiveTab('directory');
+    handleTabChange('directory');
   };
 
   // ── Animations (désactivées si l'utilisateur préfère réduire les mouvements) ──
@@ -954,23 +1069,22 @@ export function AnnuairePage({
 
   return (
     <div lang={lang} className="w-full h-full min-h-full flex-1 flex flex-col bg-transparent relative overflow-hidden">
-      {/* ── ARRIÈRE-PLAN TRANSPARENT & ATMOSPHÉRIQUE DE L'ANNUAIRE ── */}
+      {/* ── ARRIÈRE-PLAN DE L'ANNUAIRE (FLOUTÉ AVEC DOUCEUR, SANS VOILE NOIR) ── */}
       <PageBackground
         imageSrc={annuaireBg}
         imageAlt="Annuaire Collaborateurs"
         imageFit="cover"
-        showAtmosphere={true}
-        showDarkWash={true}
-        className="opacity-30"
+        showAtmosphere={false}
+        showDarkWash={false}
+        showGlow={false}
+        className="opacity-100 bg-transparent"
+        imageClassName="opacity-100 blur-[12px] scale-110"
       />
 
       {/* ── UTILISATION DU LAYOUT TABBED IDENTIQUE À AGENDA ET NEWS ── */}
       <TabbedViewLayout
         activeTab={activeTab}
-        onTabChange={(val) => {
-          playXboxSound('select');
-          setActiveTab(val as 'directory' | 'org' | 'about');
-        }}
+        onTabChange={(val) => handleTabChange(val as 'directory' | 'org' | 'about')}
         tabs={tabsOptions}
         containerClassName="h-[calc(100vh-115px)] supports-[height:100dvh]:h-[calc(100dvh-115px)] my-0 px-3 sm:px-6 lg:px-8 py-2 relative z-10"
         mainClassName="overflow-hidden flex flex-col h-full min-h-0"
@@ -987,12 +1101,71 @@ export function AnnuairePage({
             className="relative z-20 shrink-0 flex flex-col gap-2 sm:gap-2.5 pb-2.5 border-b border-white/10 select-none"
           >
 
-            {/* Ligne 1 : Titre + Outils d'action rapides */}
+            {/* Ligne 1 : Recherche (déplacée à la place du titre) avec largeur réduite + Outils d'action rapides */}
             <div className="w-full flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex min-w-0 items-center gap-2.5">
-                <h1 className="truncate text-lg sm:text-xl lg:text-2xl font-extrabold text-white tracking-tight">
-                  {t.title}
-                </h1>
+              {/* Côté Gauche : Champ de recherche compact + bouton Filtres (mobile) */}
+              <div className="flex items-center gap-2 w-full sm:w-auto min-w-0">
+                <div className="relative group w-full sm:w-64 md:w-80 lg:w-96 max-w-md shrink-0">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-teal-400 transition-colors">
+                    <Search className="w-3.5 h-3.5" />
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape' && searchQuery) setSearchQuery('');
+                    }}
+                    aria-label={t.searchAria}
+                    placeholder={t.searchPlaceholder}
+                    className="w-full pl-9 pr-9 py-1.5 sm:py-2 rounded-full bg-slate-900/60 hover:bg-slate-900/80 focus:bg-slate-900/90 border border-white/15 focus:border-teal-400/80 text-white placeholder-slate-400 text-xs sm:text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-teal-400/20 backdrop-blur-md transition-all truncate"
+                  />
+                  <AnimatePresence>
+                    {searchQuery && (
+                      <motion.button
+                        key="clear-search"
+                        type="button"
+                        initial={reduceMotion ? false : { opacity: 0, scale: 0.7 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        transition={{ duration: 0.12 }}
+                        onClick={() => {
+                          playXboxSound('select');
+                          setSearchQuery('');
+                        }}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white transition-colors cursor-pointer"
+                        title={t.clearSearch}
+                        aria-label={t.clearSearch}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Bouton Filtres : uniquement sur petits écrans */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    playXboxSound('select');
+                    setShowFilters((v) => !v);
+                  }}
+                  aria-expanded={showFilters}
+                  aria-controls="directory-filterbar"
+                  className={`md:hidden shrink-0 flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60 ${
+                    showFilters || filters.length > 0
+                      ? 'border-teal-400/60 bg-teal-500/20 text-teal-200'
+                      : 'border-white/15 bg-slate-900/60 text-slate-300'
+                  }`}
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
+                  <span>{t.filtersBtn}</span>
+                  {filters.length > 0 && (
+                    <span className="min-w-[1.1rem] rounded-full bg-teal-500 px-1 text-center text-[10px] font-black leading-[1.1rem] text-slate-950">
+                      {filters.length}
+                    </span>
+                  )}
+                </button>
               </div>
 
               {/* Outils d'actions rapides et bascule de vue */}
@@ -1060,13 +1233,16 @@ export function AnnuairePage({
                   <FilterX className="w-4 h-4" />
                 </button>
 
-                {/* Bascule Grille / Liste */}
+                {/* Bascule Grille / Liste / Dépliable (Galerie) */}
                 <div className="shrink-0 flex items-center rounded-lg border border-white/10 bg-white/5 p-0.5 ml-1">
                   <button
                     type="button"
-                    onClick={() => setViewMode('grid')}
+                    onClick={() => {
+                      playXboxSound('select');
+                      setViewMode('grid');
+                    }}
                     aria-pressed={viewMode === 'grid'}
-                    className={`rounded p-1.5 sm:p-1 transition-colors ${viewMode === 'grid' ? 'bg-teal-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'}`}
+                    className={`rounded p-1.5 sm:p-1 transition-colors ${viewMode === 'grid' ? 'bg-teal-500 text-slate-950 font-bold shadow-sm' : 'text-slate-400 hover:text-white'}`}
                     title={t.viewGrid}
                     aria-label={t.viewGrid}
                   >
@@ -1074,81 +1250,32 @@ export function AnnuairePage({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setViewMode('list')}
+                    onClick={() => {
+                      playXboxSound('select');
+                      setViewMode('list');
+                    }}
                     aria-pressed={viewMode === 'list'}
-                    className={`rounded p-1.5 sm:p-1 transition-colors ${viewMode === 'list' ? 'bg-teal-500 text-slate-950 font-bold' : 'text-slate-400 hover:text-white'}`}
+                    className={`rounded p-1.5 sm:p-1 transition-colors ${viewMode === 'list' ? 'bg-teal-500 text-slate-950 font-bold shadow-sm' : 'text-slate-400 hover:text-white'}`}
                     title={t.viewList}
                     aria-label={t.viewList}
                   >
                     <List className="w-3.5 h-3.5" />
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playXboxSound('select');
+                      setViewMode('expand');
+                    }}
+                    aria-pressed={viewMode === 'expand'}
+                    className={`rounded p-1.5 sm:p-1 transition-colors ${viewMode === 'expand' ? 'bg-teal-500 text-slate-950 font-bold shadow-sm' : 'text-slate-400 hover:text-white'}`}
+                    title={t.viewExpand}
+                    aria-label={t.viewExpand}
+                  >
+                    <Rows3 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
-            </div>
-
-            {/* Ligne 2 : Recherche plein format + bouton Filtres (mobile) */}
-            <div className="w-full flex items-stretch gap-2">
-              <div className="relative group flex-1 min-w-0">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-teal-400 transition-colors">
-                  <Search className="w-4 h-4" />
-                </div>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape' && searchQuery) setSearchQuery('');
-                  }}
-                  aria-label={t.searchAria}
-                  placeholder={t.searchPlaceholder}
-                  className="w-full pl-11 pr-11 py-2.5 rounded-full bg-slate-900/60 hover:bg-slate-900/80 focus:bg-slate-900/90 border border-white/15 focus:border-teal-400/80 text-white placeholder-slate-400 text-base sm:text-sm shadow-xl focus:outline-none focus:ring-2 focus:ring-teal-400/20 backdrop-blur-md transition-all truncate"
-                />
-                <AnimatePresence>
-                  {searchQuery && (
-                    <motion.button
-                      key="clear-search"
-                      type="button"
-                      initial={reduceMotion ? false : { opacity: 0, scale: 0.7 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.7 }}
-                      transition={{ duration: 0.12 }}
-                      onClick={() => {
-                        playXboxSound('select');
-                        setSearchQuery('');
-                      }}
-                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-white transition-colors cursor-pointer"
-                      title={t.clearSearch}
-                      aria-label={t.clearSearch}
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Bouton Filtres : uniquement sur petits écrans */}
-              <button
-                type="button"
-                onClick={() => {
-                  playXboxSound('select');
-                  setShowFilters((v) => !v);
-                }}
-                aria-expanded={showFilters}
-                aria-controls="directory-filterbar"
-                className={`md:hidden shrink-0 flex items-center gap-1.5 rounded-full border px-3.5 text-xs font-semibold transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/60 ${
-                  showFilters || filters.length > 0
-                    ? 'border-teal-400/60 bg-teal-500/20 text-teal-200'
-                    : 'border-white/15 bg-slate-900/60 text-slate-300'
-                }`}
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                <span>{t.filtersBtn}</span>
-                {filters.length > 0 && (
-                  <span className="min-w-[1.1rem] rounded-full bg-teal-500 px-1 text-center text-[10px] font-black leading-[1.1rem] text-slate-950">
-                    {filters.length}
-                  </span>
-                )}
-              </button>
             </div>
 
             {/* Ligne 3 : FilterBar (repliable sur mobile, toujours visible dès md) */}
@@ -1275,12 +1402,38 @@ export function AnnuairePage({
                       </motion.div>
                     ))}
                   </motion.div>
-                ) : (
+                ) : viewMode === 'list' ? (
                   <motion.div key="list" {...viewAnim} className="pb-8 pt-1.5 min-w-0">
                     <EmployeeListView
                       employees={filteredEmployees}
                       onSelect={(selected) => openEmployee(selected, false)}
                       onOpenQr={(selected) => openEmployee(selected, true)}
+                    />
+                  </motion.div>
+                ) : (
+                  <motion.div key="expand" {...viewAnim} className="pb-8 pt-1.5 min-w-0">
+                    <ClickExpandGallery<DirectoryEmployee>
+                      items={expandItems}
+                      multiple={false}
+                      minItemWidth={280}
+                      gap={14}
+                      avatarShape="morph"
+                      duration={500}
+                      labels={{
+                        list: t.tabDirectory,
+                        open: (item) => `Déplier la fiche de ${item.title}`,
+                        close: (item) => `Replier la fiche de ${item.title}`,
+                        tags: t.fSkills,
+                      }}
+                      onOpenChange={(_openIds, { open }) => {
+                        if (open) playXboxSound('select');
+                        else playXboxSound('toggle');
+                      }}
+                      empty={
+                        <div className="w-full py-12 flex flex-col items-center justify-center text-center p-6 text-slate-400">
+                          <p className="text-sm">{t.emptyTitle}</p>
+                        </div>
+                      }
                     />
                   </motion.div>
                 )}

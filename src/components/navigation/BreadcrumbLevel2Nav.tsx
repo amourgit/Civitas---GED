@@ -151,6 +151,15 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
     subOptionTitle = "Structures & Sites";
   } else if (path === "/administration/utilisateurs" || path === "/iam") {
     subOptionTitle = "Accès & Identités (IAM)";
+  } else if (collaboratorUuid) {
+    if (path.includes("/purchase-history")) subOptionTitle = "Purchase History";
+    else if (path.includes("/wishlist")) subOptionTitle = "Wishlist";
+    else if (path.includes("/review")) subOptionTitle = "Review";
+    else if (path.includes("/loyalty")) subOptionTitle = "Loyalty Program";
+    else if (path.includes("/support")) subOptionTitle = "Support Ticket";
+    else if (path.includes("/insight")) subOptionTitle = "Insight";
+    else if (path.includes("/activity")) subOptionTitle = "Activity";
+    else if (path.includes("/details")) subOptionTitle = "Détails";
   }
 
   const isAtOptionRoot = 
@@ -388,12 +397,17 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
 
                   {/* Collaborator Full Name */}
                   {currentCollaborator && (
-                    <span 
-                      className="font-bold text-white text-[11px] sm:text-xs md:text-sm truncate hidden xs:inline"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        playXboxSound('select');
+                        navigate(`/annuaire/${collaboratorUuid}/review`);
+                      }}
+                      className="font-bold text-white hover:text-amber-200 transition-colors cursor-pointer text-[11px] sm:text-xs md:text-sm truncate hidden xs:inline"
                       title={`${currentCollaborator.fullName} - ${currentCollaborator.role}`}
                     >
                       {currentCollaborator.fullName}
-                    </span>
+                    </button>
                   )}
                 </div>
               </BreadcrumbItem>

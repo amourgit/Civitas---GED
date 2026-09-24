@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ServicesApplicationsTab } from './services/ServicesApplicationsTab';
@@ -11,6 +11,7 @@ import { playXboxSound } from '../../utils/xboxAudio';
 import { Copy, Check, Users, AppWindow, ArrowLeft, Shield, Server } from 'lucide-react';
 import { TabsContent } from '../ui/AnimatedTabs';
 import { TabbedViewLayout } from '../layout/TabbedViewLayout';
+import { StaggerTestimonials, type TestimonialItem } from '../ui/StaggerTestimonials';
 
 export function ServicesPage() {
   const navigate = useNavigate();
@@ -76,78 +77,43 @@ export function ServicesPage() {
     }
   ];
 
-  // VIEW 1: Site Selection Grid (When no site UUID is specified)
+  // Données des sites passées en props au carrousel Stagger
+  const siteCarouselItems = useMemo<TestimonialItem[]>(() => {
+    const siteImages = [
+      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&auto=format&fit=crop&q=80",
+    ];
+
+    return SERVICES_LIST.map((srv, idx) => ({
+      tempId: idx,
+      testimonial: `${srv.name} — ${srv.description}`,
+      by: `${srv.shortName} • ${srv.head} (${srv.memberCount} membres, ${srv.appCount} apps)`,
+      imgSrc: siteImages[idx % siteImages.length],
+      siteUuid: srv.uuid,
+      shortName: srv.shortName,
+      name: srv.name,
+      category: srv.category,
+      memberCount: srv.memberCount,
+      appCount: srv.appCount,
+    }));
+  }, []);
+
+  // VIEW 1: Carrousel Stagger pour la sélection des Sites (Quand aucun site n'est sélectionné)
   if (!selectedService) {
     return (
-      <div className="w-full h-[calc(100vh-120px)] my-2 sm:my-3 text-slate-100 overflow-y-auto px-4 sm:px-6 lg:px-8 py-4 scrollbar-thin scrollbar-thumb-teal-500/20">
-        <div className="max-w-6xl mx-auto space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-                Sélection du Site
-              </h1>
-              <p className="text-xs text-slate-300 mt-1">
-                Choisissez un site ci-dessous pour accéder à ses applications, membres et ressources.
-              </p>
-            </div>
-            <div className="text-xs text-teal-300 font-semibold px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 self-start sm:self-auto">
-              {SERVICES_LIST.length} Sites disponibles
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {SERVICES_LIST.map((srv) => (
-              <motion.div
-                key={srv.uuid}
-                whileHover={{ scale: 1.01 }}
-                onClick={() => {
-                  playXboxSound('select');
-                  navigate(`/sites/${srv.uuid}/applications`);
-                }}
-                className="group p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 hover:border-teal-400/50 hover:bg-slate-800/80 transition-all cursor-pointer flex flex-col justify-between space-y-4 shadow-xl"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-teal-500/20 text-teal-300 border border-teal-400/30">
-                      {srv.shortName}
-                    </span>
-
-                    {/* Copiable UUID Badge */}
-                    <button
-                      type="button"
-                      onClick={(e) => handleCopyUuid(srv.uuid, e)}
-                      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5 hover:bg-white/15 border border-white/10 text-[11px] font-mono text-slate-300 hover:text-white transition-colors cursor-pointer"
-                      title="Cliquer pour copier l'UUID du site"
-                    >
-                      <span>UUID: {srv.uuid}</span>
-                      {copiedUuid ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-slate-400" />}
-                    </button>
-                  </div>
-
-                  <div>
-                    <h2 className="text-base font-bold text-white group-hover:text-teal-300 transition-colors">
-                      {srv.name}
-                    </h2>
-                    <p className="text-xs text-teal-400/80 font-medium mt-0.5">{srv.category}</p>
-                  </div>
-
-                  <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed">
-                    {srv.description}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400 group-hover:text-slate-200">
-                  <div className="flex items-center gap-3 text-[11px]">
-                    <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5 text-slate-500" /> {srv.memberCount} membres</span>
-                    <span className="flex items-center gap-1"><AppWindow className="w-3.5 h-3.5 text-slate-500" /> {srv.appCount} apps</span>
-                  </div>
-                  <span className="text-teal-300 font-semibold group-hover:translate-x-1 transition-transform">
-                    Accéder au site →
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+      <div className="w-full h-full min-h-[calc(100vh-120px)] flex flex-col justify-center items-center text-slate-100 overflow-hidden relative select-none py-2 sm:py-4">
+        <div className="w-full max-w-7xl mx-auto flex flex-col items-center justify-center">
+          <StaggerTestimonials
+            testimonials={siteCarouselItems}
+            onSelect={(item) => {
+              playXboxSound('select');
+              navigate(`/sites/${item.siteUuid || 'srv-8f92a10b'}/applications`);
+            }}
+          />
         </div>
       </div>
     );
