@@ -488,8 +488,8 @@ export function SupremeIntranetTopBar({
             {/* App Launcher Drawer via WaterGlassModal */}
             {activeMenu === 'appLauncher' && (
               <WaterGlassModal
-                align="right"
-                className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-16px)] sm:w-88 max-w-sm"
+                align="none"
+                className="fixed sm:absolute top-14 sm:top-10 left-2 right-2 sm:left-auto sm:right-0 w-[calc(100vw-16px)] sm:w-88 max-w-sm z-[9999]"
                 contentClassName="p-3 sm:p-3.5"
                 header={
                   <div className="flex items-center justify-between">
@@ -596,8 +596,8 @@ export function SupremeIntranetTopBar({
             {/* Create Dropdown via WaterGlassModal */}
             {activeMenu === 'create' && (
               <WaterGlassModal
-                align="right"
-                className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-56 max-w-xs"
+                align="none"
+                className="fixed sm:absolute top-14 sm:top-10 left-2 right-2 sm:left-auto sm:right-0 w-[calc(100vw-16px)] sm:w-56 max-w-xs z-[9999]"
                 header={
                   <span className="text-[10px] font-bold text-teal-300 uppercase tracking-wider">
                     Nouveau contenu
@@ -699,8 +699,8 @@ export function SupremeIntranetTopBar({
             {/* Popup Profil via WaterGlassModal */}
             {activeMenu === 'profile' && (
               <WaterGlassModal
-                align="right"
-                width="w-[calc(100vw-24px)] sm:w-64 max-w-xs"
+                align="none"
+                className="fixed sm:absolute top-14 sm:top-10 left-2 right-2 sm:left-auto sm:right-0 w-[calc(100vw-16px)] sm:w-64 max-w-xs z-[9999]"
                 contentClassName="p-2.5"
                 header={
                   <div className="flex items-center gap-2.5">

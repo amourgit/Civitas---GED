@@ -23,7 +23,7 @@ export function InformationsPage({ initialTab = 'news', onShowNotification }: Pr
   const getTabFromPath = (): 'news' | 'annonces' | 'agenda' => {
     const path = location.pathname.toLowerCase();
     if (path.includes('/informations/annonces') || path.includes('/annonces')) return 'annonces';
-    if (path.includes('/informations/agenda') || path.includes('/calendrier')) return 'agenda';
+    if (path.includes('/informations/agenda')) return 'agenda';
     return 'news';
   };
 

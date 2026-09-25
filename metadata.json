@@ -1,6 +1,6 @@
 {
   "name": "EGEN — Écosystème Gouvernemental de l’Économie Numérique",
   "description": "Plateforme globale de l'Écosystème Gouvernemental de l'Économie Numérique (EGEN). Gestion électronique de documents (GED), calendrier, publication et services gouvernementaux.",
-  "requestFramePermissions": ["camera"],
+  "requestFramePermissions": ["camera", "microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

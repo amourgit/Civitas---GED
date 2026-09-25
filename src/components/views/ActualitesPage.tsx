@@ -141,7 +141,7 @@ export function ActualitesPage() {
         </button>
 
         <button 
-          onClick={() => { playXboxSound('select'); navigate('/calendrier'); }}
+          onClick={() => { playXboxSound('select'); navigate('/informations/agenda'); }}
           className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.02] hover:bg-white/10 transition-colors text-left group cursor-pointer"
         >
           <div className="p-2 rounded-lg bg-amber-500/20 text-amber-300 group-hover:bg-amber-500/30">

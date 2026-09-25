@@ -42,6 +42,7 @@ import { AmbientBackground } from './components/shell/AmbientBackground';
 import { PageBackgroundProvider } from './components/shell/PageBackground';
 import { PageLoadingProvider } from './context/PageLoadingContext';
 import { RightContentProvider, useRightContent } from './context/RightContentContext';
+import { AssistantGlobalVoiceProvider } from './context/AssistantGlobalVoiceContext';
 import { WorkspaceProvider } from './context/WorkspaceContext';
 import { ServiceProvider } from './context/ServiceContext';
 import { PortalCarouselProvider } from './context/PortalCarouselContext';
@@ -764,9 +765,11 @@ function AppContent() {
         />
       </header>
 
-      {/* Page Assistant Overlay (3D Robot Background, Sans Route Dédier) */}
+      {/* Page Assistant Overlay (3D Robot Background + Interactive Conversation Interface) */}
       <AssistantPageOverlay
         isActive={isAssistantActive}
+        mode={assistantMode}
+        onSelectMode={handleSelectAssistantMode}
         onClose={() => setIsAssistantActive(false)}
       />
 
@@ -1104,7 +1107,9 @@ export default function App() {
             <ServiceProvider>
               <PortalCarouselProvider>
                 <RightContentProvider>
-                  <AppContent />
+                  <AssistantGlobalVoiceProvider>
+                    <AppContent />
+                  </AssistantGlobalVoiceProvider>
                 </RightContentProvider>
               </PortalCarouselProvider>
             </ServiceProvider>

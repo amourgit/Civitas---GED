@@ -50,7 +50,7 @@ export function ServicesApplicationsTab() {
       status: 'Synchro active',
       icon: Calendar,
       color: 'from-indigo-500 to-purple-600',
-      link: '/calendrier'
+      link: '/informations/agenda'
     },
     {
       id: 'news',

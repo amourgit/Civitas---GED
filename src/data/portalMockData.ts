@@ -77,7 +77,7 @@ export const PORTAL_MOCK_DATA = {
       children: [
         { id: 'news-pub', label: 'News et Publications', route: '/actualites' },
         { id: 'annonces', label: 'Annonces', route: '/annonces' },
-        { id: 'agenda', label: 'Agenda', route: '/calendrier' }
+        { id: 'agenda', label: 'Agenda', route: '/informations/agenda' }
       ]
     },
     { 

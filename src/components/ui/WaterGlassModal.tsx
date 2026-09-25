@@ -47,13 +47,16 @@ export const WaterGlassModal = forwardRef<HTMLDivElement, WaterGlassModalProps>(
       none: '',
     }[align];
 
+    const hasPosition = className.includes('fixed') || className.includes('absolute');
+    const defaultPosition = hasPosition ? '' : 'absolute top-full mt-2';
+
     return (
       <div
         ref={ref}
-        className={`absolute top-full mt-2 z-50 text-xs text-slate-100 select-none overflow-hidden
-          bg-black/15 backdrop-blur-2xl rounded-2xl border border-white/10
-          shadow-[0_8px_32px_0_rgba(0,0,0,0.45)]
-          before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-b before:from-white/[0.08] before:to-transparent before:pointer-events-none
+        className={`${defaultPosition} z-[9999] text-xs text-slate-100 select-none overflow-hidden
+          bg-slate-950/90 backdrop-blur-3xl rounded-2xl border border-white/20
+          shadow-[0_16px_48px_0_rgba(0,0,0,0.65)]
+          before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-b before:from-white/[0.12] before:to-transparent before:pointer-events-none
           animate-in fade-in zoom-in-95 duration-150
           ${alignmentClasses}
           ${width || ''}

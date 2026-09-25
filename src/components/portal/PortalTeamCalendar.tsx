@@ -27,7 +27,7 @@ export function PortalTeamCalendar({ onShowToast }: PortalTeamCalendarProps) {
 
   const handleEventClick = (event: CalendarEventItem) => {
     playXboxSound('select');
-    navigate('/calendrier');
+    navigate('/informations/agenda');
   };
 
   const events = activeTab === 'upcoming' 

@@ -62,7 +62,7 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
   // Mapping paths to Option & SubOption
   let activeOption = siblingOptions.find((opt) => {
     const labelLower = opt.label.toLowerCase();
-    if (labelLower === "informations" && (path.startsWith("/informations") || path.startsWith("/actualites") || path.startsWith("/annonces") || path.startsWith("/calendrier"))) {
+    if (labelLower === "informations" && (path.startsWith("/informations") || path.startsWith("/actualites") || path.startsWith("/annonces"))) {
       return true;
     }
     if ((labelLower === "sites" || labelLower === "site" || labelLower === "services") && (path.startsWith("/sites") || path.startsWith("/services") || path.startsWith("/applications") || (path.startsWith("/ged") && !path.startsWith("/ged/recherche")))) {
@@ -82,7 +82,7 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
 
   // Fallback if no exact option matched
   if (!activeOption) {
-    if (path.includes("actualites") || path.includes("annonces") || path.includes("calendrier")) {
+    if (path.includes("actualites") || path.includes("annonces")) {
       activeOption = siblingOptions.find((o) => o.label.toLowerCase() === "informations");
     } else if (path.includes("applications") || path.includes("ged") || path.includes("/sites") || path.includes("/services")) {
       activeOption = siblingOptions.find((o) => {
@@ -136,7 +136,7 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
     subOptionTitle = "News et Publications";
   } else if (path === "/informations/annonces" || path === "/annonces") {
     subOptionTitle = "Annonces";
-  } else if (path === "/informations/agenda" || path === "/calendrier") {
+  } else if (path === "/informations/agenda") {
     subOptionTitle = "Agenda";
   } else if (path.includes("/membres")) {
     subOptionTitle = "Membres & Équipes";

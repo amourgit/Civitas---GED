@@ -30,7 +30,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
       badgeBottomText: 'DEC 16',
       title: 'New Hire Orientation',
       dateString: 'Wed, Oct 16, 12:00 PM',
-      route: '/calendrier'
+      route: '/informations/agenda'
     },
     {
       id: 'ev-2',
@@ -40,7 +40,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
       badgeBgImage: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=160&auto=format&fit=crop&q=80',
       title: 'Canada Day',
       dateString: 'Wed, Jul 1, All day',
-      route: '/calendrier'
+      route: '/informations/agenda'
     },
     {
       id: 'ev-3',
@@ -50,7 +50,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
       badgeBgImage: 'https://images.unsplash.com/photo-1498931299472-f7a63a5a1cfa?w=160&auto=format&fit=crop&q=80',
       title: 'Independence Day',
       dateString: 'Sat, Jul 4, All day',
-      route: '/calendrier'
+      route: '/informations/agenda'
     },
     {
       id: 'ev-4',
@@ -59,7 +59,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
       badgeBottomText: '28',
       title: 'New Hire Orientation',
       dateString: 'Tue, Jul 28, 12:00 PM',
-      route: '/calendrier'
+      route: '/informations/agenda'
     }
   ];
 
@@ -71,7 +71,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
       badgeBottomText: '14',
       title: 'All-Hands Company Meeting',
       dateString: 'Fri, Aug 14, 10:00 AM',
-      route: '/calendrier'
+      route: '/informations/agenda'
     },
     {
       id: 'ev-6',
@@ -80,7 +80,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
       badgeBottomText: '22',
       title: 'IT Infrastructure Maintenance',
       dateString: 'Sat, Aug 22, All day',
-      route: '/calendrier'
+      route: '/informations/agenda'
     },
     {
       id: 'ev-7',
@@ -89,7 +89,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
       badgeBottomText: '05',
       title: 'Leadership Strategy Review',
       dateString: 'Tue, Sep 05, 02:00 PM',
-      route: '/calendrier'
+      route: '/informations/agenda'
     },
     {
       id: 'ev-8',
@@ -98,7 +98,7 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
       badgeBottomText: '30',
       title: 'Compliance Training Deadline',
       dateString: 'Wed, Sep 30, 05:00 PM',
-      route: '/calendrier'
+      route: '/informations/agenda'
     }
   ];
 
@@ -119,12 +119,12 @@ export function PortalFooterNewsEvents({ onShowToast }: PortalFooterNewsEventsPr
   const handleAddEvent = () => {
     playXboxSound('select');
     onShowToast?.("Ouverture de l'éditeur pour planifier un nouvel événement.", 'info');
-    navigate('/calendrier');
+    navigate('/informations/agenda');
   };
 
   const handleSeeAllEvents = () => {
     playXboxSound('select');
-    navigate('/calendrier');
+    navigate('/informations/agenda');
   };
 
   return (

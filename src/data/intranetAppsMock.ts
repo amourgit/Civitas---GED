@@ -44,7 +44,7 @@ export const INTRANET_APPS_MOCK: IntranetApp[] = [
     icon: 'Calendar',
     category: 'collaboration',
     status: 'En ligne',
-    url: '/calendrier'
+    url: '/informations/agenda'
   },
   {
     id: 'iam',

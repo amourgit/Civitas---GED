@@ -194,10 +194,10 @@ const INDEXED_APPS = [
   },
   {
     id: 'app-agenda',
-    name: 'Calendrier & Planning',
+    name: 'Agenda & Planning',
     category: 'Organisation & Événements',
     description: 'Agenda institutionnel, réunions inter-services, séminaires et calendrier des astreintes.',
-    route: '/calendrier',
+    route: '/informations/agenda',
     badge: 'Planning'
   },
   {
@@ -450,7 +450,7 @@ export function AppleSpotlight({
         badge: evt.category,
         badgeTone: 'amber',
         icon: <CalendarDays className="w-4 h-4 text-amber-400" />,
-        route: '/calendrier',
+        route: '/informations/agenda',
         date: evt.dateLabel,
         tags: evt.tags,
         metadata: {
