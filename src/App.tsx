@@ -49,6 +49,8 @@ import { PortalCarouselNav } from './components/portal/PortalCarouselNav';
 import { PortalFooterNewsEvents } from './components/portal/PortalFooterNewsEvents';
 import RandomLetterSwapNav from './components/navigation/RandomLetterSwapNav';
 import { SupremeIntranetTopBar } from './components/shell/SupremeIntranetTopBar';
+import { AssistantPageOverlay } from './components/assistant/AssistantPageOverlay';
+import { AssistantMode, ASSISTANT_MODES, getSavedAssistantMode, saveAssistantMode } from './components/assistant/assistantModes';
 import { XboxSidebar, XboxSidebarItem, XboxSidebarSection } from './components/shell/XboxSidebar';
 import { PortalSplitLayout } from './components/layout/PortalSplitLayout';
 import { AccueilPage } from './components/views/AccueilPage';
@@ -233,6 +235,8 @@ function AppContent() {
   const [specialGalleryFolder, setSpecialGalleryFolder] = useState<FolderItem | null>(null);
   const [propertiesFolder, setPropertiesFolder] = useState<FolderItem | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isAssistantActive, setIsAssistantActive] = useState(false);
+  const [assistantMode, setAssistantMode] = useState<AssistantMode>(() => getSavedAssistantMode());
 
   // Auto-close mobile sidebar when navigating
   useEffect(() => {
@@ -291,6 +295,12 @@ function AppContent() {
       setToast(curr => (curr?.message === msg ? null : curr));
     }, 3500);
   }, []);
+
+  const handleSelectAssistantMode = useCallback((mode: AssistantMode) => {
+    setAssistantMode(mode);
+    saveAssistantMode(mode);
+    showToast(`Mode activé : ${ASSISTANT_MODES[mode].name}`, 'info');
+  }, [showToast]);
 
   // Modal Open / Close handlers with corresponding Xbox audio
   const openSearchModal = () => {
@@ -727,22 +737,37 @@ function AppContent() {
       <AmbientBackground />
 
       {/* 0. SUPREME TOPBAR DE L'INTRANET AVEC 2ÈME NIVEAU EXTENSIBLE DE L'APPLICATION ACTIVE */}
-      <SupremeIntranetTopBar
-        onOpenGlobalSearch={openSearchModal}
-        onOpenGED={() => navigate('/ged')}
-        currentAppName={currentAppName}
-        onShowNotification={showToast}
-        onToggleSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
-        isSidebarOpen={isMobileSidebarOpen}
-        onSearchClick={openSearchModal}
-        onNotificationClick={openNotificationModal}
-        onQuickAction={(action) => {
-          if (action === 'espaces') showToast('Espaces de travail partagés ouverts.', 'info');
-          else if (action === 'taches') showToast('Tâches & validations GED.', 'info');
-          else if (action === 'workflows') showToast('Circuits de validation opérationnels.', 'info');
-          else if (action === 'profile') showToast('Profil Amour Samuel NZILA NGALA (Administrateur)', 'info');
-          else showToast(`Action ${action} déclenchée.`, 'info');
-        }}
+      <header className="relative z-50 shrink-0 w-full bg-transparent">
+        <SupremeIntranetTopBar
+          onOpenGlobalSearch={openSearchModal}
+          onOpenGED={() => navigate('/ged')}
+          currentAppName={currentAppName}
+          onShowNotification={showToast}
+          onToggleSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
+          isSidebarOpen={isMobileSidebarOpen}
+          onSearchClick={openSearchModal}
+          onNotificationClick={openNotificationModal}
+          isAssistantActive={isAssistantActive}
+          onToggleAssistant={() => {
+            setIsAssistantActive(prev => !prev);
+            playXboxSound('toggle');
+          }}
+          assistantMode={assistantMode}
+          onSelectAssistantMode={handleSelectAssistantMode}
+          onQuickAction={(action) => {
+            if (action === 'espaces') showToast('Espaces de travail partagés ouverts.', 'info');
+            else if (action === 'taches') showToast('Tâches & validations GED.', 'info');
+            else if (action === 'workflows') showToast('Circuits de validation opérationnels.', 'info');
+            else if (action === 'profile') showToast('Profil Amour Samuel NZILA NGALA (Administrateur)', 'info');
+            else showToast(`Action ${action} déclenchée.`, 'info');
+          }}
+        />
+      </header>
+
+      {/* Page Assistant Overlay (3D Robot Background, Sans Route Dédier) */}
+      <AssistantPageOverlay
+        isActive={isAssistantActive}
+        onClose={() => setIsAssistantActive(false)}
       />
 
       {/* Xbox Guide Modal (Always modal overlay, exactly matching Xbox Guide OS design) */}

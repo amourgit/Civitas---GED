@@ -17,6 +17,7 @@ import { SERVICES_LIST } from "../../data/servicesData";
 import { findEmployeeByParam, getEmployeeUuid } from "../../data/directoryData";
 import { playXboxSound } from "../../utils/xboxAudio";
 import { Copy, Check } from "lucide-react";
+import { WaterGlassModal } from "../ui/WaterGlassModal";
 
 interface Props {
   onToggleFullMenu?: () => void;
@@ -225,21 +226,23 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
               ...
             </button>
 
-            {/* Ellipsis Glassmorphism Dropdown */}
-            <AnimatePresence>
-              {isEllipsisOpen && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute left-0 top-full mt-1.5 w-52 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl p-1.5 z-50 text-white ring-1 ring-black/20"
-                >
-                  <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-300 border-b border-white/10 mb-1 flex items-center justify-between">
-                    <span>Options de l'espace</span>
-                    <span className="text-[9px] text-slate-400">{currentWorkspace.name}</span>
+            {/* Ellipsis Glassmorphism Dropdown via WaterGlassModal */}
+            {isEllipsisOpen && (
+              <WaterGlassModal
+                align="left"
+                width="w-56"
+                header={
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-teal-300">
+                      Options de l'espace
+                    </span>
+                    <span className="text-[9px] text-slate-400 font-mono">
+                      {currentWorkspace.name}
+                    </span>
                   </div>
-                  <div className="space-y-0.5">
+                }
+                optionsComponent={
+                  <div className="space-y-1">
                     {siblingOptions.map((opt) => {
                       const isCurrent = activeOption?.id === opt.id;
                       return (
@@ -250,10 +253,10 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
                             setIsEllipsisOpen(false);
                             navigate(getOptionRoute(opt.label));
                           }}
-                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left transition-all cursor-pointer text-xs ${
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-all cursor-pointer text-xs border-none ${
                             isCurrent
-                              ? "text-teal-300 font-bold"
-                              : "hover:bg-white/10 text-slate-200 hover:text-white font-medium"
+                              ? "bg-white/[0.10] text-teal-300 font-bold"
+                              : "hover:bg-white/[0.06] text-slate-200/90 hover:text-white font-medium"
                           }`}
                         >
                           <span className="truncate">{opt.label}</span>
@@ -261,9 +264,9 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
                       );
                     })}
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                }
+              />
+            )}
           </BreadcrumbItem>
 
           {/* Separator */}
@@ -302,22 +305,20 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
                 </div>
               )}
 
-              {/* Option Submenu Dropdown */}
-              <AnimatePresence>
-                {isOptionSubmenuOpen && activeOption.subMenus && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute left-0 top-full mt-1.5 w-auto min-w-[200px] bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl p-2 z-50 text-white ring-1 ring-black/20"
-                  >
-                    <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-300 border-b border-white/10 mb-1">
+              {/* Option Submenu Dropdown via WaterGlassModal */}
+              {isOptionSubmenuOpen && activeOption.subMenus && (
+                <WaterGlassModal
+                  align="left"
+                  width="w-auto min-w-[210px]"
+                  header={
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-teal-300">
                       Sous-options de {activeOption.label}
-                    </div>
-                    <div className="space-y-1">
+                    </span>
+                  }
+                  optionsComponent={
+                    <div className="space-y-1.5">
                       {activeOption.subMenus.map((subMenu) => (
-                        <div key={subMenu.title} className="space-y-0.5">
+                        <div key={subMenu.title} className="space-y-1">
                           <div className="px-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-1">
                             {subMenu.title}
                           </div>
@@ -330,7 +331,7 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
                                 if (subItem.onClick) subItem.onClick();
                                 if (subItem.link) navigate(subItem.link);
                               }}
-                              className="w-full text-left px-2 py-1 rounded-lg hover:bg-white/10 text-slate-200 hover:text-white transition-all cursor-pointer text-xs"
+                              className="w-full text-left px-3 py-1.5 rounded-xl hover:bg-white/[0.06] text-slate-200/90 hover:text-white transition-all cursor-pointer text-xs border-none"
                             >
                               <span className="truncate">{subItem.label}</span>
                             </button>
@@ -338,9 +339,9 @@ export function BreadcrumbLevel2Nav({ onToggleFullMenu, showFullMenuToggle = tru
                         </div>
                       ))}
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  }
+                />
+              )}
             </BreadcrumbItem>
           )}
 

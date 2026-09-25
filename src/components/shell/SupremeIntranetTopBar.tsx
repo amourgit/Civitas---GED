@@ -48,7 +48,8 @@ import {
   Database,
   AppWindow,
   Info,
-  Server
+  Server,
+  Bot
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -62,6 +63,9 @@ import { WorkspaceId } from '../../types/workspace';
 import { EgenLogo } from '../ui/EgenLogo';
 import { WorkspaceAndServiceSelectorsColumn } from './WorkspaceAndServiceSelectorsColumn';
 import { GooeyInput } from '../ui/GooeyInput';
+import { WaterGlassModal } from '../ui/WaterGlassModal';
+import { AssistantRobotButton } from '../assistant/AssistantRobotButton';
+import { AssistantMode } from '../assistant/assistantModes';
 
 export interface SupremeIntranetTopBarProps {
   // Global Intranet Props (Level 1)
@@ -76,6 +80,12 @@ export interface SupremeIntranetTopBarProps {
   onSearchClick?: () => void;
   onNotificationClick?: () => void;
   onQuickAction?: (actionName: string) => void;
+
+  // Assistant Page Overlay Props
+  isAssistantActive?: boolean;
+  onToggleAssistant?: () => void;
+  assistantMode?: AssistantMode;
+  onSelectAssistantMode?: (mode: AssistantMode) => void;
 
   // Extensible Slots for Custom Application Extensions
   appSlotLeft?: React.ReactNode;
@@ -95,6 +105,10 @@ export function SupremeIntranetTopBar({
   onSearchClick,
   onNotificationClick,
   onQuickAction,
+  isAssistantActive = false,
+  onToggleAssistant,
+  assistantMode = 'conversation',
+  onSelectAssistantMode,
   appSlotLeft,
   appSlotCenter,
   appSlotRight,
@@ -323,7 +337,10 @@ export function SupremeIntranetTopBar({
   }, [availableWorkspaces]);
 
   return (
-    <div ref={menuRef} className="w-full shrink-0 z-50 select-none relative font-sans text-slate-100 overflow-visible border-b border-white/10">
+    <div 
+      ref={menuRef} 
+      className="w-full shrink-0 z-50 select-none relative font-sans text-slate-100 overflow-visible border-b border-white/10 bg-transparent"
+    >
       {/* 1. SUPREME TOPBAR: EXACT POWELL SOFTWARE LIGHT INTRANET TOPBAR */}
       <header className="w-full bg-transparent transition-colors overflow-visible flex flex-col">
         {/* ROW 1: BRAND & ACTIONS TOP ROW */}
@@ -411,24 +428,36 @@ export function SupremeIntranetTopBar({
               <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 transition-transform duration-200 ${activeMenu === 'lang' ? 'rotate-180 text-teal-400' : ''}`} />
             </button>
 
-            {/* Language Dropdown */}
+            {/* Language Dropdown via WaterGlassModal */}
             {activeMenu === 'lang' && (
-              <div className="absolute right-0 top-9 w-32 bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 py-1 z-50 text-xs animate-in fade-in duration-150 text-white">
-                {(['English', 'Français', 'Español', 'Deutsch'] as const).map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => {
-                      setCurrentLang(lang);
-                      setActiveMenu(null);
-                      notify(`Langue changée : ${lang}`);
-                    }}
-                    className="w-full text-left px-2.5 py-1 text-slate-200 hover:bg-white/15 hover:text-white flex items-center justify-between cursor-pointer bg-transparent border-none text-[11px]"
-                  >
-                    <span>{lang}</span>
-                    {currentLang === lang && <Check className="w-3 h-3 text-teal-400" />}
-                  </button>
-                ))}
-              </div>
+              <WaterGlassModal
+                align="right"
+                width="w-36"
+                optionsComponent={
+                  <div className="space-y-1">
+                    {(['English', 'Français', 'Español', 'Deutsch'] as const).map((lang) => (
+                      <button
+                        key={lang}
+                        type="button"
+                        onClick={() => {
+                          playXboxSound('select');
+                          setCurrentLang(lang);
+                          setActiveMenu(null);
+                          notify(`Langue changée : ${lang}`);
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between transition-all duration-200 cursor-pointer border-none ${
+                          currentLang === lang
+                            ? 'bg-white/[0.10] text-teal-300 font-medium shadow-sm'
+                            : 'text-slate-200/90 hover:bg-white/[0.06] hover:text-white'
+                        }`}
+                      >
+                        <span className="text-[12px]">{lang}</span>
+                        {currentLang === lang && <Check className="w-3.5 h-3.5 text-teal-300" />}
+                      </button>
+                    ))}
+                  </div>
+                }
+              />
             )}
           </div>
 
@@ -456,94 +485,99 @@ export function SupremeIntranetTopBar({
               </span>
             </button>
 
-            {/* App Launcher Drawer */}
+            {/* App Launcher Drawer via WaterGlassModal */}
             {activeMenu === 'appLauncher' && (
-              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-16px)] sm:w-88 max-w-sm bg-slate-900/90 backdrop-blur-2xl border border-white/20 shadow-2xl p-3.5 sm:p-4 rounded-2xl z-50 text-xs animate-in fade-in slide-in-from-top-2 duration-150 text-white">
-                <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-white/10">
-                  <span className="font-semibold text-sm text-white tracking-tight">Applications ({currentWorkspace.name})</span>
-                  <span className="text-[10px] bg-teal-500/20 text-teal-300 font-medium px-2 py-0.5 rounded-full border border-teal-400/30">
-                    {currentApps.length} Application{currentApps.length > 1 ? 's' : ''}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 sm:gap-2.5 max-h-72 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/20">
-                  {currentApps.length > 0 ? (
-                    currentApps.map((app) => (
-                      <button
-                        key={app.id}
-                        onClick={() => {
-                          playXboxSound('select');
-                          setActiveMenu(null);
-                          if (app.id === 'ged' && onOpenGED) {
-                            onOpenGED();
-                          } else {
-                            navigate(app.url);
-                          }
-                          notify(`Application ${app.name} active`);
-                        }}
-                        className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl bg-white/5 hover:bg-white/15 text-slate-200 hover:text-white transition-all cursor-pointer group text-center max-w-full overflow-hidden"
-                      >
-                        <div className="relative mb-2 flex items-center justify-center">
-                          <div className="w-10 h-10 rounded-lg bg-teal-600/80 border border-teal-400/40 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-                            {app.icon === 'FolderOpen' ? (
-                              <FolderOpen className="w-5 h-5 text-teal-100" />
-                            ) : app.icon === 'Calendar' ? (
-                              <Calendar className="w-5 h-5 text-teal-100" />
-                            ) : app.icon === 'ShieldCheck' ? (
-                              <ShieldCheck className="w-5 h-5 text-teal-100" />
-                            ) : app.icon === 'Newspaper' ? (
-                              <Newspaper className="w-5 h-5 text-teal-100" />
-                            ) : app.icon === 'Megaphone' ? (
-                              <Megaphone className="w-5 h-5 text-teal-100" />
-                            ) : (
-                              <Grid className="w-5 h-5 text-teal-100" />
+              <WaterGlassModal
+                align="right"
+                className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-16px)] sm:w-88 max-w-sm"
+                contentClassName="p-3 sm:p-3.5"
+                header={
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-sm text-white tracking-tight">Applications ({currentWorkspace.name})</span>
+                    <span className="text-[10px] bg-teal-500/20 text-teal-300 font-medium px-2 py-0.5 rounded-full border border-teal-400/30">
+                      {currentApps.length} Application{currentApps.length > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                }
+                optionsComponent={
+                  <div className="grid grid-cols-3 gap-2 sm:gap-2.5 max-h-72 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/20">
+                    {currentApps.length > 0 ? (
+                      currentApps.map((app) => (
+                        <button
+                          key={app.id}
+                          onClick={() => {
+                            playXboxSound('select');
+                            setActiveMenu(null);
+                            if (app.id === 'ged' && onOpenGED) {
+                              onOpenGED();
+                            } else {
+                              navigate(app.url);
+                            }
+                            notify(`Application ${app.name} active`);
+                          }}
+                          className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.12] text-slate-200 hover:text-white transition-all cursor-pointer group text-center max-w-full overflow-hidden border border-white/5"
+                        >
+                          <div className="relative mb-2 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-lg bg-teal-600/80 border border-teal-400/40 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
+                              {app.icon === 'FolderOpen' ? (
+                                <FolderOpen className="w-5 h-5 text-teal-100" />
+                              ) : app.icon === 'Calendar' ? (
+                                <Calendar className="w-5 h-5 text-teal-100" />
+                              ) : app.icon === 'ShieldCheck' ? (
+                                <ShieldCheck className="w-5 h-5 text-teal-100" />
+                              ) : app.icon === 'Newspaper' ? (
+                                <Newspaper className="w-5 h-5 text-teal-100" />
+                              ) : app.icon === 'Megaphone' ? (
+                                <Megaphone className="w-5 h-5 text-teal-100" />
+                              ) : (
+                                <Grid className="w-5 h-5 text-teal-100" />
+                              )}
+                            </div>
+                            {app.status && (
+                              <span className="absolute -top-1 -right-2 text-[8px] font-bold px-1.5 py-0.2 bg-teal-500 text-white rounded-full shadow-xs">
+                                {app.status}
+                              </span>
                             )}
                           </div>
-                          {app.status && (
-                            <span className="absolute -top-1 -right-2 text-[8px] font-bold px-1.5 py-0.2 bg-teal-500 text-white rounded-full shadow-xs">
-                              {app.status}
-                            </span>
-                          )}
-                        </div>
-                        <span className="font-semibold text-[11px] sm:text-xs text-white group-hover:text-teal-200 leading-tight truncate w-full px-1" title={app.name}>
-                          {app.name}
-                        </span>
-                        <span className="text-[9px] sm:text-[10px] text-slate-300 truncate w-full px-1 mt-0.5" title={app.description}>
-                          {app.description}
-                        </span>
-                      </button>
-                    ))
-                  ) : (
-                    <div className="col-span-3 text-center py-6 px-2 text-slate-300">
-                      <p className="text-xs font-semibold mb-1 text-teal-200">Aucune application active</p>
-                      <p className="text-[10px] text-slate-400 mb-3">L'espace {currentWorkspace.name} n'a pas d'apps configurées.</p>
-                      <button
-                        onClick={() => {
-                          playXboxSound('select');
-                          setWorkspaceId('intranet');
-                        }}
-                        className="px-3 py-1.5 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 text-xs font-medium border border-teal-400/30 transition-all cursor-pointer"
-                      >
-                        Voir l'Intranet Général
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-3 mt-3 border-t border-white/10 flex items-center justify-between">
+                          <span className="font-semibold text-[11px] sm:text-xs text-white group-hover:text-teal-200 leading-tight truncate w-full px-1" title={app.name}>
+                            {app.name}
+                          </span>
+                          <span className="text-[9px] sm:text-[10px] text-slate-300 truncate w-full px-1 mt-0.5" title={app.description}>
+                            {app.description}
+                          </span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="col-span-3 text-center py-6 px-2 text-slate-300">
+                        <p className="text-xs font-semibold mb-1 text-teal-200">Aucune application active</p>
+                        <p className="text-[10px] text-slate-400 mb-3">L'espace {currentWorkspace.name} n'a pas d'apps configurées.</p>
+                        <button
+                          onClick={() => {
+                            playXboxSound('select');
+                            setWorkspaceId('intranet');
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 text-xs font-medium border border-teal-400/30 transition-all cursor-pointer"
+                        >
+                          Voir l'Intranet Général
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                }
+                footer={
                   <button
                     onClick={() => {
                       playXboxSound('select');
                       setActiveMenu(null);
                       navigate('/applications');
                     }}
-                    className="w-full py-2 px-3 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-teal-400/30 backdrop-blur-sm"
+                    className="w-full py-2 px-3 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-teal-300 hover:text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer border border-white/10"
                   >
                     <span>Voir toutes les applications</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
-                </div>
-              </div>
+                }
+              />
             )}
           </div>
 
@@ -559,34 +593,42 @@ export function SupremeIntranetTopBar({
               <CirclePlus className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[1.8]" />
             </button>
 
-            {/* Create Dropdown */}
+            {/* Create Dropdown via WaterGlassModal */}
             {activeMenu === 'create' && (
-              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-56 max-w-xs bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 py-1.5 z-50 text-xs animate-in fade-in duration-150 text-white">
-                <div className="px-3 py-1 text-[10px] font-bold text-teal-300 uppercase tracking-wider border-b border-white/10 mb-1">
-                  Nouveau contenu
-                </div>
-                <button 
-                  onClick={() => { setActiveMenu(null); notify("Création de nouveau dossier GED"); }}
-                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white flex items-center gap-2 cursor-pointer bg-transparent border-none text-[11px]"
-                >
-                  <FolderOpen className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Nouveau Dossier GED</span>
-                </button>
-                <button 
-                  onClick={() => { setActiveMenu(null); notify("Téléversement de fichier"); }}
-                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white flex items-center gap-2 cursor-pointer bg-transparent border-none text-[11px]"
-                >
-                  <FileText className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Importer un Document</span>
-                </button>
-                <button 
-                  onClick={() => { setActiveMenu(null); notify("Nouvelle publication sur My Board"); }}
-                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white flex items-center gap-2 cursor-pointer bg-transparent border-none text-[11px]"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Nouvelle Publication</span>
-                </button>
-              </div>
+              <WaterGlassModal
+                align="right"
+                className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-56 max-w-xs"
+                header={
+                  <span className="text-[10px] font-bold text-teal-300 uppercase tracking-wider">
+                    Nouveau contenu
+                  </span>
+                }
+                optionsComponent={
+                  <div className="space-y-1">
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("Création de nouveau dossier GED"); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-slate-200/90 hover:bg-white/[0.06] hover:text-white flex items-center gap-2.5 transition-all duration-200 cursor-pointer border-none text-[11px]"
+                    >
+                      <FolderOpen className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Nouveau Dossier GED</span>
+                    </button>
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("Téléversement de fichier"); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-slate-200/90 hover:bg-white/[0.06] hover:text-white flex items-center gap-2.5 transition-all duration-200 cursor-pointer border-none text-[11px]"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Importer un Document</span>
+                    </button>
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("Nouvelle publication sur My Board"); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-slate-200/90 hover:bg-white/[0.06] hover:text-white flex items-center gap-2.5 transition-all duration-200 cursor-pointer border-none text-[11px]"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Nouvelle Publication</span>
+                    </button>
+                  </div>
+                }
+              />
             )}
           </div>
 
@@ -602,31 +644,39 @@ export function SupremeIntranetTopBar({
               <Settings className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[1.8]" />
             </button>
 
-            {/* Settings Dropdown */}
+            {/* Settings Dropdown via WaterGlassModal */}
             {activeMenu === 'settings' && (
-              <div className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-52 max-w-xs bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 py-1.5 z-50 text-xs animate-in fade-in duration-150 text-white">
-                <div className="px-3 py-1 text-[10px] font-bold text-teal-300 uppercase tracking-wider border-b border-white/10 mb-1">
-                  Configuration
-                </div>
-                <button 
-                  onClick={() => { setActiveMenu(null); notify("Préférences d'affichage"); }}
-                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white cursor-pointer bg-transparent border-none text-[11px]"
-                >
-                  Préférences d'affichage
-                </button>
-                <button 
-                  onClick={() => { setActiveMenu(null); notify("Paramètres de sécurité & accès"); }}
-                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white cursor-pointer bg-transparent border-none text-[11px]"
-                >
-                  Permissions & Sécurité
-                </button>
-                <button 
-                  onClick={() => { setActiveMenu(null); notify("À propos d'EGEN v4.2 — Écosystème Gouvernemental"); }}
-                  className="w-full text-left px-3 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white cursor-pointer bg-transparent border-none text-[11px]"
-                >
-                  À propos d'EGEN
-                </button>
-              </div>
+              <WaterGlassModal
+                align="right"
+                width="w-[calc(100vw-24px)] sm:w-52 max-w-xs"
+                header={
+                  <span className="text-[10px] font-bold text-teal-300 uppercase tracking-wider">
+                    Configuration
+                  </span>
+                }
+                optionsComponent={
+                  <div className="space-y-1">
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("Préférences d'affichage"); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-slate-200/90 hover:bg-white/[0.06] hover:text-white cursor-pointer border-none text-[11px] transition-all"
+                    >
+                      Préférences d'affichage
+                    </button>
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("Paramètres de sécurité & accès"); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-slate-200/90 hover:bg-white/[0.06] hover:text-white cursor-pointer border-none text-[11px] transition-all"
+                    >
+                      Permissions & Sécurité
+                    </button>
+                    <button 
+                      onClick={() => { setActiveMenu(null); notify("À propos d'EGEN v4.2 — Écosystème Gouvernemental"); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-slate-200/90 hover:bg-white/[0.06] hover:text-white cursor-pointer border-none text-[11px] transition-all"
+                    >
+                      À propos d'EGEN
+                    </button>
+                  </div>
+                }
+              />
             )}
           </div>
 
@@ -646,17 +696,14 @@ export function SupremeIntranetTopBar({
               />
             </button>
 
-            {/* Popup Profil */}
-            <AnimatePresence>
-              {activeMenu === 'profile' && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.94, y: -6 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.94, y: -6 }}
-                  transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-                  className="fixed sm:absolute right-2 sm:right-0 top-12 sm:top-10 w-[calc(100vw-24px)] sm:w-64 max-w-xs bg-slate-900/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/20 p-2.5 z-50 text-xs origin-top-right text-white"
-                >
-                  <div className="flex items-center gap-2.5 pb-2 mb-2 border-b border-white/10">
+            {/* Popup Profil via WaterGlassModal */}
+            {activeMenu === 'profile' && (
+              <WaterGlassModal
+                align="right"
+                width="w-[calc(100vw-24px)] sm:w-64 max-w-xs"
+                contentClassName="p-2.5"
+                header={
+                  <div className="flex items-center gap-2.5">
                     <div className="relative w-9 h-9 rounded-full overflow-hidden border border-white/20 shrink-0 shadow-xs aspect-square">
                       <img 
                         src="/assets/moi-assis.jpg" 
@@ -674,43 +721,43 @@ export function SupremeIntranetTopBar({
                       </span>
                     </div>
                   </div>
-
-                  <div className="space-y-0.5">
+                }
+                optionsComponent={
+                  <div className="space-y-1">
                     <button 
                       onClick={() => { setActiveMenu(null); notify("Accès au profil complet"); }}
-                      className="w-full text-left px-2 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2 transition-colors font-medium text-[11px]"
+                      className="w-full text-left px-3 py-2 text-slate-200/90 hover:bg-white/[0.06] hover:text-white rounded-xl cursor-pointer border-none flex items-center gap-2.5 transition-all font-medium text-[11px]"
                     >
                       <User className="w-3.5 h-3.5 text-teal-300" />
                       <span>Mon profil complet</span>
                     </button>
                     <button 
                       onClick={() => { setActiveMenu(null); notify("Préférences du compte"); }}
-                      className="w-full text-left px-2 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2 transition-colors text-[11px]"
+                      className="w-full text-left px-3 py-2 text-slate-200/90 hover:bg-white/[0.06] hover:text-white rounded-xl cursor-pointer border-none flex items-center gap-2.5 transition-all text-[11px]"
                     >
                       <SlidersHorizontal className="w-3.5 h-3.5 text-teal-300" />
                       <span>Préférences & Compte</span>
                     </button>
                     <button 
                       onClick={() => { setActiveMenu(null); notify("Favoris & signets"); }}
-                      className="w-full text-left px-2 py-1.5 text-slate-200 hover:bg-white/15 hover:text-white rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2 transition-colors text-[11px]"
+                      className="w-full text-left px-3 py-2 text-slate-200/90 hover:bg-white/[0.06] hover:text-white rounded-xl cursor-pointer border-none flex items-center gap-2.5 transition-all text-[11px]"
                     >
                       <Bookmark className="w-3.5 h-3.5 text-teal-300" />
                       <span>Mes favoris GED</span>
                     </button>
                   </div>
-
-                  <div className="mt-1.5 pt-1.5 border-t border-white/10">
-                    <button 
-                      onClick={() => { setActiveMenu(null); notify("Déconnexion du portail intranet"); }}
-                      className="w-full text-left px-2 py-1 text-red-300 hover:bg-red-500/20 hover:text-red-200 rounded-lg cursor-pointer bg-transparent border-none flex items-center gap-2 transition-colors font-medium text-[11px]"
-                    >
-                      <LogOut className="w-3.5 h-3.5 text-red-400" />
-                      <span>Se déconnecter</span>
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                }
+                footer={
+                  <button 
+                    onClick={() => { setActiveMenu(null); notify("Déconnexion du portail intranet"); }}
+                    className="w-full text-left px-3 py-1.5 text-red-300 hover:bg-red-500/20 hover:text-red-200 rounded-xl cursor-pointer border-none flex items-center gap-2 transition-all font-medium text-[11px]"
+                  >
+                    <LogOut className="w-3.5 h-3.5 text-red-400" />
+                    <span>Se déconnecter</span>
+                  </button>
+                }
+              />
+            )}
           </div>
 
           {/* 8. Date & Heure - Retiré depuis la version tablette (uniquement visible sur desktop lg+) */}
@@ -730,19 +777,46 @@ export function SupremeIntranetTopBar({
         {!isGedRoute && (
           <div className="w-full bg-transparent px-2 sm:px-4 md:px-6 lg:px-7 h-10 sm:h-11 flex items-center justify-between overflow-visible z-30">
             {(location.pathname === '/' || location.pathname === '/accueil' || showFullNav) ? (
-              <div className="w-full flex items-center justify-between">
+              <div className="w-full flex items-center justify-between gap-2">
                 <DropdownNavigation navItems={desktopNavItems} />
-                {showFullNav && (
-                  <button
-                    onClick={() => setShowFullNav(false)}
-                    className="text-xs text-slate-300 hover:text-white bg-white/10 px-2 py-1 rounded-md ml-2 cursor-pointer shrink-0"
-                  >
-                    Mode Fil d'ariane
-                  </button>
-                )}
+                <div className="flex items-center gap-2 shrink-0">
+                  {showFullNav && (
+                    <button
+                      onClick={() => setShowFullNav(false)}
+                      className="text-xs text-slate-300 hover:text-white bg-white/10 px-2 py-1 rounded-md cursor-pointer shrink-0"
+                    >
+                      Mode Fil d'ariane
+                    </button>
+                  )}
+                  {/* Bouton Icône Déclencheur / Retour Assistant IA 3D au Niveau 2 */}
+                  <AssistantRobotButton
+                    currentMode={assistantMode}
+                    isFullscreenActive={isAssistantActive}
+                    onSelectMode={(mode) => {
+                      if (onSelectAssistantMode) onSelectAssistantMode(mode);
+                    }}
+                    onToggleFullscreen={() => {
+                      if (onToggleAssistant) onToggleAssistant();
+                    }}
+                  />
+                </div>
               </div>
             ) : (
-              <BreadcrumbLevel2Nav onToggleFullMenu={() => setShowFullNav(true)} />
+              <div className="w-full flex items-center justify-between gap-2">
+                <BreadcrumbLevel2Nav onToggleFullMenu={() => setShowFullNav(true)} />
+                {/* Bouton Icône Déclencheur / Retour Assistant IA 3D au Niveau 2 */}
+                <AssistantRobotButton
+                  currentMode={assistantMode}
+                  isFullscreenActive={isAssistantActive}
+                  onSelectMode={(mode) => {
+                    if (onSelectAssistantMode) onSelectAssistantMode(mode);
+                  }}
+                  onToggleFullscreen={() => {
+                    if (onToggleAssistant) onToggleAssistant();
+                  }}
+                  className="ml-2"
+                />
+              </div>
             )}
           </div>
         )}
@@ -812,6 +886,18 @@ export function SupremeIntranetTopBar({
                 {appSlotRight}
               </div>
             )}
+
+            {/* Bouton Icône Déclencheur / Retour Assistant IA 3D au Niveau 2 GED */}
+            <AssistantRobotButton
+              currentMode={assistantMode}
+              isFullscreenActive={isAssistantActive}
+              onSelectMode={(mode) => {
+                if (onSelectAssistantMode) onSelectAssistantMode(mode);
+              }}
+              onToggleFullscreen={() => {
+                if (onToggleAssistant) onToggleAssistant();
+              }}
+            />
           </div>
 
         </div>

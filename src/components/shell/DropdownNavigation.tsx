@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { RandomLetterSwap } from "../ui/random-letter-swap";
+import { WaterGlassModal } from "../ui/WaterGlassModal";
 
 export type NavSubMenuItem = {
   label: string;
@@ -314,50 +315,54 @@ export function DropdownNavigation({ navItems }: Props) {
             }}
             onMouseEnter={handleMenuMouseEnter}
             onMouseLeave={handleMenuMouseLeave}
-            className="w-auto animate-in fade-in zoom-in-95 duration-150"
+            className="w-auto"
           >
-            {/* Pure Clean Transparent Glassmorphism Container with White/Teal Text */}
-            <div className="bg-slate-900/80 backdrop-blur-xl border border-white/20 p-2 sm:p-2.5 w-auto max-w-[95vw] shadow-2xl rounded-xl text-white ring-1 ring-black/20">
-              <div className="flex items-start gap-2.5 sm:gap-3.5 divide-x divide-white/10">
-                {activeNavItem.subMenus.map((sub, idx) => (
-                  <div 
-                    className={`w-auto min-w-[130px] max-w-[185px] ${idx > 0 ? 'pl-2.5 sm:pl-3.5' : ''}`} 
-                    key={sub.title}
-                  >
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-teal-300 pb-1 mb-1 border-b border-white/10 flex items-center justify-between">
-                      <span className="truncate">{sub.title}</span>
+            {/* Pure Clean Transparent WaterGlassModal Container */}
+            <WaterGlassModal
+              align="none"
+              className="mt-0"
+              optionsComponent={
+                <div className="flex items-start gap-2.5 sm:gap-3.5 divide-x divide-white/10">
+                  {activeNavItem.subMenus.map((sub, idx) => (
+                    <div 
+                      className={`w-auto min-w-[130px] max-w-[185px] ${idx > 0 ? 'pl-2.5 sm:pl-3.5' : ''}`} 
+                      key={sub.title}
+                    >
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-teal-300 pb-1 mb-1 border-b border-white/10 flex items-center justify-between">
+                        <span className="truncate">{sub.title}</span>
+                      </div>
+                      <ul className="space-y-0.5">
+                        {sub.items.map((item) => {
+                          const Icon = item.icon;
+                          return (
+                            <li key={item.label}>
+                              <a
+                                href={item.link || "#"}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  if (item.onClick) item.onClick();
+                                  setOpenMenu(null);
+                                  setActiveNavItem(null);
+                                }}
+                                className="flex items-center gap-1.5 py-1 px-1.5 rounded-xl hover:bg-white/[0.08] text-white hover:text-teal-200 transition-colors group/subitem cursor-pointer"
+                                title={item.description || item.label}
+                              >
+                                <div className="size-5 rounded-lg flex items-center justify-center bg-teal-400/15 border border-teal-300/30 text-teal-200 shrink-0 group-hover/subitem:bg-teal-400/25 group-hover/subitem:text-teal-100 transition-colors">
+                                  <Icon className="h-3 w-3 flex-none" />
+                                </div>
+                                <span className="text-[11px] font-medium text-white group-hover/subitem:text-teal-100 transition-colors truncate">
+                                  {item.label}
+                                </span>
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
                     </div>
-                    <ul className="space-y-0.5">
-                      {sub.items.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <li key={item.label}>
-                            <a
-                              href={item.link || "#"}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                if (item.onClick) item.onClick();
-                                setOpenMenu(null);
-                                setActiveNavItem(null);
-                              }}
-                              className="flex items-center gap-1.5 py-1 px-1.5 rounded-lg hover:bg-white/15 text-white hover:text-teal-200 transition-colors group/subitem cursor-pointer"
-                              title={item.description || item.label}
-                            >
-                              <div className="size-5 rounded flex items-center justify-center bg-teal-400/15 border border-teal-300/30 text-teal-200 shrink-0 group-hover/subitem:bg-teal-400/25 group-hover/subitem:text-teal-100 transition-colors">
-                                <Icon className="h-3 w-3 flex-none" />
-                              </div>
-                              <span className="text-[11px] font-medium text-white group-hover/subitem:text-teal-100 transition-colors truncate">
-                                {item.label}
-                              </span>
-                            </a>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  ))}
+                </div>
+              }
+            />
           </div>,
           document.body
         )}
